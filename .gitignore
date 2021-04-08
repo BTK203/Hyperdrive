@@ -25,5 +25,5 @@ hs_err_pid*
 #"target" folder for PathVisualizer
 PathVisualizer/PathVisualizer/PathVisualizer/target
 
-#PathVisualizer "prefs.txt"
-PathVisualizer/PathVisualizer/PathVisualizer/prefs.txt
+#PathVisualizer "prefs.txt" files
+prefs.txt
