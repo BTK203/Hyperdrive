@@ -1,0 +1,29 @@
+THINGS TO DO (sequentially):
+
+Stuff to implement:
+- Manual drive distance setting (for test purposes) ...done 
+- Manual position setting (for test purposes) ...done
+- Write chord-based displacement for position tracking
+
+Unit tests
+- Test position calculation for tank drive (it will work swerve is this passes) ...done
+- Test Path Recording ..done
+- Test trajectory / right and left velocity calculation for tank drive. ...done
+
+Todos
+- Resolve any TODOs in code
+
+Version Control
+- Clean the project
+- Make GitHub repo
+
+Integration testing
+- Test position tracking with both "always linear" mode and "chord" mode.
+- Test functionality on (hopefully 2019) robot.
+- When/If time allows, test on 2021 robot. On this test, try to implement the code as fast as possible.
+
+Documentation
+- Create the Manual
+
+Version Control again
+- If tests produced satisfactory results, release the code.
