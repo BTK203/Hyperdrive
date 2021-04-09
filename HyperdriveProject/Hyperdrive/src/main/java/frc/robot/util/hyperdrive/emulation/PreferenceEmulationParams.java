@@ -19,6 +19,7 @@ public class PreferenceEmulationParams implements IEmulateParams {
 
     /**
      * Creates a new PreferenceEmulationParams.
+     * @param The units of length to use. This should be the same value that you defined Hyperdrive with.
      */
     public PreferenceEmulationParams(Units.DISTANCE units) {
         this.units = units;

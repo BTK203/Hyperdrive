@@ -83,6 +83,10 @@ public class PVHost {
         ).start();
     }
 
+    /**
+     * Disconnects the currently active client socket and attempts to reconnect it. This is used to revive
+     * any connection that suddenly disconnects.
+     */
     private void redoConnection() {
         //likely due to the client disconnecting. Terminate connection and try to get it going again
         try {
@@ -172,6 +176,7 @@ public class PVHost {
      * Handles a singular message.
      * @param subject The subject of the message in string form.
      * @param message The body of the message.
+     * @param extraInfo Extra information provided by the message.
      */
     private void handleMessage(String subject, String message, String extraInfo) {
         MessageType messageType = MessageType.fromString(subject);
@@ -221,6 +226,7 @@ public class PVHost {
      * Formats a message into a format that the client can read.
      * @param subject The subject of the message. Should be "Pos" if sending a position, or "Path-[pathname] if sending a path."
      * @param message The body of the message.
+     * @return A formatted message that can be sent to the PathVisualizer client.
      */
     private String composeMessage(MessageType subject, String message) {
         return HyperdriveConstants.START_SEQUENCE + subject.getCode() + HyperdriveConstants.SPLIT_SEQUENCE + message + HyperdriveConstants.END_SEQUENCE;
@@ -231,6 +237,7 @@ public class PVHost {
      * @param subject The subject of the message. Should be "Pos" if sending a position, or "Path-[pathname] if sending a path."
      * @param subjectInfo additional information needed for the client to carry out the task depicted by the message.
      * @param message The body of the message.
+     * @return A formatted message that can be sent to the PathVisualizer client.
      */
     private String composeMessage(MessageType subject, String subjectInfo, String message) {
         return HyperdriveConstants.START_SEQUENCE + subject.getCode() + HyperdriveConstants.SUBJECT_SEQUENCE + subjectInfo + HyperdriveConstants.SPLIT_SEQUENCE + message + HyperdriveConstants.END_SEQUENCE;

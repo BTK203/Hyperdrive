@@ -19,6 +19,7 @@ import java.awt.event.WindowAdapter;
 
 import BTK203.Constants;
 import BTK203.util.IRenderable;
+import BTK203.util.Position;
 import BTK203.util.Util;
 
 /**
@@ -34,6 +35,13 @@ public class PathChooser extends JDialog {
 
     private IRenderable result;
     
+    /**
+     * Creates a new PathChooser dialog.
+     * @param parent The parent window of the dialog.
+     * @param options The renderable options for the user to choose from.
+     * @param pathsOnly Whether or not to fiter out the positions and display only
+     * the paths as options. If {@code true}, any {@link Position}s will not be shown.
+     */
     public PathChooser(JFrame parent, IRenderable[] options, boolean pathsOnly) {
         super(parent, true);
         setTitle("Save");
@@ -175,6 +183,10 @@ public class PathChooser extends JDialog {
         return null;
     }
 
+    /**
+     * Marks the dialog as complete and able to close.
+     * @param result The IRenderable that the user chose.
+     */
     private void complete(IRenderable result) {
         this.result = result;
         dispose();

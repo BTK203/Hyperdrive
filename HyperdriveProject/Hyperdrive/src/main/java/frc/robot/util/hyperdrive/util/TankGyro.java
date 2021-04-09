@@ -165,6 +165,8 @@ public class TankGyro {
      * until {@link #update(double, double)} is called with zero as both position values. If you
      * only wish to zero the heading of the gyro, and are not zeroing the drivetrain encoders along
      * with it, then this value should be {@code false}.
+     * @param waitForEncoders Should be {@code true} if the drivetrain encoders are also being zeroed.
+     * This will make the gyro wait for those zeroed values before actually zeroing the heading.
      */
     public void zeroHeading(boolean waitForEncoders) {
         this.waitForEncoders = waitForEncoders;

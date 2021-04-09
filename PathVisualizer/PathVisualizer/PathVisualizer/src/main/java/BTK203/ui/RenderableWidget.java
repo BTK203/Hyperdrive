@@ -28,7 +28,6 @@ public class RenderableWidget extends JPanel {
     /**
      * Creates a new PathWidget
      * @param renderable The path that the widget represents
-     * @param name The name of the widget
      */
     public RenderableWidget(IRenderable renderable) {
         super();
@@ -73,6 +72,7 @@ public class RenderableWidget extends JPanel {
 
     /**
      * Returns the path that this widget represents.
+     * @return The renderable that the widget represents.
      */
     public IRenderable getRenderable() {
         return renderable;
@@ -80,6 +80,7 @@ public class RenderableWidget extends JPanel {
 
     /**
      * Returns the name of this widget.
+     * @return The name of the renderable that this widget represents.
      */
     public String getName() {
         return renderable.getName();
@@ -87,6 +88,7 @@ public class RenderableWidget extends JPanel {
 
     /**
      * Returns the width of the Widget.
+     * @return The width of the widget in pixels.
      */
     @Override
     public int getWidth() {

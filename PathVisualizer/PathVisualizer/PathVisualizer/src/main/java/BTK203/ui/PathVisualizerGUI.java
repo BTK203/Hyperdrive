@@ -1,9 +1,7 @@
 package BTK203.ui;
 
-import javax.swing.BoxLayout;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
-import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.UIManager;
@@ -16,7 +14,6 @@ import BTK203.util.IRenderable;
 import BTK203.util.Path;
 import BTK203.util.Point2D;
 import BTK203.util.Position;
-import BTK203.util.Util;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
@@ -121,6 +118,10 @@ public class PathVisualizerGUI extends JFrame {
         }
     }
 
+    /**
+     * Prompts the user to select an IRenderable to save.
+     * @return The IRenderable that the user wants to save.
+     */
     public IRenderable promptRenderableToSave() {
         ArrayList<IRenderable> renderableList = visualizer.getRenderables();
         IRenderable[] renderableArray = new IRenderable[renderableList.size()];
@@ -136,7 +137,6 @@ public class PathVisualizerGUI extends JFrame {
 
     /**
      * Prompts the user to select a renderable to save to file.
-     * @return The IRenderable to save to file.
      */
     public void promptSaveRenderable() {
         IRenderable desiredRenderable = promptRenderableToSave();
@@ -181,7 +181,8 @@ public class PathVisualizerGUI extends JFrame {
 
     /**
      * Prompts the user to select a file to load from or save to the robot.
-     * @param operation The operation (save / load) that will take place
+     * @param operation The operation (save / load) that will take place.
+     * @param startingDirectory The file directory to start in.
      * @return The absolute robot file path that the user selects
      */
     public String runRobotFileDialog(FileOperation operation, String startingDirectory) {
@@ -200,7 +201,6 @@ public class PathVisualizerGUI extends JFrame {
     /**
      * Renders a path on the Visualizer.
      * @param path The path to render.
-     * @param name The name of the path.
      */
     public void putPath(Path path) {
         if(!manifest.widgetExists(path.getName()) && path.isValid()) {
@@ -258,6 +258,7 @@ public class PathVisualizerGUI extends JFrame {
     /**
      * Returns the user's desired IPv4 socket address for the robot.
      * See Ribbon.getDesiredSocketAddress() for more information.
+     * @return The IP Address that the user wants to be connected to.
      */
     public String getDesiredIPAddress() {
         return ribbon.getDesiredSocketAddress();
@@ -266,6 +267,7 @@ public class PathVisualizerGUI extends JFrame {
     /**
      * Returns the user's desired socket port.
      * See Ribbon.getDesiredPort() for more information.
+     * @return The Port that the user wants to be connected to.
      */
     public int getDesiredPort() {
         return ribbon.getDesiredPort();

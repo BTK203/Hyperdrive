@@ -110,6 +110,13 @@ public class SocketHelper {
         }
     }
 
+    /**
+     * Sends a message to the host and waits, with a Constants.MESSAGE_TIMEOUT timeout time, for the host to respond.
+     * @param subject The subject of the message to send.
+     * @param message The contents of the message to send.
+     * @param extraInfo The extra information needed for the host to handle the message.
+     * @return The host's response.
+     */
     public String sendMessageAndGetResponse(MessageType subject, String message, String extraInfo) {
         if(!getInitalizedAndConnected()) {
             return "";
@@ -194,6 +201,10 @@ public class SocketHelper {
         return false;
     }
 
+    /**
+     * Returns whether or not the SocketHelper has recently received a message.
+     * @return {@code true} if the SocketHelper is updated, {@code false} otherwise.
+     */
     public boolean getUpdated() {
         return System.currentTimeMillis() - lastUpdateTime < Constants.STABLE_UPDATE_THRESHOLD;
     }
@@ -291,6 +302,8 @@ public class SocketHelper {
 
     /**
      * Prints the generic error message from an UnknownHostException.
+     * @param ex The exception to print about.
+     * @param address The address that is unknown.
      */
     private void printUnknownHostExceptionMessage(UnknownHostException ex, String address) {
         System.out.println("No host " + address + " is known.");
@@ -299,6 +312,7 @@ public class SocketHelper {
 
     /**
      * Prints the generic error message from an IOException
+     * @param ex The exception to print about.
      */
     private void printIOExceptionMessage(IOException ex) {
         System.out.println("IOException occurred in SocketHelper.");
@@ -309,6 +323,7 @@ public class SocketHelper {
      * Processes a raw message into usable objects and then passes it along to the Manager for further processing.
      * @param subject The subject of the message (part after open paren but before colon)
      * @param message The body of the message (part after colon but before close paren)
+     * @param info The extra information in the message that is needed to be handled.
      */
     private void handleMessage(String subject, String message, String info) {
         MessageType type = MessageType.fromString(subject); //the type of message

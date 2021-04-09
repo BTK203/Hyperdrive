@@ -100,7 +100,7 @@ public class ConstantEmulationParams implements IEmulateParams {
     
     /**
      * Returns the default values for robots to use, in whatever unit is supplied.
-     * @return
+     * @return A {@link ConstantEmulationParams} containing the default parameters for path driving.
      */
     public static ConstantEmulationParams getDefaults(Units.DISTANCE units) {
         return new ConstantEmulationParams(

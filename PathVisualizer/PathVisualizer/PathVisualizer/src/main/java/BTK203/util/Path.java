@@ -61,45 +61,26 @@ public class Path implements IRenderable {
         this.visible = true;
     }
 
-    /**
-     * Returns the Path's points.
-     */
     public Point2D[] getPoints() {
         return points;
     }
 
-    /**
-     * Returns true if this Path was initalized correctly, false otherwise.
-     */
     public boolean isValid() {
         return valid;
     }
 
-    /**
-     * Sets whether or not the Path is visible.
-     */
     public void setVisible(boolean visible) {
         this.visible = visible;
     }
 
-    /**
-     * Returns whether or not the path is visible.
-     */
     public boolean isVisible() {
         return visible;
     }
 
-    /**
-     * Returns the color of the path.
-     */
     public Color getColor() {
         return color;
     }
 
-    /**
-     * Returns the name of the Renderable as it would appear on the manifest.
-     * @return The name of the Renderable.
-     */
     public String getName() {
         return name;
     }
@@ -128,6 +109,7 @@ public class Path implements IRenderable {
     /**
      * Creates a new Path from the given string.
      * @param string The string to interpret.
+     * @param name The name of the new Path.
      * @return A Path containing the information in the String.
      */
     public static Path fromString(String string, String name) {
@@ -149,6 +131,7 @@ public class Path implements IRenderable {
 
     /**
      * Gets the next color for a new path.
+     * @return The next color to use.
      */
     public static Color getNextColor() {
         Color nextColor = new Color(Color.HSBtoRGB(currentHue, Constants.NEXTCOLOR_SATURATION, Constants.NEXTCOLOR_BRIGHTNESS));

@@ -12,6 +12,10 @@ public class Rectangle {
 
     /**
      * Creates a new Rectangle at position (x, y) with size (width, height)
+     * @param x The X-coordinate of the top-left point.
+     * @param y The Y-coordinate of the top-left point.
+     * @param width The width of the rectangle
+     * @param height The height of the rectangle.
      */
     public Rectangle(double x, double y, double width, double height) {
         this.x = x;
@@ -48,6 +52,10 @@ public class Rectangle {
         return height;
     }
 
+    /**
+     * Returns a String representing the {@link Rectangle}.
+     * @return Formatted String representing the rectangle.
+     */
     public String toString() {
         return "(" +
             Double.valueOf(x).toString() + ", " +

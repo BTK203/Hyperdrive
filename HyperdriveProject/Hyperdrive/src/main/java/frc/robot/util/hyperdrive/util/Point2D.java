@@ -27,6 +27,7 @@ public class Point2D {
 
     /**
      * Returns the X-coordinate of the point.
+     * @return X-coordinate of point.
      */
     public double getX() {
         return x;
@@ -34,6 +35,7 @@ public class Point2D {
 
     /**
      * Returns the Y-coordinate of the point.
+     * @return Y-coordinate of point.
      */
     public double getY() {
         return y;
@@ -41,6 +43,7 @@ public class Point2D {
 
     /**
      * Returns the heading of the point.
+     * @return Heading (exit angle) of point.
      */
     public double getHeading() {
         return heading;
@@ -74,6 +77,7 @@ public class Point2D {
      * Returns a representation of this point in String format.
      * Format: [x],[y],[heading]
      * The output from this method can be used in the Point2D.fromString() method.
+     * @return Human and computer readable String representation of the Point.
      */
     public String toString() {
         double roundedX = HyperdriveUtil.roundTo(this.getX(), 2);
@@ -85,12 +89,25 @@ public class Point2D {
     /**
      * Returns a Point2D from a given String input
      * - Expected Format: [x],[y],[heading]
+     * @param input Formatted String representing a Point2D (can use output from
+     * {@link #toString()})
+     * @return The Point2D represented by the string, or {@code null} if the String
+     * is not formatted correctly (too few numbers, letters instead of numbers, etc).
      */
     public static Point2D fromString(String input) {
         String[] parts = input.split(",");
-        double x = Double.valueOf(parts[0]).doubleValue();
-        double y = Double.valueOf(parts[1]).doubleValue();
-        double heading = Double.valueOf(parts[2]).doubleValue();
-        return new Point2D(x, y, heading);
+        if(parts.length < 3) {
+            return null;
+        }
+
+        try {
+            double x = Double.valueOf(parts[0]).doubleValue();
+            double y = Double.valueOf(parts[1]).doubleValue();
+            double heading = Double.valueOf(parts[2]).doubleValue();
+            return new Point2D(x, y, heading);
+        } catch(NumberFormatException ex) {
+            return null;
+        }
+
     }
 }

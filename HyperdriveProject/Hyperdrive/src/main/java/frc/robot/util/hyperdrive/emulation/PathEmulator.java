@@ -67,6 +67,8 @@ public class PathEmulator {
      * For full explantion, see the constructor for the {@link Hyperdrive} class.
      * @param robotWeight The weight of the robot in either pounds, newtons, or kilogram-force.
      * @param weightUnit The unit of weight that the robot was measured in.
+     * @param distanceUnit The unit of distance that should be used. The motorUnitsPerUnit value should convert
+     * motor units to this unit.
      */
     public PathEmulator(final double motorUnitsPerUnit, final double robotWeight, Units.FORCE weightUnit, Units.DISTANCE distanceUnit) {
         this(motorUnitsPerUnit, robotWeight, weightUnit, distanceUnit, null, null);
@@ -324,7 +326,6 @@ public class PathEmulator {
     /**
      * Returns an angle corresponding to the direction that the robot is travelling in
      * @param angle Original angle.
-     * @param isForwards True if robot is driving forwards, false otherwise
      */
     private double forwardsify(double angle) {
         return (isForwards ? angle : (angle + 180) % 360);

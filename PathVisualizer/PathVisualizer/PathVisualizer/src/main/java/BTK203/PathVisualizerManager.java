@@ -25,8 +25,6 @@ public class PathVisualizerManager {
     private SocketHelper socketHelper;
     private HashMap<String, String> preferences;
     private HashMap<String, Integer> names;
-    private boolean updatedBefore;
-    private long lastReconnectTime;
 
     /**
      * Initalizes all needed components of the program.
@@ -37,9 +35,7 @@ public class PathVisualizerManager {
         readPreferences();
 
         names = new HashMap<String, Integer>();
-        updatedBefore = false;
-        lastReconnectTime = 0;
-
+        
         //resolve default IP address and port. Keep this section of code below the call to readPreferences().
         String defaultIPAddress = getPreference("defaultIPAddress", "10.36.95.2");
         int defaultPort         = Integer.valueOf(getPreference("defaultPort", "3695"));
@@ -82,6 +78,9 @@ public class PathVisualizerManager {
 
     /**
      * Gets the value of a preference, stored in a string.
+     * @param key The name of the value to get.
+     * @param backup The value to restore if the key doesn't exist.
+     * @return The value of key.
      */
     public String getPreference(String key, String backup) {
         if(preferences.containsKey(key)) {
@@ -142,6 +141,7 @@ public class PathVisualizerManager {
 
     /**
      * Prompts the user to save a file to the robot.
+     * @param operation The type of file operation to perform.
      */
     public void doRobotFileOperation(FileOperation operation) {
         //resolve from preferences the last file location that the user used. This will be the starting location for the directory
@@ -287,7 +287,7 @@ public class PathVisualizerManager {
     /**
      * Gets the next available name for something.
      * This is similar to how the windows file explorer renames duplicate files to "name (1)" or "name (2)"
-     * @param Name The base name to use.
+     * @param name The base name to use.
      * @return The next available name.
      */
     private String getNextName(String name) {

@@ -19,7 +19,6 @@ public class Path {
     /**
      * Creates a new path from the given file path.
      * @param file The path to the file to read from.
-     * @param color The color of the path.
      */
     public Path(String file) {
         this.valid = false;
@@ -42,7 +41,6 @@ public class Path {
     /**
      * Creates a new Path.
      * @param points An array of points describing the path.
-     * @param color The color of the path.
      */
     public Path(Point2D[] points) {
         this.points = points;
@@ -51,6 +49,7 @@ public class Path {
 
     /**
      * Returns the Path's points.
+     * @return An array of {@link Point2D} objects.
      */
     public Point2D[] getPoints() {
         return points;
@@ -58,7 +57,8 @@ public class Path {
 
     /**
      * Returns true if this Path was initalized correctly, false otherwise.
-     * @return The validity of the Path.
+     * @return The validity of the Path. {@code true} for valid and {@code false}
+     * for not.
      */
     public boolean isValid() {
         return valid;

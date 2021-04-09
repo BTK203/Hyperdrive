@@ -33,6 +33,7 @@ public class Hyperdrive {
 
     /**
      * Creates a new Hyperdrive. 
+     * @param distanceUnit The units of distance that the robot will use.
      * @param motorUnitsPerUnit The number of motor position units (ticks, rotations, etc) that are in one
      * length measurement unit (inches, feet, meters, etc). To get this value, drive the robot a set distance
      * (more than 10 feet for most accuracy) and then record the raw displacement of the motor encoders.
@@ -43,7 +44,6 @@ public class Hyperdrive {
      * wheels with pneumatic tires through a toughbox mini gearbox.
      * @param robotWeight The weight of the robot.
      * @param weightUnit The units of weight that the robot is measured in.
-     * @param distanceUnit The units of distance that the robot will use.
      * @param pvPort The port to use for communicating with PathVisualizer. Defaults to 3695.
      */
     public Hyperdrive(Units.DISTANCE distanceUnit, final double motorUnitsPerUnit, final double robotWeight, Units.FORCE weightUnit, int pvPort) {
@@ -61,8 +61,8 @@ public class Hyperdrive {
      * length measurement unit (inches, feet, meters, etc). See javadoc for
      * {@link #Hyperdrive(frc.robot.util.hyperdrive.util.Units.DISTANCE, double, double, frc.robot.util.hyperdrive.util.Units.FORCE, int)}
      * for full explanation.
-     * @param robotWeight
-     * @param weightUnit
+     * @param robotWeight The weight of the robot.
+     * @param weightUnit The unit of weight that the robot is measured in.
      */
     public Hyperdrive(Units.DISTANCE distanceUnits, final double motorUnitsPerUnit, final double robotWeight, Units.FORCE weightUnit) {
         this(distanceUnits, motorUnitsPerUnit, robotWeight, weightUnit, 3695);

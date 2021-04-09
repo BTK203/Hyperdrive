@@ -33,6 +33,8 @@ public class PositionTracker {
 
     /**
      * Creates a new PositionTracker.
+     * @param motorUnitsPerUnit The number of "motor units" that are present in a single unit of distance (inches,
+     * meters, etc). This should be the same value that was passed into the {@link Hyperdrive} constructor.
      * @param x The starting X-coordinate of the robot.
      * @param y The starting Y-coordinate of the robot.
      * @param angle The starting heading angle of the robot in degrees. (0 = towards positive X. Positive = CCW)
@@ -45,6 +47,8 @@ public class PositionTracker {
 
     /**
      * Creates a new Position tracker, with starting position and rotation at 0.
+     * @param motorUnitsPerUnit The number of "motor units" that are present in a single unit of distance (inches,
+     * meters, etc). This should be the same value that was passed into the {@link Hyperdrive} constructor.
      */
     public PositionTracker(final double motorUnitsPerUnit) {
         this(motorUnitsPerUnit, 0, 0, 0);
@@ -54,7 +58,7 @@ public class PositionTracker {
      * Sets the position and heading of the robot.
      * @param x The new X-coordinate of the robot.
      * @param y The new Y-coordinate of the robot.
-     * @param angle The new heading angle of the robot.
+     * @param heading The new heading angle of the robot.
      */
     public void setPositionAndHeading(double x, double y, double heading) {
         this.x = x;

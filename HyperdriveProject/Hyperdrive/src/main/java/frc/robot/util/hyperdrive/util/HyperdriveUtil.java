@@ -30,7 +30,9 @@ public class HyperdriveUtil {
 	/**
 	 *	Kind of self explanatory, but with some spice
 	 *	Use this mainly as a get method to retrieve values the user types into the smart dash
-	 *		(the 'Set' part is only in case the value doesn't exist, backup is a default to use and set if it isn't there)
+	 *	(the 'Set' part is only in case the value doesn't exist, backup is a default to use and set if it isn't there)
+	 * @param key The name of the value
+	 * @param backup The value to set if the value does not exist
 	 */
 	static Preferences pref = Preferences.getInstance();
 	public static double getAndSetDouble(String key, double backup) {

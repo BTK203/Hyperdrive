@@ -19,9 +19,7 @@ public class HyperdriveConstants {
         EMULATE_POINT_PASS_LIMIT = 10,
         EMULATE_MAX_HEADING_TO_TURN_DIFFERENCE = 75;
 
-    //PathVisualizer constants
-    public static final int
-        SOCKET_BUFFER_SIZE = 128000;
+    
 
     //PositionTracker constants
     public static final double
@@ -29,6 +27,10 @@ public class HyperdriveConstants {
 
     public static final boolean 
         USE_CHORD_BASED_TRACKING = true;
+
+    //PathVisualizer constants
+    public static final int
+        SOCKET_BUFFER_SIZE = 128000;
 
     public static final String
         START_SEQUENCE = "[",

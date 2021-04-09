@@ -30,8 +30,8 @@ public class SocketWidget extends JPanel {
 
     /**
      * Updates the widget.
-     * @param bound True if the socket is bound, false otherwise.
-     * @param connected True if the socket is connected, false otherwise.
+     * @param socketConnecting {@code true} if the socket is actively connecting, {@code false} otherwise.
+     * @param connected {@code true} if the socket is connected, {@code false} otherwise.
      */
     public void update(boolean socketConnecting, boolean socketInitalized) {
         if(!(socketConnecting || socketInitalized)) { //unbound, unconnected

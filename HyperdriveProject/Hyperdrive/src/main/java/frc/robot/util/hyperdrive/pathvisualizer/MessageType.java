@@ -1,7 +1,7 @@
 package frc.robot.util.hyperdrive.pathvisualizer;
 
 /**
- * Describes a message that the robot receives.
+ * Describes a message that the robot receives from PathVisualizer
  */
 public enum MessageType {
     UNKNOWN("UNKNOWN", -1),      //MESSAGE FORMATS BY TYPE:

@@ -3,11 +3,9 @@ package BTK203.ui;
 import java.awt.Dimension;
 import java.util.ArrayList;
 import javax.swing.BoxLayout;
-import javax.swing.JLabel;
 import javax.swing.JPanel;
 import BTK203.Constants;
 import BTK203.util.IRenderable;
-import BTK203.util.Util;
 
 /**
  * A graphical manifest of all paths currently on display.
@@ -52,7 +50,7 @@ public class PathManifest extends JPanel {
 
     /**
      * Removes a PathWidget by name.
-     * @param name The name of the widget to delete.
+     * @param path The IRenderable to delete.
      */
     public void removeWidgetByPath(IRenderable path) {
         for(int i=0; i<widgets.size(); i++) {

@@ -4,16 +4,15 @@
 
 package frc.robot.util.hyperdrive.emulation;
 
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.util.hyperdrive.util.HyperdriveUtil;
 import frc.robot.util.hyperdrive.util.Units;
 
 /**
  * Represents the trajectory of a tank-style robot as it moves through a Path.
  * This class will provide programmers with the target velocities of the left
- * and right motors. This class can be created using the {@link Trajectory} 
- * class with the constructor, and can also be created by the {@link Trajectory} 
- * class using {@code getTankTrajectory()}.
+ * and right motors. This class can be created using the {@link #TankTrajectory(Trajectory, double)} 
+ * constructor, and can also be created by the {@link Trajectory} class using 
+ * {@link Trajectory #getTankTrajectory()}.
  */
 public class TankTrajectory extends Trajectory {
     private double
