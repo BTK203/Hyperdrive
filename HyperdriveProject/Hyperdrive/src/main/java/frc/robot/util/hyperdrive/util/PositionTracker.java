@@ -11,6 +11,14 @@ import frc.robot.util.hyperdrive.HyperdriveConstants;
  * A class that tracks the position of the robot in field space.
  * Because team 3695 has not had experience with swerve drive as of yet,
  * this class is primarly programmed for tank bots.
+ * <br><br>
+ * This class relies on the integrity of the drivetrain encoder readouts to calculate
+ * the robot's position on the field. Those encoder counts must be as close as
+ * possible to the actual displacement of the wheel from its starting position. That
+ * being said, in order for this class to accurately report the robot's true position
+ * on the field, the drivetrain wheels cannot drift. Drifting will result in a difference 
+ * betweenthe encoder position and the drivetrain's actual position, which will cause this 
+ * class to inaccurately report the robot's position.
  */
 public class PositionTracker {
     private double
@@ -19,7 +27,7 @@ public class PositionTracker {
         y,
         heading;
 
-    private boolean zeroingDrivetrain; //indicates if the PositionTracker is to wait for the distance readout to zero before zeroing position.
+    private boolean waitForEncoders; //indicates if the PositionTracker is to wait for the distance readout to zero before zeroing position.
     
     private final double motorUnitsPerUnit;
 
@@ -31,7 +39,7 @@ public class PositionTracker {
      */
     public PositionTracker(final double motorUnitsPerUnit, double x, double y, double heading) {
         this.motorUnitsPerUnit = motorUnitsPerUnit;
-        zeroingDrivetrain = false;
+        waitForEncoders = false;
         setPositionAndHeading(x, y, heading);
     }
 
@@ -65,20 +73,17 @@ public class PositionTracker {
     /**
      * Zeroes the position and heading of the robot. This should be called when the 
      * robot is NOT moving.
-     * @param zeroingDrivetrain True if the drivetrain is also currently being zeroed.
+     * @param waitForEncoders True if the drivetrain is also currently being zeroed.
      * This option is necessary because of the lag that is experienced when performing a 
      * CAN operation. An encoder zero operation will not instantly result in zero encoders.
      * In fact, the encoder value will most likely not read 0 until the next robot frame.
      * Enabling this option forces this method to wait until the either class is fed  
      * a position value that is close enough to zero, or until a half-second has passed.
-     * @return The success of the operation (true for success, false otherwise). A
-     * {@code false} value will only be returned if the {@code zeroingDrivetrain} option
-     * is enabled, and a half-second passes without 0 encoder values being seen.
      */
-    public void zeroPositionAndHeading(boolean zeroingDrivetrain) {
-        this.zeroingDrivetrain = zeroingDrivetrain;
+    public void zeroPositionAndHeading(boolean waitForEncoders) {
+        this.waitForEncoders = waitForEncoders;
 
-        if(!zeroingDrivetrain) {
+        if(!waitForEncoders) {
             setPositionAndHeading(0, 0, 0);
         }
     }
@@ -136,9 +141,9 @@ public class PositionTracker {
         this.y += driveY;
         this.heading = movementDirection;
 
-        if(zeroingDrivetrain && Math.abs(driveDistance) < HyperdriveConstants.ALMOST_ZERO) {
+        if(waitForEncoders && Math.abs(driveDistance) < HyperdriveConstants.ALMOST_ZERO) {
             setPositionAndHeading(0, 0, 0);
-            zeroingDrivetrain = false;
+            waitForEncoders = false;
         }
     }
 

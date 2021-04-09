@@ -164,7 +164,7 @@ public class Hyperdrive {
     /**
      * Sets the position and heading of the robot to 0. This method should be called
      * when the robot is standing still to ensure accurate and reliable results.
-     * This overload also providesan option to wait for the drive encoders to be 
+     * This overload also provides an option to wait for the drive encoders to be 
      * 0 before actually resetting the position, which helps to prevent large 
      * position jumps that may ruin any position-related zero that was recently set. 
      * See the javadoc for the {@link PositionTracker #zeroPositionAndHeading(boolean)} 

@@ -241,10 +241,32 @@
               "_title": "Immediate Turn"
             }
           },
+          "0,3": {
+            "size": [
+              2,
+              1
+            ],
+            "content": {
+              "_type": "Text View",
+              "_source0": "network_table:///SmartDashboard/Heading",
+              "_title": "Heading"
+            }
+          },
+          "18,0": {
+            "size": [
+              2,
+              1
+            ],
+            "content": {
+              "_type": "Command",
+              "_source0": "network_table:///SmartDashboard/Zero Gyro",
+              "_title": "Zero Gyro"
+            }
+          },
           "12,1": {
             "size": [
-              7,
-              6
+              8,
+              8
             ],
             "content": {
               "_type": "Robot Preferences",
@@ -297,9 +319,9 @@
     }
   ],
   "windowGeometry": {
-    "x": 305.0,
-    "y": 0.0,
-    "width": 1620.0,
-    "height": 684.0
+    "x": -8.0,
+    "y": -8.0,
+    "width": 1936.0,
+    "height": 1056.0
   }
 }

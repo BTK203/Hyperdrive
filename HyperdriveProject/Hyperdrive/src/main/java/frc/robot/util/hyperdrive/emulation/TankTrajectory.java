@@ -49,10 +49,6 @@ public class TankTrajectory extends Trajectory {
                 rightDisplacement = trajectory.getTurn() * (radius - midWheelDisplacement);
             }
 
-            //TODO: delete
-            SmartDashboard.putNumber("Left Displacement", leftDisplacement);
-            SmartDashboard.putNumber("Right Displacement", rightDisplacement);
-
             //convert those displacments to velocities using the base velocity of the robot.
             double timeInterval = trajectory.getDistance() / trajectory.getVelocity();
 

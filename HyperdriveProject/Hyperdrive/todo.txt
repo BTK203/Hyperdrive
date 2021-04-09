@@ -3,19 +3,20 @@ THINGS TO DO (sequentially):
 Stuff to implement:
 - Manual drive distance setting (for test purposes) ...done 
 - Manual position setting (for test purposes) ...done
-- Write chord-based displacement for position tracking
+- Write chord-based displacement for position tracking ...done
 
 Unit tests
 - Test position calculation for tank drive (it will work swerve is this passes) ...done
-- Test Path Recording ..done
+- Test Path Recording ...done
 - Test trajectory / right and left velocity calculation for tank drive. ...done
+- Test tank gyro ...done
 
 Todos
-- Resolve any TODOs in code
+- Resolve any TODOs in code ...done
 
 Version Control
-- Clean the project
-- Make GitHub repo
+- Clean the project ...done
+- Make GitHub repo ...done
 
 Integration testing
 - Test position tracking with both "always linear" mode and "chord" mode.

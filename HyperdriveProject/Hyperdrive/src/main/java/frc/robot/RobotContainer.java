@@ -45,6 +45,7 @@ public class RobotContainer {
     SmartDashboard.putData("Record", new CyborgCommandRecordPath(drivetrain.getHyperdrive()));
     SmartDashboard.putData("Create Random", new InstantCommandCreateRandomPath("src/main/java/frc/robot/random.txt", drivetrain.getHyperdrive()));
     SmartDashboard.putData("Zero Coords", new InstantCommand(() -> drivetrain.zeroPositionAndHeading()));
+    SmartDashboard.putData("Zero Gyro", new InstantCommand(() -> drivetrain.zeroGyro()));
     SmartDashboard.putData("Zero Positions", new InstantCommand(() -> drivetrain.zeroMotorPositions()));
     SmartDashboard.putData("Randomize", new InstantCommand(() -> drivetrain.randomize()));
     SmartDashboard.putData("Displace Random", new InstantCommand(() -> drivetrain.displaceRandomly()));
@@ -75,8 +76,15 @@ public class RobotContainer {
    */
   private boolean testUnitConversions() {
     boolean allPassed = true;
+    allPassed = allPassed && testUnits();
+    
+    return allPassed;
+  }
 
+  private boolean testUnits() {
     //distance units (in, ft, yd, cm, m)
+    boolean allPassed = true;
+
     allPassed = allPassed && HyperdriveUtil.assertEquals("20 in = 1.1666 ft", HyperdriveUtil.roundTo(HyperdriveUtil.convertDistance(20, Units.DISTANCE.INCHES, Units.DISTANCE.FEET), 3), 1.667); //20 inches = 1.666667 ft
     allPassed = allPassed && HyperdriveUtil.assertEquals("7.2 ft = 86.4 in", HyperdriveUtil.convertDistance(7.2, Units.DISTANCE.FEET, Units.DISTANCE.INCHES), 86.4);
     allPassed = allPassed && HyperdriveUtil.assertEquals("6.4 ft = 2.133 yd", HyperdriveUtil.roundTo(HyperdriveUtil.convertDistance(6.4, Units.DISTANCE.FEET, Units.DISTANCE.YARDS), 3), 2.133);

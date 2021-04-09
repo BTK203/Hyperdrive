@@ -78,7 +78,8 @@ public class Point2D {
     public String toString() {
         double roundedX = HyperdriveUtil.roundTo(this.getX(), 2);
         double roundedY = HyperdriveUtil.roundTo(this.getY(), 2);
-        return Double.valueOf(roundedX).toString() + "," + Double.valueOf(roundedY).toString() + "," + Double.valueOf(heading).toString();
+        double roundedH = HyperdriveUtil.roundTo(this.getHeading(), 2);
+        return Double.valueOf(roundedX).toString() + "," + Double.valueOf(roundedY).toString() + "," + Double.valueOf(roundedH).toString();
     }
 
     /**

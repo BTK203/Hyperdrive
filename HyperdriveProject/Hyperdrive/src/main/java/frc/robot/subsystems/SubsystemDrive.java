@@ -12,6 +12,7 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 import frc.robot.util.hyperdrive.Hyperdrive;
 import frc.robot.util.hyperdrive.util.Point2D;
+import frc.robot.util.hyperdrive.util.TankGyro;
 
 public class SubsystemDrive extends SubsystemBase {
   private CANSparkMax
@@ -26,6 +27,7 @@ public class SubsystemDrive extends SubsystemBase {
     heading;
 
   private Hyperdrive hyperdrive;
+  private TankGyro gyro;
 
   /** Creates a new SubsystemDrive. */
   public SubsystemDrive() {
@@ -39,6 +41,7 @@ public class SubsystemDrive extends SubsystemBase {
     heading = 0;
 
     hyperdrive = new Hyperdrive();
+    gyro = new TankGyro(24, 0.472);
 
     setFollowers();
   }
@@ -47,9 +50,12 @@ public class SubsystemDrive extends SubsystemBase {
   public void periodic() {
     // This method will be called once per scheduler run
     hyperdrive.update(leftPosition, rightPosition, heading);
+    gyro.update(leftPosition, rightPosition);
+    heading = gyro.getHeading();
 
     SmartDashboard.putNumber("Left Position", leftPosition);
     SmartDashboard.putNumber("Right Position", rightPosition);
+    SmartDashboard.putNumber("Heading", heading);
   }
 
   /**
@@ -65,6 +71,13 @@ public class SubsystemDrive extends SubsystemBase {
    */
   public void zeroPositionAndHeading() {
     hyperdrive.zeroPositionAndHeading(true);
+  }
+
+  /**
+   * Zeros the tank gyro, waiting for encoders before it does such.
+   */
+  public void zeroGyro() {
+    gyro.zeroHeading(true);
   }
 
   /**
