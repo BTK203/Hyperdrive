@@ -151,8 +151,8 @@ public class Ribbon extends JPanel {
      * @param socketConnecting True if the socket is bound, false otherwise.
      * @param socketInitalized True if the socket is connected, false otherwise.
      */
-    public void setSocketStatus(boolean socketConnecting, boolean socketInitalized) {
-        socketStatus.update(socketConnecting, socketInitalized);
+    public void setSocketStatus(boolean socketConnecting, boolean socketInitalized, boolean socketResponding) {
+        socketStatus.update(socketConnecting, socketInitalized, socketResponding);
     }
 
     /**

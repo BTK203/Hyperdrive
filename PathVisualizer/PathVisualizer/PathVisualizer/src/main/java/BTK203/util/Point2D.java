@@ -27,7 +27,6 @@ public class Point2D {
 
     /**
      * Returns the X-coordinate of the point.
-     * @return X-coordinate
      */
     public double getX() {
         return x;
@@ -35,7 +34,6 @@ public class Point2D {
 
     /**
      * Returns the Y-coordinate of the point.
-     * @return Y-coordinate
      */
     public double getY() {
         return y;
@@ -43,7 +41,6 @@ public class Point2D {
 
     /**
      * Returns the heading of the point.
-     * @return The exit angle of the point.
      */
     public double getHeading() {
         return heading;
@@ -77,7 +74,6 @@ public class Point2D {
      * Returns a representation of this point in String format.
      * Format: [x],[y],[heading]
      * The output from this method can be used in the Point2D.fromString() method.
-     * @return A human and computer readable String representing the point.
      */
     public String toString() {
         double roundedX = Util.roundTo(this.getX(), 2);
@@ -88,20 +84,15 @@ public class Point2D {
     /**
      * Returns a Point2D from a given String input
      * - Expected Format: [x],[y],[heading]
-     * @param input A formatted String, such as the one returned by {@link #toString()}
-     * @return The Point2D represented by the String.
      */
     public static Point2D fromString(String input) {
         String[] parts = input.split(",");
-
-        if(parts.length >= 3) {
-            try {
-                double x = Double.valueOf(parts[0]).doubleValue();
-                double y = Double.valueOf(parts[1]).doubleValue();
-                double heading = Double.valueOf(parts[2]).doubleValue();
-                return new Point2D(x, y, heading);
-            } catch(NumberFormatException ex) {
-            }
+        try {
+            double x = Double.valueOf(parts[0]).doubleValue();
+            double y = Double.valueOf(parts[1]).doubleValue();
+            double heading = Double.valueOf(parts[2]).doubleValue();
+            return new Point2D(x, y, heading);
+        } catch(NumberFormatException ex) {
         }
         
         return null;

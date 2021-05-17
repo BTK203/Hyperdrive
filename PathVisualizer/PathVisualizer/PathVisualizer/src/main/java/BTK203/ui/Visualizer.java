@@ -65,7 +65,6 @@ public class Visualizer extends JPanel {
 
     /**
      * Paints the object. This method called by Swing internal methods.
-     * @param g The Graphics to paint on.
      */
     public void paint(Graphics g) {
         //fill in the background

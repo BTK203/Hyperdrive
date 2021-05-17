@@ -15,6 +15,7 @@ public class SocketWidget extends JPanel {
     private static final String
         SOCKET_NOT_CONNECTING = "Status: Not Connected!",
         SOCKET_CONNECTING     = "Status: Searching...",
+        SOCKET_NOT_RESPOND    = "Status: Not Responding!",
         SOCKET_INITALIZED     = "Status: Connected";
 
     private JLabel statusLabel;
@@ -30,10 +31,10 @@ public class SocketWidget extends JPanel {
 
     /**
      * Updates the widget.
-     * @param socketConnecting {@code true} if the socket is actively connecting, {@code false} otherwise.
-     * @param connected {@code true} if the socket is connected, {@code false} otherwise.
+     * @param bound True if the socket is bound, false otherwise.
+     * @param connected True if the socket is connected, false otherwise.
      */
-    public void update(boolean socketConnecting, boolean socketInitalized) {
+    public void update(boolean socketConnecting, boolean socketInitalized, boolean socketResponding) {
         if(!(socketConnecting || socketInitalized)) { //unbound, unconnected
             setBackground(Constants.ERROR_RED_COLOR);
             statusLabel.setText(SOCKET_NOT_CONNECTING);
@@ -41,8 +42,13 @@ public class SocketWidget extends JPanel {
             setBackground(Constants.WARNING_YELLOW_COLOR);
             statusLabel.setText(SOCKET_CONNECTING);
         } else if(socketInitalized) {
-            setBackground(Constants.GOOD_GREEN_COLOR);
-            statusLabel.setText(SOCKET_INITALIZED);
+            if(socketResponding) {
+                setBackground(Constants.GOOD_GREEN_COLOR);
+                statusLabel.setText(SOCKET_INITALIZED);
+            } else {
+                setBackground(Constants.WARNING_ORANGE_COLOR);
+                statusLabel.setText(SOCKET_NOT_RESPOND);
+            }
         }
     }
 }

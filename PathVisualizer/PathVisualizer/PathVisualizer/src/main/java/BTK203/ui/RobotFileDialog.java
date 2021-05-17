@@ -44,9 +44,7 @@ public class RobotFileDialog extends JDialog {
 
     /**
      * Creates a new RobotFileDialog.
-     * @param parent The parent widget that this dialog belongs to.
      * @param operation The mode to open files with. Can either be RobotFileDialog.SAVING or RobotFileDialog.READING
-     * @param startingDirectory The file directory that the dialog should start in.
      */
     public RobotFileDialog(JFrame parent, FileOperation operation, String startingDirectory) {
         super(parent, true);
@@ -159,7 +157,6 @@ public class RobotFileDialog extends JDialog {
     /**
      * Populates fileList by making contact with the robot and querying it's path files.
      * This method should be run in a separate thread.
-     * @param directory The directory to search and display.
      */
     private void populateList(String directory) {
         directoryBox.setText(directory);

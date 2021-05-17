@@ -33,6 +33,7 @@ public class Constants {
         END_POINT_COLOR      = new Color(200, 20, 20),
         ERROR_RED_COLOR      = new Color(255, 50, 50),
         WARNING_YELLOW_COLOR = new Color(255, 255, 50),
+        WARNING_ORANGE_COLOR = new Color(255, 50, 0),
         GOOD_GREEN_COLOR     = new Color(50, 255, 50),
         ROBOT_POSITION_COLOR = new Color(0, 0, 0),
         BLACK                = new Color(0, 0, 0),
@@ -76,7 +77,7 @@ public class Constants {
      */
     public static final int
         SOCKET_TIMEOUT = 20,
-        SOCKET_BUFFER_SIZE = 128000, //128 kB
+        SOCKET_BUFFER_SIZE = 16000, //128 kB
         MAX_UNCLAIMED_MESSAGES = 256;
 
     /**

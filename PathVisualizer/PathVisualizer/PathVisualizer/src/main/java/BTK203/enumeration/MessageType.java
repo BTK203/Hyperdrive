@@ -1,8 +1,5 @@
 package BTK203.enumeration;
 
-/**
- * Describes different types of messages that can be sent to or received from the host.
- */
 public enum MessageType {
     UNKNOWN("UNKNOWN", -1),      //MESSAGE FORMATS BY TYPE:
     POSITION("Pos", 0),          //Pos:[point]

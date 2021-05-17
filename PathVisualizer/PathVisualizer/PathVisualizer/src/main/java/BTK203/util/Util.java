@@ -12,7 +12,6 @@ public class Util {
     /**
      * Rounds a number to n places.
      * @param number The number to round.
-     * @param places The number of decimal points to round to.
      */
     public static double roundTo(double number, int places) {
         int multiplier = (int) Math.pow(10, places);
@@ -35,7 +34,6 @@ public class Util {
 
     /**
      * Creates a new Border to acheive a margin
-     * @return A Border that serves as a margin.
      */
     public static Border generateHorizontalMargin() {
         return BorderFactory.createEmptyBorder(0, Constants.DEFAULT_HORIZONTAL_MARGIN, 0, Constants.DEFAULT_HORIZONTAL_MARGIN);
@@ -43,7 +41,6 @@ public class Util {
 
     /**
      * Creates a new Border to acheive a margin.
-     * @return A Border that serves as a margin.
      */
     public static Border generateVerticalMargin() {
         return BorderFactory.createEmptyBorder(Constants.DEFAULT_VERTICAL_MARGIN, 0, Constants.DEFAULT_VERTICAL_MARGIN, 0);

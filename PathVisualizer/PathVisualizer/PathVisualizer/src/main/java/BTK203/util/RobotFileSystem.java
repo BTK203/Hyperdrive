@@ -43,11 +43,6 @@ public class RobotFileSystem {
         return paths;
     }
 
-    /**
-     * Returns an array of the names of the given files.
-     * @param paths The files to return the names of.
-     * @return An array of just the names (not the paths) of the files.
-     */
     public String[] onlyNames(String[] paths) {
         String[] nameArray = new String[paths.length];
         for(int i=0; i<paths.length; i++) {
