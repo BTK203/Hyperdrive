@@ -71,7 +71,7 @@ public class HyperdriveUtil {
 	 * @param units The original units of the measurement.
 	 * @return The value of the measurement in inches.
 	 */
-	public static double toInches(double value, Units.LENGTH units) {
+	public static double toInches(double value, Units.DISTANCE units) {
 		switch(units) {
 		case CENTIMETERS:
 			return value / 2.54;
@@ -94,7 +94,7 @@ public class HyperdriveUtil {
 	 * @param desired The units to convert the measurement to.
 	 * @return The value of the measurement in the desired unit.
 	 */
-	public static double fromInches(double value, Units.LENGTH desired) {
+	public static double fromInches(double value, Units.DISTANCE desired) {
 		switch(desired) {
 		case CENTIMETERS:
 			return value * 2.54;
@@ -120,7 +120,7 @@ public class HyperdriveUtil {
 	 * @param desired The unit to convert the measurement to.
 	 * @return The value of the measurement in the desired unit.
 	 */
-	public static double convertDistance(double value, Units.LENGTH original, Units.LENGTH desired) {
+	public static double convertDistance(double value, Units.DISTANCE original, Units.DISTANCE desired) {
 		double inches = toInches(value, original);
 		return fromInches(inches, desired);
 	}
@@ -251,6 +251,76 @@ public class HyperdriveUtil {
 	public static double weightFromMassKG(double mass, Units.FORCE desiredWeightUnit) {
 		double newtons = mass * 9.80665;
 		return convertForce(newtons, Units.FORCE.NEWTON, desiredWeightUnit);
+	}
+
+	/**
+	 * Inserts a value at the beginning of an array and shifts all existing values up one index.
+	 * This method will keep the size of the array the same, meaning that the last value in the 
+	 * array will be deleted.
+	 * Precondition: The length of the original array is greater than 1.
+	 * @param values The array to change. The length of this array must be greater than 1.
+	 * @param newValue The value to insert at the beginning of the array.
+	 * @return The shifted array, with the new value at index 0.
+	 */
+	public static double[] shiftValues(double[] values, double newValue) {
+		if(values.length < 1) {
+			return new double[] { newValue };
+		}
+
+		double[] newArray = new double[values.length];
+		for(int i=0; i<values.length - 1; i++) {
+			newArray[i + 1] = values[i];
+		}
+
+		newArray[0] = newValue;
+		return newArray;
+	}
+
+	/**
+	 * Calculates the average of a set of numbers.
+	 * @param values The set to average.
+	 * @return The average value of the set.
+	 */
+	public static double average(double[] values) {
+		double avg = 0;
+		for(double value : values) {
+			avg += value;
+		}
+
+		return avg / values.length;
+	}
+
+	/**
+	 * Differentiates an array once.
+	 * @param array The array to differentiate
+	 * @return An array containing the changes in all values of the original array
+	 */
+	public static double[] differentiate(double[] array) {
+		if(array.length < 1) {
+			return new double[] {0};
+		}
+
+		double[] differentiated = new double[array.length - 1];
+		for(int i=1; i<array.length; i++) {
+			differentiated[i - 1] = array[i] - array[i - 1];
+		}
+
+		return differentiated;
+	}
+
+	/**
+	 * Differentiates an array multiple times. 
+	 * @param array The array to differentiate
+	 * @param times The number of times to differentiate the array.
+	 * @return Differentiated array.
+	 */
+	public static double[] differentiate(double[] array, int times) {
+		double[] differentiated = array;
+		for(int i=0; i<times; i++) {
+			differentiated = differentiate(differentiated);
+		}
+
+		return differentiated;
 	}
 
     /**

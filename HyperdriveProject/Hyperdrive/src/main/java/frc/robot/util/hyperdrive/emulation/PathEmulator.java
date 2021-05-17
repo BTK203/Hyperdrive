@@ -9,6 +9,7 @@ import frc.robot.util.hyperdrive.util.Path;
 import frc.robot.util.hyperdrive.util.Point2D;
 import frc.robot.util.hyperdrive.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.util.hyperdrive.Hyperdrive;
 import frc.robot.util.hyperdrive.HyperdriveConstants;
 import frc.robot.util.hyperdrive.recording.PathRecorder;
@@ -33,7 +34,7 @@ public class PathEmulator {
         motorUnitsPerUnit,
         robotWeightNewtons;
 
-    private final Units.LENGTH distanceUnit;
+    private final Units.DISTANCE distanceUnit;
 
     /**
      * Creates a new PathEmulator that is pre-loaded with the given {@code Path}
@@ -47,13 +48,13 @@ public class PathEmulator {
      * @param path The Path to pre-load
      * @param parameters The IEmulateParams to pre-load
      */
-    public PathEmulator(final double motorUnitsPerUnit, final double robotWeight, final Units.FORCE weightUnit, final Units.LENGTH distanceUnit, Path path, IEmulateParams parameters) {
+    public PathEmulator(final double motorUnitsPerUnit, final double robotWeight, final Units.FORCE weightUnit, final Units.DISTANCE distanceUnit, Path path, IEmulateParams parameters) {
         this.path = path;
         this.parameters = parameters;
         this.motorUnitsPerUnit = motorUnitsPerUnit;
         this.robotWeightNewtons = HyperdriveUtil.convertForce(robotWeight, weightUnit, Units.FORCE.NEWTON);
         this.distanceUnit = distanceUnit;
-        this.recorder = new PathRecorder(HyperdriveConstants.PATH_EMULATOR_DEFAULT_RESULTS_PATH);
+        this.recorder = new PathRecorder(HyperdriveConstants.PATH_EMULATOR_DEFAULT_RESULTS_PATH, distanceUnit);
         this.isForwards = true;
         this.pathFinished = true; //call load() to correct this
         this.currentPointIndex = 0;
@@ -70,7 +71,7 @@ public class PathEmulator {
      * @param distanceUnit The unit of distance that should be used. The motorUnitsPerUnit value should convert
      * motor units to this unit.
      */
-    public PathEmulator(final double motorUnitsPerUnit, final double robotWeight, Units.FORCE weightUnit, Units.LENGTH distanceUnit) {
+    public PathEmulator(final double motorUnitsPerUnit, final double robotWeight, Units.FORCE weightUnit, Units.DISTANCE distanceUnit) {
         this(motorUnitsPerUnit, robotWeight, weightUnit, distanceUnit, null, null);
     }
 
@@ -102,7 +103,7 @@ public class PathEmulator {
      */
     public void specifyResultsFile(String filePath) {
         recorder.closeFile();
-        recorder = new PathRecorder(filePath);
+        recorder = new PathRecorder(filePath, distanceUnit);
     }
 
     /**
@@ -120,15 +121,31 @@ public class PathEmulator {
      * @param robotPosition The current position of the robot.
      */
     public void performInitialCalculations(Point2D robotPosition) {
-        if(isLoaded() && path.isValid()) {
+        //perform assertions for path following
+        boolean
+            pathLoaded     = isLoaded(),
+            pathValid      = path.isValid(),
+            pathLongEnough = path.getPoints().length > 1;
+
+        recorder.init();
+
+        if(pathLoaded && pathValid && pathLongEnough) {
             double headingToNextPoint = robotPosition.getHeadingTo(path.getPoints()[1]);
             double headingDifference = HyperdriveUtil.getAngleToHeading(robotPosition.getHeading(), headingToNextPoint); 
             this.isForwards = Math.abs(headingDifference) < 90;
             
-            recorder.init();
             currentPointIndex = 0;
         } else {
-            DriverStation.reportError("Either no Path was loaded, or the loaded Path was invalid!", true);
+            //at least one of the conditions in the if statement was false. Print out an error message for the ones that were.
+            if(!pathLoaded) {
+                DriverStation.reportError("No Path is loaded!", true);
+            } else if(!pathValid) {
+                DriverStation.reportError("The loaded Path is not valid!", true);
+            } else if(!pathLongEnough) {
+                DriverStation.reportError("The loaded Path is not long enough! Paths must be longer than 1 point!", true);
+            }
+
+            pathFinished = true;
         }
     }
 
@@ -193,6 +210,12 @@ public class PathEmulator {
     public Trajectory calculateTrajectory(Point2D robotPosition) {
         Point2D[] points = path.getPoints();
         recorder.recordPoint(robotPosition);
+
+        //if path is too short, then end the path.
+        if(points.length <= 1) {
+            pathFinished = true;
+            return new Trajectory(0, 0, 0, 0, 0, motorUnitsPerUnit); //no movement trajectory
+        }
         
         //resolve the point that the robot is currently at and where we want to aim
         if(currentPointIndex < points.length - 1) {
@@ -200,8 +223,11 @@ public class PathEmulator {
             for(int limit=0; limit<HyperdriveConstants.EMULATE_POINT_PASS_LIMIT; limit++) {
                 //get the angle that the robot needs to turn to acheive the point
                 double headingToNext = Math.abs(HyperdriveUtil.getAngleToHeading(currentDirection, robotPosition.getHeadingTo(points[currentPointIndex])));
-    
-                //get a path that consists of future points.
+
+                SmartDashboard.putNumber("heading to next", headingToNext);
+                SmartDashboard.putBoolean("fowards", isForwards);
+
+                //get a path that consists of future points
                 if(currentPointIndex < points.length - 1 && headingToNext >= 90) {
                     currentPointIndex++;
                 } else {
@@ -213,6 +239,9 @@ public class PathEmulator {
         int skipCount = parameters.getPointSkipCount();
         currentPointIndex = (currentPointIndex > points.length - skipCount ? points.length - skipCount : currentPointIndex);
         Point2D currentDestination = points[currentPointIndex + 1];
+
+        SmartDashboard.putNumber("current", currentPointIndex);
+        SmartDashboard.putNumber("limit", points.length);
 
         //figure out if the robot needs to drive forwards or backwards to acheive the point
         double headingToNextPoint = robotPosition.getHeadingTo(currentDestination);
@@ -253,6 +282,8 @@ public class PathEmulator {
 
         immediateTurn *= parameters.getOverturn();
 
+        SmartDashboard.putNumber("it", immediateTurn);
+
         //TODO: figure out why the algorithm calculates backwards to be half.
         // if(!isForwards) {
         //     immediateTurn *= 2;
@@ -261,6 +292,7 @@ public class PathEmulator {
         immediateTurn = Math.toRadians(immediateTurn); //The Trajectory class requires values in radians.
         double radius = immediateDistance / immediateTurn;
         double baseSpeed = calculateBestTangentialSpeed(radius);
+        SmartDashboard.putNumber("base speed", baseSpeed);
         double velocity = (isForwards ? baseSpeed : -1 * baseSpeed);
         
         if(shouldZeroTurn) {
@@ -347,13 +379,13 @@ public class PathEmulator {
         double coefficientOfFriction = parameters.getCoefficientOfStaticFriction(); //No Unit.
         double normalForce = robotWeightNewtons; //unit: N. There is no extra downwards force on the robot so Fn == Fg
         double robotMass   = HyperdriveUtil.massKGFromWeight(robotWeightNewtons, Units.FORCE.NEWTON); //unit: kg
-        double radius      = Math.abs(HyperdriveUtil.convertDistance(turnRadius, distanceUnit, Units.LENGTH.METERS)); //unit: m. We can absolute value it because we dont care about the direction of the arc.
+        double radius      = Math.abs(HyperdriveUtil.convertDistance(turnRadius, distanceUnit, Units.DISTANCE.METERS)); //unit: m. We can absolute value it because we dont care about the direction of the arc.
 
         //formula: v = sqrt( (r * CoF * Fn) / m )
         double bestSpeed = Math.sqrt( ( radius * coefficientOfFriction * normalForce ) / robotMass ); //unit: m/s
 
         //convert best speed to in/s
-        bestSpeed = HyperdriveUtil.convertDistance(bestSpeed, Units.LENGTH.METERS, distanceUnit); //unit: in/s
+        bestSpeed = HyperdriveUtil.convertDistance(bestSpeed, Units.DISTANCE.METERS, distanceUnit); //unit: in/s
         bestSpeed = (bestSpeed > maxSpeed ? maxSpeed : (bestSpeed < minSpeed ? minSpeed : bestSpeed));
 
         return bestSpeed;
