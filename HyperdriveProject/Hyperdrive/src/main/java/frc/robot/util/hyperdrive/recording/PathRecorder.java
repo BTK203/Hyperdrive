@@ -24,13 +24,13 @@ public class PathRecorder {
     private long lastFlushTime;
     private boolean initialized;
 
-    private final Units.DISTANCE distanceUnits;
+    private final Units.LENGTH distanceUnits;
     
     /**
      * Creates a new PathRecorder writing to the given file.
      * @param file The absolute file path of the file to record to.
      */
-    public PathRecorder(String file, final Units.DISTANCE distanceUnits) {
+    public PathRecorder(String file, final Units.LENGTH distanceUnits) {
         this.file = file;
         lastPoint = new Point2D(0, 0, 0);
         lastFlushTime = System.currentTimeMillis();
@@ -79,7 +79,7 @@ public class PathRecorder {
      */
     public void recordPoint(Point2D point) {
         try {
-            final double distanceIntervalUnits = HyperdriveUtil.convertDistance(HyperdriveConstants.PATH_RECORDER_DISTANCE_INTERVAL, Units.DISTANCE.INCHES, distanceUnits);
+            final double distanceIntervalUnits = HyperdriveUtil.convertDistance(HyperdriveConstants.PATH_RECORDER_DISTANCE_INTERVAL, Units.LENGTH.INCHES, distanceUnits);
             if(point.getDistanceFrom(lastPoint) >= distanceIntervalUnits) {
                 buffer.append(point.toString() + "\n");
                 lastPoint = point;
