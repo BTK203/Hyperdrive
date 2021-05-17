@@ -102,11 +102,11 @@ public class ConstantEmulationParams implements IEmulateParams {
      * Returns the default values for robots to use, in whatever unit is supplied.
      * @return A {@link ConstantEmulationParams} containing the default parameters for path driving.
      */
-    public static ConstantEmulationParams getDefaults(Units.DISTANCE units) {
+    public static ConstantEmulationParams getDefaults(Units.LENGTH units) {
         return new ConstantEmulationParams(
             HyperdriveConstants.DEFAULT_OVERTURN,
-            HyperdriveUtil.convertDistance(HyperdriveConstants.DEFAULT_MIN_SPEED_IPS, Units.DISTANCE.INCHES, units),
-            HyperdriveUtil.convertDistance(HyperdriveConstants.DEFAULT_MAX_SPEED_IPS, Units.DISTANCE.INCHES, units),
+            HyperdriveUtil.convertDistance(HyperdriveConstants.DEFAULT_MIN_SPEED_IPS, Units.LENGTH.INCHES, units),
+            HyperdriveUtil.convertDistance(HyperdriveConstants.DEFAULT_MAX_SPEED_IPS, Units.LENGTH.INCHES, units),
             HyperdriveConstants.DEFAULT_POSITIONAL_CORRECT_INHIBITOR,
             HyperdriveConstants.DEFAULT_POSITIONAL_CORRECT_DISTANCE,
             HyperdriveConstants.DEFAULT_COEFFICIENT_OF_STATIC_FRICTION,

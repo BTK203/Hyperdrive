@@ -9,7 +9,8 @@ package frc.robot.util.hyperdrive;
  */
 public class HyperdriveConstants {
     //recorder constants
-    public static final int PATH_RECORDER_DISTANCE_INTERVAL = 4;
+    public static final int PATH_RECORDER_DISTANCE_INTERVAL = 4; //one point will be recorded every 4 INCHES.
+
     public static final String 
         PATH_RECORDER_DEFAULT_RECORD_PATH = "/home/lvuser/points.hpt",
         PATH_EMULATOR_DEFAULT_RESULTS_PATH = "/home/lvuser/results.hpt";
@@ -19,18 +20,16 @@ public class HyperdriveConstants {
         EMULATE_POINT_PASS_LIMIT = 10,
         EMULATE_MAX_HEADING_TO_TURN_DIFFERENCE = 75;
 
-    
-
     //PositionTracker constants
     public static final double
         ALMOST_ZERO = 1.2; // This is the value that the absoulte value of the robot's displacement should be under to be considered "zeroed."
 
     public static final boolean 
-        USE_CHORD_BASED_TRACKING = true;
+        USE_CHORD_BASED_TRACKING = true; //more accurate way of tracking robot position on the field
 
     //PathVisualizer constants
     public static final int
-        SOCKET_BUFFER_SIZE = 128000;
+        SOCKET_BUFFER_SIZE = 16000; //16 kB. Should be more than enough space for any reasonably-sized path
 
     public static final String
         START_SEQUENCE = "[",
@@ -38,7 +37,7 @@ public class HyperdriveConstants {
         SUBJECT_SEQUENCE = "---",
         SPLIT_SEQUENCE = ":::";
 
-    //default values
+    //default values (all configured in INCHES)
     public static final double
         DEFAULT_OVERTURN = 1.15,
         DEFAULT_MIN_SPEED_IPS = 60,

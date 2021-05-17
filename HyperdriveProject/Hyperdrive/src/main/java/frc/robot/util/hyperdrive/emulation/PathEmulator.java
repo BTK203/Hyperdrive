@@ -33,7 +33,7 @@ public class PathEmulator {
         motorUnitsPerUnit,
         robotWeightNewtons;
 
-    private final Units.DISTANCE distanceUnit;
+    private final Units.LENGTH distanceUnit;
 
     /**
      * Creates a new PathEmulator that is pre-loaded with the given {@code Path}
@@ -47,7 +47,7 @@ public class PathEmulator {
      * @param path The Path to pre-load
      * @param parameters The IEmulateParams to pre-load
      */
-    public PathEmulator(final double motorUnitsPerUnit, final double robotWeight, final Units.FORCE weightUnit, final Units.DISTANCE distanceUnit, Path path, IEmulateParams parameters) {
+    public PathEmulator(final double motorUnitsPerUnit, final double robotWeight, final Units.FORCE weightUnit, final Units.LENGTH distanceUnit, Path path, IEmulateParams parameters) {
         this.path = path;
         this.parameters = parameters;
         this.motorUnitsPerUnit = motorUnitsPerUnit;
@@ -70,7 +70,7 @@ public class PathEmulator {
      * @param distanceUnit The unit of distance that should be used. The motorUnitsPerUnit value should convert
      * motor units to this unit.
      */
-    public PathEmulator(final double motorUnitsPerUnit, final double robotWeight, Units.FORCE weightUnit, Units.DISTANCE distanceUnit) {
+    public PathEmulator(final double motorUnitsPerUnit, final double robotWeight, Units.FORCE weightUnit, Units.LENGTH distanceUnit) {
         this(motorUnitsPerUnit, robotWeight, weightUnit, distanceUnit, null, null);
     }
 
@@ -347,13 +347,13 @@ public class PathEmulator {
         double coefficientOfFriction = parameters.getCoefficientOfStaticFriction(); //No Unit.
         double normalForce = robotWeightNewtons; //unit: N. There is no extra downwards force on the robot so Fn == Fg
         double robotMass   = HyperdriveUtil.massKGFromWeight(robotWeightNewtons, Units.FORCE.NEWTON); //unit: kg
-        double radius      = Math.abs(HyperdriveUtil.convertDistance(turnRadius, distanceUnit, Units.DISTANCE.METERS)); //unit: m. We can absolute value it because we dont care about the direction of the arc.
+        double radius      = Math.abs(HyperdriveUtil.convertDistance(turnRadius, distanceUnit, Units.LENGTH.METERS)); //unit: m. We can absolute value it because we dont care about the direction of the arc.
 
         //formula: v = sqrt( (r * CoF * Fn) / m )
         double bestSpeed = Math.sqrt( ( radius * coefficientOfFriction * normalForce ) / robotMass ); //unit: m/s
 
         //convert best speed to in/s
-        bestSpeed = HyperdriveUtil.convertDistance(bestSpeed, Units.DISTANCE.METERS, distanceUnit); //unit: in/s
+        bestSpeed = HyperdriveUtil.convertDistance(bestSpeed, Units.LENGTH.METERS, distanceUnit); //unit: in/s
         bestSpeed = (bestSpeed > maxSpeed ? maxSpeed : (bestSpeed < minSpeed ? minSpeed : bestSpeed));
 
         return bestSpeed;

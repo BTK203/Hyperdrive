@@ -15,13 +15,13 @@ import frc.robot.util.hyperdrive.util.Units;
  * that contains the tuned values from the Preferences table.
  */
 public class PreferenceEmulationParams implements IEmulateParams {
-    private Units.DISTANCE units;
+    private Units.LENGTH units;
 
     /**
      * Creates a new PreferenceEmulationParams.
      * @param The units of length to use. This should be the same value that you defined Hyperdrive with.
      */
-    public PreferenceEmulationParams(Units.DISTANCE units) {
+    public PreferenceEmulationParams(Units.LENGTH units) {
         this.units = units;
     }
 
@@ -32,12 +32,12 @@ public class PreferenceEmulationParams implements IEmulateParams {
 
     @Override
     public double getMinimumSpeed() {
-        return HyperdriveUtil.getAndSetDouble("Emulate Minimum Speed", HyperdriveUtil.convertDistance(HyperdriveConstants.DEFAULT_MIN_SPEED_IPS, Units.DISTANCE.INCHES, units));
+        return HyperdriveUtil.getAndSetDouble("Emulate Minimum Speed", HyperdriveUtil.convertDistance(HyperdriveConstants.DEFAULT_MIN_SPEED_IPS, Units.LENGTH.INCHES, units));
     }
 
     @Override
     public double getMaximumSpeed() {
-        return HyperdriveUtil.getAndSetDouble("Emulate Maximum Speed", HyperdriveUtil.convertDistance(HyperdriveConstants.DEFAULT_MAX_SPEED_IPS, Units.DISTANCE.INCHES, units));
+        return HyperdriveUtil.getAndSetDouble("Emulate Maximum Speed", HyperdriveUtil.convertDistance(HyperdriveConstants.DEFAULT_MAX_SPEED_IPS, Units.LENGTH.INCHES, units));
     }
 
     @Override
@@ -47,7 +47,7 @@ public class PreferenceEmulationParams implements IEmulateParams {
 
     @Override
     public double getPositionalCorrectionDistance() {
-        return HyperdriveUtil.getAndSetDouble("Emulate Positional Correction Distance", HyperdriveUtil.convertDistance(HyperdriveConstants.DEFAULT_POSITIONAL_CORRECT_DISTANCE, Units.DISTANCE.INCHES, units));
+        return HyperdriveUtil.getAndSetDouble("Emulate Positional Correction Distance", HyperdriveUtil.convertDistance(HyperdriveConstants.DEFAULT_POSITIONAL_CORRECT_DISTANCE, Units.LENGTH.INCHES, units));
     }
 
     @Override

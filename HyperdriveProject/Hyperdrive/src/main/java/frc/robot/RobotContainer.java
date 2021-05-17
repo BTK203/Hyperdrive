@@ -85,18 +85,18 @@ public class RobotContainer {
     //distance units (in, ft, yd, cm, m)
     boolean allPassed = true;
 
-    allPassed = allPassed && HyperdriveUtil.assertEquals("20 in = 1.1666 ft", HyperdriveUtil.roundTo(HyperdriveUtil.convertDistance(20, Units.DISTANCE.INCHES, Units.DISTANCE.FEET), 3), 1.667); //20 inches = 1.666667 ft
-    allPassed = allPassed && HyperdriveUtil.assertEquals("7.2 ft = 86.4 in", HyperdriveUtil.convertDistance(7.2, Units.DISTANCE.FEET, Units.DISTANCE.INCHES), 86.4);
-    allPassed = allPassed && HyperdriveUtil.assertEquals("6.4 ft = 2.133 yd", HyperdriveUtil.roundTo(HyperdriveUtil.convertDistance(6.4, Units.DISTANCE.FEET, Units.DISTANCE.YARDS), 3), 2.133);
-    allPassed = allPassed && HyperdriveUtil.assertEquals("0.35 yd = 1.05 ft", HyperdriveUtil.roundTo(HyperdriveUtil.convertDistance(0.35, Units.DISTANCE.YARDS, Units.DISTANCE.FEET), 3), 1.05);
-    allPassed = allPassed && HyperdriveUtil.assertEquals("4.8 yd = 438.912 cm", HyperdriveUtil.roundTo(HyperdriveUtil.convertDistance(4.8, Units.DISTANCE.YARDS, Units.DISTANCE.CENTIMETERS), 2), 438.91);
-    allPassed = allPassed && HyperdriveUtil.assertEquals("50.8 cm = 0.555 yd", HyperdriveUtil.roundTo(HyperdriveUtil.convertDistance(50.8, Units.DISTANCE.CENTIMETERS, Units.DISTANCE.YARDS), 3), 0.556);
-    allPassed = allPassed && HyperdriveUtil.assertEquals("81 cm = 0.81 m", HyperdriveUtil.roundTo(HyperdriveUtil.convertDistance(81, Units.DISTANCE.CENTIMETERS, Units.DISTANCE.METERS), 2), 0.81);
-    allPassed = allPassed && HyperdriveUtil.assertEquals("7.25 m = 725.0 cm", HyperdriveUtil.roundTo(HyperdriveUtil.convertDistance(7.25, Units.DISTANCE.METERS, Units.DISTANCE.CENTIMETERS), 1), 725.0);
-    allPassed = allPassed && HyperdriveUtil.assertEquals("94 in = 2.3876 m", HyperdriveUtil.roundTo(HyperdriveUtil.convertDistance(94, Units.DISTANCE.INCHES, Units.DISTANCE.METERS), 3), 2.388);
-    allPassed = allPassed && HyperdriveUtil.assertEquals("82 ft = 2499.36 cm", HyperdriveUtil.roundTo(HyperdriveUtil.convertDistance(82, Units.DISTANCE.FEET, Units.DISTANCE.CENTIMETERS), 2), 2499.36);
-    allPassed = allPassed && HyperdriveUtil.assertEquals("7 m = 7.655 yd", HyperdriveUtil.roundTo(HyperdriveUtil.convertDistance(7, Units.DISTANCE.METERS, Units.DISTANCE.YARDS), 3), 7.655);
-    allPassed = allPassed && HyperdriveUtil.assertEquals("54 in = 1.5 yd", HyperdriveUtil.roundTo(HyperdriveUtil.convertDistance(54, Units.DISTANCE.INCHES, Units.DISTANCE.YARDS), 1), 1.5);
+    allPassed = allPassed && HyperdriveUtil.assertEquals("20 in = 1.1666 ft", HyperdriveUtil.roundTo(HyperdriveUtil.convertDistance(20, Units.LENGTH.INCHES, Units.LENGTH.FEET), 3), 1.667); //20 inches = 1.666667 ft
+    allPassed = allPassed && HyperdriveUtil.assertEquals("7.2 ft = 86.4 in", HyperdriveUtil.convertDistance(7.2, Units.LENGTH.FEET, Units.LENGTH.INCHES), 86.4);
+    allPassed = allPassed && HyperdriveUtil.assertEquals("6.4 ft = 2.133 yd", HyperdriveUtil.roundTo(HyperdriveUtil.convertDistance(6.4, Units.LENGTH.FEET, Units.LENGTH.YARDS), 3), 2.133);
+    allPassed = allPassed && HyperdriveUtil.assertEquals("0.35 yd = 1.05 ft", HyperdriveUtil.roundTo(HyperdriveUtil.convertDistance(0.35, Units.LENGTH.YARDS, Units.LENGTH.FEET), 3), 1.05);
+    allPassed = allPassed && HyperdriveUtil.assertEquals("4.8 yd = 438.912 cm", HyperdriveUtil.roundTo(HyperdriveUtil.convertDistance(4.8, Units.LENGTH.YARDS, Units.LENGTH.CENTIMETERS), 2), 438.91);
+    allPassed = allPassed && HyperdriveUtil.assertEquals("50.8 cm = 0.555 yd", HyperdriveUtil.roundTo(HyperdriveUtil.convertDistance(50.8, Units.LENGTH.CENTIMETERS, Units.LENGTH.YARDS), 3), 0.556);
+    allPassed = allPassed && HyperdriveUtil.assertEquals("81 cm = 0.81 m", HyperdriveUtil.roundTo(HyperdriveUtil.convertDistance(81, Units.LENGTH.CENTIMETERS, Units.LENGTH.METERS), 2), 0.81);
+    allPassed = allPassed && HyperdriveUtil.assertEquals("7.25 m = 725.0 cm", HyperdriveUtil.roundTo(HyperdriveUtil.convertDistance(7.25, Units.LENGTH.METERS, Units.LENGTH.CENTIMETERS), 1), 725.0);
+    allPassed = allPassed && HyperdriveUtil.assertEquals("94 in = 2.3876 m", HyperdriveUtil.roundTo(HyperdriveUtil.convertDistance(94, Units.LENGTH.INCHES, Units.LENGTH.METERS), 3), 2.388);
+    allPassed = allPassed && HyperdriveUtil.assertEquals("82 ft = 2499.36 cm", HyperdriveUtil.roundTo(HyperdriveUtil.convertDistance(82, Units.LENGTH.FEET, Units.LENGTH.CENTIMETERS), 2), 2499.36);
+    allPassed = allPassed && HyperdriveUtil.assertEquals("7 m = 7.655 yd", HyperdriveUtil.roundTo(HyperdriveUtil.convertDistance(7, Units.LENGTH.METERS, Units.LENGTH.YARDS), 3), 7.655);
+    allPassed = allPassed && HyperdriveUtil.assertEquals("54 in = 1.5 yd", HyperdriveUtil.roundTo(HyperdriveUtil.convertDistance(54, Units.LENGTH.INCHES, Units.LENGTH.YARDS), 1), 1.5);
 
     //time units(dsec, sec, min)
     allPassed = allPassed && HyperdriveUtil.assertEquals("1 sec = 10 dsec", HyperdriveUtil.convertTime(1, Units.TIME.SECONDS, Units.TIME.DECASECONDS), 10.0);

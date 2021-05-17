@@ -71,7 +71,7 @@ public class HyperdriveUtil {
 	 * @param units The original units of the measurement.
 	 * @return The value of the measurement in inches.
 	 */
-	public static double toInches(double value, Units.DISTANCE units) {
+	public static double toInches(double value, Units.LENGTH units) {
 		switch(units) {
 		case CENTIMETERS:
 			return value / 2.54;
@@ -94,7 +94,7 @@ public class HyperdriveUtil {
 	 * @param desired The units to convert the measurement to.
 	 * @return The value of the measurement in the desired unit.
 	 */
-	public static double fromInches(double value, Units.DISTANCE desired) {
+	public static double fromInches(double value, Units.LENGTH desired) {
 		switch(desired) {
 		case CENTIMETERS:
 			return value * 2.54;
@@ -120,7 +120,7 @@ public class HyperdriveUtil {
 	 * @param desired The unit to convert the measurement to.
 	 * @return The value of the measurement in the desired unit.
 	 */
-	public static double convertDistance(double value, Units.DISTANCE original, Units.DISTANCE desired) {
+	public static double convertDistance(double value, Units.LENGTH original, Units.LENGTH desired) {
 		double inches = toInches(value, original);
 		return fromInches(inches, desired);
 	}
