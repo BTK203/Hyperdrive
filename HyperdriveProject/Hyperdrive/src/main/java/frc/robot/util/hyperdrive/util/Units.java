@@ -12,7 +12,7 @@ public class Units {
     /**
      * Describes units of distance.
      */
-    public static enum LENGTH {
+    public static enum DISTANCE {
         INCHES,
         FEET,
         YARDS,

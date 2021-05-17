@@ -20,7 +20,7 @@ public class ConstantEmulationParams implements IEmulateParams {
         minimumSpeed,
         maximumSpeed,
         positionalCorrectionInhibitor,
-        positionalCorrectionThreshold,
+        positionalCorrectionDistance,
         coefficientOfStaticFriction;
 
     private int
@@ -33,7 +33,7 @@ public class ConstantEmulationParams implements IEmulateParams {
      * @param minimumSpeed The minimum speed of the robot at any time during the {@code Path}
      * @param maximumSpeed The maximum speed of the robot at any time during the {@code Path}
      * @param positionalCorrectionInhibitor Inhibits the robot from performing positional corrections during the {@code Path}.
-     * @param positionalCorrectionThreshold The minimuim distance off-course that the robot has to be to start correcting its position.
+     * @param positionalCorrectionDistance The minimuim distance off-course that the robot has to be to start correcting its position.
      * @param coefficientOfStaticFriction The coefficient of static friction between the robot's wheels and the floor's surface. Lower values = slower turns.
      * @param pointSkipCount The number of points ahead of the robot to ignore when making decisions about turns.
      * @param immediatePathSize The number of points ahead of the robot (after pointSkipCount) to look at to make desicions about turns.
@@ -43,7 +43,7 @@ public class ConstantEmulationParams implements IEmulateParams {
         double minimumSpeed,
         double maximumSpeed,
         double positionalCorrectionInhibitor,
-        double positionalCorrectionThreshold,
+        double positionalCorrectionDistance,
         double coefficientOfStaticFriction,
         int pointSkipCount,
         int immediatePathSize
@@ -52,7 +52,7 @@ public class ConstantEmulationParams implements IEmulateParams {
         this.minimumSpeed = minimumSpeed;
         this.maximumSpeed = maximumSpeed;
         this.positionalCorrectionInhibitor = positionalCorrectionInhibitor;
-        this.positionalCorrectionThreshold = positionalCorrectionThreshold;
+        this.positionalCorrectionDistance = positionalCorrectionDistance;
         this.coefficientOfStaticFriction = coefficientOfStaticFriction;
         this.pointSkipCount = pointSkipCount;
         this.immediatePathSize = immediatePathSize;
@@ -80,7 +80,7 @@ public class ConstantEmulationParams implements IEmulateParams {
 
     @Override
     public double getPositionalCorrectionDistance() {
-        return positionalCorrectionThreshold;
+        return positionalCorrectionDistance;
     }
 
     @Override
@@ -102,11 +102,11 @@ public class ConstantEmulationParams implements IEmulateParams {
      * Returns the default values for robots to use, in whatever unit is supplied.
      * @return A {@link ConstantEmulationParams} containing the default parameters for path driving.
      */
-    public static ConstantEmulationParams getDefaults(Units.LENGTH units) {
+    public static ConstantEmulationParams getDefaults(Units.DISTANCE units) {
         return new ConstantEmulationParams(
             HyperdriveConstants.DEFAULT_OVERTURN,
-            HyperdriveUtil.convertDistance(HyperdriveConstants.DEFAULT_MIN_SPEED_IPS, Units.LENGTH.INCHES, units),
-            HyperdriveUtil.convertDistance(HyperdriveConstants.DEFAULT_MAX_SPEED_IPS, Units.LENGTH.INCHES, units),
+            HyperdriveUtil.convertDistance(HyperdriveConstants.DEFAULT_MIN_SPEED_IPS, Units.DISTANCE.INCHES, units),
+            HyperdriveUtil.convertDistance(HyperdriveConstants.DEFAULT_MAX_SPEED_IPS, Units.DISTANCE.INCHES, units),
             HyperdriveConstants.DEFAULT_POSITIONAL_CORRECT_INHIBITOR,
             HyperdriveConstants.DEFAULT_POSITIONAL_CORRECT_DISTANCE,
             HyperdriveConstants.DEFAULT_COEFFICIENT_OF_STATIC_FRICTION,

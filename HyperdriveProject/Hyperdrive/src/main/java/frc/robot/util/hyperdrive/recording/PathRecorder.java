@@ -9,7 +9,9 @@ import java.io.FileWriter;
 import java.io.IOException;
 import edu.wpi.first.wpilibj.DriverStation;
 import frc.robot.util.hyperdrive.HyperdriveConstants;
+import frc.robot.util.hyperdrive.util.HyperdriveUtil;
 import frc.robot.util.hyperdrive.util.Point2D;
+import frc.robot.util.hyperdrive.util.Units;
 
 /**
  * A utility for recording paths.
@@ -21,16 +23,19 @@ public class PathRecorder {
     private Point2D lastPoint;
     private long lastFlushTime;
     private boolean initialized;
+
+    private final Units.DISTANCE distanceUnits;
     
     /**
      * Creates a new PathRecorder writing to the given file.
      * @param file The absolute file path of the file to record to.
      */
-    public PathRecorder(String file) {
+    public PathRecorder(String file, final Units.DISTANCE distanceUnits) {
         this.file = file;
         lastPoint = new Point2D(0, 0, 0);
         lastFlushTime = System.currentTimeMillis();
         initialized = false;
+        this.distanceUnits = distanceUnits;
     }
 
     /**
@@ -74,7 +79,8 @@ public class PathRecorder {
      */
     public void recordPoint(Point2D point) {
         try {
-            if(point.getDistanceFrom(lastPoint) >= HyperdriveConstants.PATH_RECORDER_DISTANCE_INTERVAL) {
+            final double distanceIntervalUnits = HyperdriveUtil.convertDistance(HyperdriveConstants.PATH_RECORDER_DISTANCE_INTERVAL, Units.DISTANCE.INCHES, distanceUnits);
+            if(point.getDistanceFrom(lastPoint) >= distanceIntervalUnits) {
                 buffer.append(point.toString() + "\n");
                 lastPoint = point;
             }

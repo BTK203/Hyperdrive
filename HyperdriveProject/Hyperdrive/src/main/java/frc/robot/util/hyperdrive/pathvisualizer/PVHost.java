@@ -56,11 +56,9 @@ public class PVHost {
      * @param name The name of the path. Will appear on the manifest with that name.
      */
     public void sendPath(Path path, String name) {
-        if(path.isValid()) {
+        if(path.isValid() && path.getPoints().length > 1) {
             String message = composeMessage(MessageType.PATH, name, path.toString());
             sendMessage(message);
-        } else {
-            DriverStation.reportError("PVHost could not send a path because it was invalid!", false);
         }
     }
 

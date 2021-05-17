@@ -29,8 +29,9 @@ public class Hyperdrive {
     private PathRecorder    recorder;
     private PathEmulator    emulator;
     private boolean         currentlyRecording;
+    private Units.DISTANCE  distanceUnits;
 
-    private final Units.LENGTH  distanceUnits;
+    private final double motorUnitsPerUnit;
 
     /**
      * Creates a new Hyperdrive. 
@@ -43,16 +44,17 @@ public class Hyperdrive {
      * with the same value), but is required if the position tracker is to report in the correct units.
      * This value defaults to 0.472, which is the approximate rotations per inch value of NEO motors driving 
      * wheels with pneumatic tires through a toughbox mini gearbox.
-     * @param weightUnit The units of weight that the robot is measured in.
      * @param robotWeight The weight of the robot.
+     * @param weightUnit The units of weight that the robot is measured in.
      * @param pvPort The port to use for communicating with PathVisualizer. Defaults to 3695.
      */
-    public Hyperdrive(final Units.LENGTH distanceUnit, final double motorUnitsPerUnit, final Units.FORCE weightUnit, final double robotWeight, final int pvPort) {
+    public Hyperdrive(Units.DISTANCE distanceUnit, final double motorUnitsPerUnit, final double robotWeight, Units.FORCE weightUnit, int pvPort) {
         this.distanceUnits = distanceUnit;
         this.pvHost = new PVHost(pvPort);
         this.tracker = new PositionTracker(motorUnitsPerUnit);
-        this.recorder = new PathRecorder(HyperdriveConstants.PATH_RECORDER_DEFAULT_RECORD_PATH);
+        this.recorder = new PathRecorder(HyperdriveConstants.PATH_RECORDER_DEFAULT_RECORD_PATH, distanceUnit);
         this.emulator = new PathEmulator(motorUnitsPerUnit, robotWeight, weightUnit, distanceUnit);
+        this.motorUnitsPerUnit = motorUnitsPerUnit;
     }
 
     /**
@@ -60,13 +62,13 @@ public class Hyperdrive {
      * @param distanceUnits The units to measure length in.
      * @param motorUnitsPerUnit The number of motor position units (ticks, rotations, etc) that are in one 
      * length measurement unit (inches, feet, meters, etc). See javadoc for
-     * {@link #Hyperdrive(frc.robot.util.hyperdrive.util.Units.LENGTH, double, double, frc.robot.util.hyperdrive.util.Units.FORCE, int)}
+     * {@link #Hyperdrive(frc.robot.util.hyperdrive.util.Units.DISTANCE, double, double, frc.robot.util.hyperdrive.util.Units.FORCE, int)}
      * for full explanation.
-     * @param weightUnit The unit of weight that the robot is measured in.
      * @param robotWeight The weight of the robot.
+     * @param weightUnit The unit of weight that the robot is measured in.
      */
-    public Hyperdrive(final Units.LENGTH distanceUnits, final double motorUnitsPerUnit, final Units.FORCE weightUnit, final double robotWeight) {
-        this(distanceUnits, motorUnitsPerUnit, weightUnit, robotWeight, 3695);
+    public Hyperdrive(Units.DISTANCE distanceUnits, final double motorUnitsPerUnit, final double robotWeight, Units.FORCE weightUnit) {
+        this(distanceUnits, motorUnitsPerUnit, robotWeight, weightUnit, 3695);
     }
 
     /**
@@ -74,11 +76,11 @@ public class Hyperdrive {
      * @param distanceUnits The units to measure length in.
      * @param motorUnitsPerUnit The number of motor position units (ticks, rotations, etc) that are in one 
      * length measurement unit (inches, feet, meters, etc). See javadoc for
-     * {@link #Hyperdrive(frc.robot.util.hyperdrive.util.Units.LENGTH, double, double, frc.robot.util.hyperdrive.util.Units.FORCE, int)}
+     * {@link #Hyperdrive(frc.robot.util.hyperdrive.util.Units.DISTANCE, double, double, frc.robot.util.hyperdrive.util.Units.FORCE, int)}
      * for full explanation.
      */
-    public Hyperdrive(final Units.LENGTH distanceUnits, final double motorUnitsPerUnit) {
-        this(distanceUnits, motorUnitsPerUnit, Units.FORCE.POUND, 125);
+    public Hyperdrive(Units.DISTANCE distanceUnits, final double motorUnitsPerUnit) {
+        this(distanceUnits, motorUnitsPerUnit, 125, Units.FORCE.POUND);
     }
 
     /**
@@ -86,8 +88,8 @@ public class Hyperdrive {
      * and the default PathVisualizer port, 3695.
      * @param distanceUnits The units of distance to use.
      */
-    public Hyperdrive(final Units.LENGTH distanceUnits) {
-        this(distanceUnits, 0.472);
+    public Hyperdrive(Units.DISTANCE distanceUnits) {
+        this(distanceUnits, 0.472, 125, Units.FORCE.POUND, 3695);
     }
 
     /**
@@ -95,7 +97,7 @@ public class Hyperdrive {
      * default robot weight, 125 pounds, and the default PathVisualizer port, 3695.
      */
     public Hyperdrive() {
-        this(Units.LENGTH.INCHES);
+        this(Units.DISTANCE.INCHES);
     }
 
     /**
@@ -207,7 +209,7 @@ public class Hyperdrive {
      * Returns the units of distance that the Hyperdrive has been configured to use.
      * @return The Hyperdrive's units of distance.
      */
-    public Units.LENGTH getDistanceUnits() {
+    public Units.DISTANCE getDistanceUnits() {
         return distanceUnits;
     }
 
@@ -230,7 +232,7 @@ public class Hyperdrive {
      * @param file The file to record to.
      */
     public void initializeRecorder(String file) {
-        recorder = new PathRecorder(file);
+        recorder = new PathRecorder(file, distanceUnits);
         recorder.init();
         currentlyRecording = true;   
     }
@@ -256,7 +258,10 @@ public class Hyperdrive {
     public void stopRecorder() {
         currentlyRecording = false;
         recorder.closeFile();
-        pvHost.sendPath(getRecordedPath(), "Recorded Path");
+        Path newPath = getRecordedPath();
+        if(newPath.getPoints().length > 1) {
+            pvHost.sendPath(newPath, "Recorded Path");
+        }
     }
 
     /**
@@ -372,8 +377,29 @@ public class Hyperdrive {
      * for viewing. If PathVisualizer is connected, and the "Live" option is enabled, then the Path will
      * appear on the screen.
      */
-    public void end() {
+    public void finishPath() {
         emulator.end();
         pvHost.sendPath(emulator.getDrivenPath(), "Driven Path");
+    }
+    
+    /**
+     * Converts a measurement made in common units (inches, meters, etc) to motor units (ticks, revolutions, etc), using the
+     * motorUnitsPerUnit measurement provided by the {@link #Hyperdrive(frc.robot.util.hyperdrive.util.Units.DISTANCE, double, double, frc.robot.util.hyperdrive.util.Units.FORCE, int)}
+     * constructor.
+     * @param commonUnitMeasurement Measurement in common units.
+     * @return Equivilent length in motor units.
+     */
+    public double toMotorUnits(double commonUnitMeasurement) {
+        return commonUnitMeasurement * motorUnitsPerUnit;
+    }
+
+    /**
+     * Converts a measurement made in motor units (ticks, revolutions, etc) to common units (inches, meters, etc)
+     * using the motorUnitsPerUnit measurement provided by the constructor.
+     * @param motorUnitMeasurement Measurement in motor units
+     * @return Equivilent length in common units.
+     */
+    public double toCommonUnits(double motorUnitMeasurement) {
+        return motorUnitMeasurement / motorUnitsPerUnit;
     }
 }

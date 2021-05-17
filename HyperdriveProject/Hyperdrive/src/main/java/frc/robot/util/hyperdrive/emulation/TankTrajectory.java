@@ -80,9 +80,6 @@ public class TankTrajectory extends Trajectory {
             this.rightVelocity = rightNegative ? -1 * rightSpeed : rightSpeed;
         } else {
             double velocity = getVelocity();
-            if(!isForwards) {
-                velocity *= -1;
-            }
 
             this.leftVelocity  = velocity;
             this.rightVelocity = velocity;
@@ -158,7 +155,9 @@ public class TankTrajectory extends Trajectory {
 
     /**
      * Returns the target velocity of the left drive wheels in order to stay on course 
-     * with the path currently being driven.
+     * with the path currently being driven. This value is returned in the raw motor controller units
+     * (assuming that a call to {@link #convertTime(frc.robot.util.hyperdrive.util.Units.TIME)} was made
+     * with the right time unit), so the target velocity of the motors can be directly set to this value. 
      * @return The target velocity of the left wheels.
      */
     public double getLeftVelocity() {
@@ -167,7 +166,9 @@ public class TankTrajectory extends Trajectory {
 
     /**
      * Returns the target velocity of the right drive wheels in order to stay on course
-     * with the path currently being driven.
+     * with the path currently being driven.This value is returned in the raw motor controller units
+     * (assuming that a call to {@link #convertTime(frc.robot.util.hyperdrive.util.Units.TIME)} was made
+     * with the right time unit), so the target velocity of the motors can be directly set to this value. 
      * @return The target velocity of the right wheels.
      */
     public double getRightVelocity() {

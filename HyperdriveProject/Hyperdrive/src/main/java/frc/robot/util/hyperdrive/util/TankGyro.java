@@ -4,6 +4,7 @@
 
 package frc.robot.util.hyperdrive.util;
 
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.util.hyperdrive.Hyperdrive;
 import frc.robot.util.hyperdrive.HyperdriveConstants;
 
@@ -22,13 +23,19 @@ import frc.robot.util.hyperdrive.HyperdriveConstants;
  */
 public class TankGyro {
     private double
-        heading,
-        lastLeftPosition,
-        lastRightPosition;
+        heading, //degrees
+        lastLeftPosition, //common units
+        lastRightPosition, //common units
+        lastLeftDisplacement, //...
+        lastRightDisplacement, //...
+        lastLeftVelocity, //common units per second
+        lastRightVelocity; //common units per second
 
     private boolean 
         inverted,    
         waitForEncoders;
+
+    private long lastUpdatedTime;
 
     private final double 
         motorUnitsPerUnit,
@@ -52,11 +59,13 @@ public class TankGyro {
         this.wheelBaseWidth = wheelBaseWidth;
         this.motorUnitsPerUnit = motorUnitsPerUnit;
         this.inverted = inverted;
-
         this.heading = 0;
         this.lastLeftPosition = leftPosition / motorUnitsPerUnit;
         this.lastRightPosition = rightPosition / motorUnitsPerUnit;
-        waitForEncoders = false;
+        this.waitForEncoders = false;
+        this.lastLeftVelocity = 0;
+        this.lastRightVelocity = 0;
+        this.lastUpdatedTime = System.currentTimeMillis();
     }
 
     /**
@@ -119,13 +128,26 @@ public class TankGyro {
      * @param rightPosition The position of the drivetrain's right wheels in motor units.
      */
     public void update(double leftPosition, double rightPosition) {
-        //use the formula: heading = (left distance - right distance) / wheel base width 
+        // this method uses velocities to calculate heading instead of simply uses the positions directly to
+        // reduce drift that is caused by acceleration.
+
+        long currentTime = System.currentTimeMillis();
+
+        //calculate the current velocity of the motors
         double
-            leftPositionUnits = leftPosition / motorUnitsPerUnit,
-            rightPositionUnits = rightPosition / motorUnitsPerUnit,
-            leftDisplacement = leftPositionUnits - lastLeftPosition,
-            rightDisplacement = rightPositionUnits - lastRightPosition;
-            
+            deltaTime = (currentTime - lastUpdatedTime) / 1000.0,
+            leftVelocity = (lastLeftPosition - leftPosition) / deltaTime,
+            rightVelocity = (lastRightPosition - rightPosition) / deltaTime,
+            leftVelocityUnits = leftVelocity / motorUnitsPerUnit,
+            rightVelocityUnits = rightVelocity / motorUnitsPerUnit;
+
+        //use the change in velocities to calculate the change in position for both left and right sides.
+        double 
+            leftDisplacementNow = deltaTime * (0.5 * (leftVelocityUnits - lastLeftVelocity) + lastLeftVelocity),
+            rightDisplacementNow = deltaTime * (0.5 * (rightVelocityUnits - lastRightVelocity) + lastRightVelocity),
+            leftDisplacement = (leftDisplacementNow + lastLeftDisplacement) / 2, //reduce noise from riemann sum
+            rightDisplacement = (rightDisplacementNow + lastRightDisplacement) / 2;
+
         double changeInHeading = 0; //unit: radians
         if(inverted) {
             changeInHeading = (leftDisplacement - rightDisplacement) / wheelBaseWidth;
@@ -136,11 +158,22 @@ public class TankGyro {
         double changeInHeadingDegrees = Math.toDegrees(changeInHeading);
         heading += changeInHeadingDegrees;
 
-        lastLeftPosition = leftPositionUnits;
-        lastRightPosition = rightPositionUnits;
+        lastLeftPosition      = leftPosition;
+        lastRightPosition     = rightPosition;
+        lastLeftVelocity      = leftVelocityUnits;
+        lastRightVelocity     = rightVelocityUnits;
+        lastLeftDisplacement  = leftDisplacementNow;
+        lastRightDisplacement = rightDisplacementNow;
+        lastUpdatedTime       = currentTime;
 
         if(waitForEncoders && drivetrainAtZero(leftPosition, rightPosition)) {
             setHeading(0);
+            lastLeftPosition = 0;
+            lastRightPosition = 0;
+            lastLeftVelocity = 0;
+            lastRightVelocity = 0;
+            lastLeftDisplacement = 0;
+            lastRightDisplacement = 0;
             waitForEncoders = false;
         }
     }
@@ -165,8 +198,6 @@ public class TankGyro {
      * until {@link #update(double, double)} is called with zero as both position values. If you
      * only wish to zero the heading of the gyro, and are not zeroing the drivetrain encoders along
      * with it, then this value should be {@code false}.
-     * @param waitForEncoders Should be {@code true} if the drivetrain encoders are also being zeroed.
-     * This will make the gyro wait for those zeroed values before actually zeroing the heading.
      */
     public void zeroHeading(boolean waitForEncoders) {
         this.waitForEncoders = waitForEncoders;
