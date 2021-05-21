@@ -92,7 +92,7 @@ public class CyborgCommandEmulatePath extends CommandBase {
   @Override
   public void end(boolean interrupted) {
     drivetrain.stop();
-    hyperdrive.end();
+    hyperdrive.finishPath();
   }
 
   // Returns true when the command should end.
