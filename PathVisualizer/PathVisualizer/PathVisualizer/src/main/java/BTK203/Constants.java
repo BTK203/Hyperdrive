@@ -77,7 +77,7 @@ public class Constants {
      */
     public static final int
         SOCKET_TIMEOUT = 20,
-        SOCKET_BUFFER_SIZE = 16000, //128 kB
+        SOCKET_BUFFER_SIZE = 16000, //16 kB
         MAX_UNCLAIMED_MESSAGES = 256;
 
     /**

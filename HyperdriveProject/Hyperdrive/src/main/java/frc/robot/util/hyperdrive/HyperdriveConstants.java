@@ -10,6 +10,7 @@ package frc.robot.util.hyperdrive;
 public class HyperdriveConstants {
     //recorder constants
     public static final int PATH_RECORDER_DISTANCE_INTERVAL = 4;
+
     public static final String 
         PATH_RECORDER_DEFAULT_RECORD_PATH = "/home/lvuser/points.hpt",
         PATH_EMULATOR_DEFAULT_RESULTS_PATH = "/home/lvuser/results.hpt";
@@ -18,8 +19,6 @@ public class HyperdriveConstants {
     public static final int
         EMULATE_POINT_PASS_LIMIT = 10,
         EMULATE_MAX_HEADING_TO_TURN_DIFFERENCE = 75;
-
-    
 
     //PositionTracker constants
     public static final double
@@ -30,7 +29,7 @@ public class HyperdriveConstants {
 
     //PathVisualizer constants
     public static final int
-        SOCKET_BUFFER_SIZE = 128000;
+        SOCKET_BUFFER_SIZE = 16000;
 
     public static final String
         START_SEQUENCE = "[",
@@ -41,8 +40,8 @@ public class HyperdriveConstants {
     //default values
     public static final double
         DEFAULT_OVERTURN = 1.15,
-        DEFAULT_MIN_SPEED_IPS = 60,
-        DEFAULT_MAX_SPEED_IPS = 120,
+        DEFAULT_MIN_SPEED_IPS = 50,
+        DEFAULT_MAX_SPEED_IPS = 100,
         DEFAULT_POSITIONAL_CORRECT_INHIBITOR = 0.025,
         DEFAULT_POSITIONAL_CORRECT_DISTANCE = 12,
         DEFAULT_COEFFICIENT_OF_STATIC_FRICTION = 0.5;

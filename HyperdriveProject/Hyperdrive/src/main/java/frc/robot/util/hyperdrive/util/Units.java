@@ -5,12 +5,12 @@
 package frc.robot.util.hyperdrive.util;
 
 /** 
- * Describes a unit of measurement, in time and distance.
+ * Describes a unit of measurement of length, time, and force.
  */
 public class Units {
 
     /**
-     * Describes units of distance.
+     * Describes units of length or distance.
      */
     public static enum LENGTH {
         INCHES,
@@ -35,7 +35,7 @@ public class Units {
         SECONDS,
 
         /**
-         * Similarly human readable, but also the common time unit in Spark MAX motor controllers.
+         * The common time unit in REV motor controllers.
          */
         MINUTES
     }

@@ -21,17 +21,16 @@ public interface IEmulateParams {
 
     /**
      * The minimum speed, in units PER SECOND that the robot can be going at any given time 
-     * during the path emulation.No matter the tightness, the robot will always take any 
-     * turn with at least this speed.This value is measured in units per second (unit can 
-     * be set using the value of HyperdriveConstants.DRIVE_ROTATIONS_PER_UNIT)
+     * during the path emulation. No matter the tightness, the robot will always take any 
+     * turn with at least this speed. This value is measured in units per second.
      * @return Minimum speed of the robot during emulation.
      */
     public double getMinimumSpeed();
 
     /**
      * The maximum speed, in units PER SECOND that the robot can be going at any given time during 
-     * the path emulation,and the speed that the robot will try to achieve during any straightaways. 
-     * This value mustbe greater than the minimum speed, and should be less than the robot's actual 
+     * the path emulation, and the speed that the robot will try to achieve during any straightaways. 
+     * This value must be greater than the minimum speed, and should be less than the robot's actual 
      * maximum speed.
      * @return Maximum speed of the robot during emulation.
      */
@@ -49,7 +48,7 @@ public interface IEmulateParams {
 
     /**
      * Returns the minimum distance from the path that the robot must have in order to start correcting 
-     * its position. This value is measured in the unit defined by HyperdriveConstants.DRIVE_ROTATIONS_PER_UNIT.
+     * its position. This value is measured in the unit given to the {@link Hyperdrive} constructor.
      * @return Minimum distance in units for positional correction to activate.
      */
     public double getPositionalCorrectionDistance();
@@ -65,7 +64,7 @@ public interface IEmulateParams {
 
     /**
      * Returns the number of points that are directly ahead of the robot that will be skipped by the path emulation 
-     * algorithm. All points ahead of the skipped points will then be used to determine how much the robot should turn.
+     * algorithm. Some points ahead of the skipped points will then be used to determine how much the robot should turn.
      * This ensures that the angle between the robot's trajectory and the point(s) ahead is true and not being made 
      * larger by a small distance from the robot to the point. This value defaults to 2, and likely will not need to 
      * be tuned.

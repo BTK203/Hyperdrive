@@ -84,23 +84,6 @@ public class Hyperdrive {
     }
 
     /**
-     * Creates a new Hyperdrive, using the default motor units per unit value, 0.472, the default robot weight, 125 pounds,
-     * and the default PathVisualizer port, 3695.
-     * @param lengthUnit The units of distance to use.
-     */
-    public Hyperdrive(final Units.LENGTH lengthUnit) {
-        this(lengthUnit, 0.472);
-    }
-
-    /**
-     * Creates a new Hyperdrive, using the default distance unit, inches, the default motor units per unit value, 0.472, the 
-     * default robot weight, 125 pounds, and the default PathVisualizer port, 3695.
-     */
-    public Hyperdrive() {
-        this(Units.LENGTH.INCHES);
-    }
-
-    /**
      * Updates the Hyperdrive. The Hyperdrive will use the distance that the
      * robot has travelled and the direction that it has travelled in and 
      * calculate the robot's position on the field. That information can be 
@@ -202,10 +185,10 @@ public class Hyperdrive {
     }
 
     /**
-     * Returns the units of distance that the Hyperdrive has been configured to use.
-     * @return The Hyperdrive's units of distance.
+     * Returns the units of length that the Hyperdrive has been configured to use.
+     * @return The Hyperdrive's units of length.
      */
-    public Units.LENGTH getDistanceUnits() {
+    public Units.LENGTH getLengthUnits() {
         return lengthUnits;
     }
 
@@ -252,11 +235,13 @@ public class Hyperdrive {
      * on the screen.
      */
     public void stopRecorder() {
-        currentlyRecording = false;
-        recorder.closeFile();
-        Path newPath = getRecordedPath();
-        if(newPath.getPoints().length > 1) {
-            pvHost.sendPath(newPath, "Recorded Path");
+        if(currentlyRecording) {
+            currentlyRecording = false;
+            recorder.closeFile();
+            Path newPath = getRecordedPath();
+            if(newPath.getPoints().length > 1) {
+                pvHost.sendPath(newPath, "Recorded Path");
+            }
         }
     }
 

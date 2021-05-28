@@ -108,6 +108,5 @@ public class Point2D {
         } catch(NumberFormatException ex) {
             return null;
         }
-
     }
 }

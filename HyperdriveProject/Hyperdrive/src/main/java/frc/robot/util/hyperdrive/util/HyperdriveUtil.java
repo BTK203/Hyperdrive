@@ -15,19 +15,6 @@ import edu.wpi.first.wpilibj.Preferences;
  */
 public class HyperdriveUtil {
 	/**
-	 * Trims int within a range
-	 * @param input int before truncation
-	 * @param lowLimit lowest allowable int
-	 * @param highLimit highest allowable int
-	 * @return truncated int
-	 */
-	public static int truncateInt(int input, int lowLimit, int highLimit) {
-		if (input < lowLimit) { input = lowLimit; }
-		if (input > highLimit) { input = highLimit; }
-		return input;
-	}
-
-	/**
 	 *	Kind of self explanatory, but with some spice
 	 *	Use this mainly as a get method to retrieve values the user types into the smart dash
 	 *	(the 'Set' part is only in case the value doesn't exist, backup is a default to use and set if it isn't there)
@@ -38,17 +25,6 @@ public class HyperdriveUtil {
 	public static double getAndSetDouble(String key, double backup) {
 		if(!pref.containsKey(key)) pref.putDouble(key, backup);
 		return pref.getDouble(key, backup);
-	}
-
-	/**
-	 * Gets boolean value from Prefs, or sets it to backup if it doesn't exist
-	 * @param key    The name of the bool to grab
-	 * @param backup The backup value to use if the bool doesn't exist
-	 * @return       The value of the boolean "Key"
-	 */
-	public static boolean getAndSetBoolean(String key, boolean backup) {
-		if(!pref.containsKey(key)) pref.putBoolean(key, backup);
-		return pref.getBoolean(key, backup);
 	}
 
 	/**
@@ -71,7 +47,7 @@ public class HyperdriveUtil {
 	 * @param units The original units of the measurement.
 	 * @return The value of the measurement in inches.
 	 */
-	public static double toInches(double value, Units.LENGTH units) {
+	private static double toInches(double value, Units.LENGTH units) {
 		switch(units) {
 		case CENTIMETERS:
 			return value / 2.54;
@@ -94,7 +70,7 @@ public class HyperdriveUtil {
 	 * @param desired The units to convert the measurement to.
 	 * @return The value of the measurement in the desired unit.
 	 */
-	public static double fromInches(double value, Units.LENGTH desired) {
+	private static double fromInches(double value, Units.LENGTH desired) {
 		switch(desired) {
 		case CENTIMETERS:
 			return value * 2.54;
@@ -112,9 +88,7 @@ public class HyperdriveUtil {
 	}
 
 	/**
-	 * Converts a measurement's units. This call is equivilent to calling 
-	 * {@link #toInches(double, Units)} on the measurement and then calling
-	 * {@link #fromInches(double, Units)} on the new inches measurement.
+	 * Converts a measurement between units of length.
 	 * @param value The value of the measurement to convert.
 	 * @param original The current unit of the measurement.
 	 * @param desired The unit to convert the measurement to.
@@ -131,7 +105,7 @@ public class HyperdriveUtil {
 	 * @param original The time units of the original value.
 	 * @return The value of the time in seconds.
 	 */
-	public static double toSeconds(double value, Units.TIME original) {
+	private static double toSeconds(double value, Units.TIME original) {
 		switch(original) {
 		case DECASECONDS:
 			return value / 10;
@@ -150,7 +124,7 @@ public class HyperdriveUtil {
 	 * @param desired The units to convert to.
 	 * @return The time value, converted to the new units.
 	 */
-	public static double fromSeconds(double value, Units.TIME desired) {
+	private static double fromSeconds(double value, Units.TIME desired) {
 		switch(desired) {
 		case DECASECONDS:
 			return value * 10;
@@ -164,10 +138,7 @@ public class HyperdriveUtil {
 	}
 
 	/**
-	 * Converts a value between time units. This is equivilent to calling 
-	 * {@link #toSeconds(double, frc.robot.util.hyperdrive.util.Units.TIME)}
-	 * on the original value and then returning the value of 
-	 * {@link #fromSeconds(double, frc.robot.util.hyperdrive.util.Units.TIME)}.
+	 * Converts a value between units of time.
 	 * @param value The value to convert between.
 	 * @param original The original units of the value.
 	 * @param desired The units to convert the value to.
@@ -184,7 +155,7 @@ public class HyperdriveUtil {
 	 * @param original The units of the original value.
 	 * @return The value of the force in the new units.
 	 */
-	public static double toNewtons(double value, Units.FORCE original) {
+	private static double toNewtons(double value, Units.FORCE original) {
 		switch(original) {
 		case NEWTON:
 			return value;
@@ -203,7 +174,7 @@ public class HyperdriveUtil {
 	 * @param desired The unit to convert the force to.
 	 * @return The value of the force in the new units.
 	 */
-	public static double fromNewtons(double value, Units.FORCE desired) {
+	private static double fromNewtons(double value, Units.FORCE desired) {
 		switch(desired) {
 		case NEWTON:
 			return value;
@@ -217,10 +188,7 @@ public class HyperdriveUtil {
 	}
 
 	/**
-	 * Converts a force value between units. This method is equivilent to calling
-	 * {@link #toNewtons(double, frc.robot.util.hyperdrive.util.Units.FORCE)} on the force
-	 * and then calling {@link #fromNewtons(double, frc.robot.util.hyperdrive.util.Units.FORCE)}
-	 * with the new unit.
+	 * Converts a force value between units.
 	 * @param value The value of the original force.
 	 * @param original The units of the force.
 	 * @param desired The unit to convert to.
@@ -253,76 +221,6 @@ public class HyperdriveUtil {
 		return convertForce(newtons, Units.FORCE.NEWTON, desiredWeightUnit);
 	}
 
-	/**
-	 * Inserts a value at the beginning of an array and shifts all existing values up one index.
-	 * This method will keep the size of the array the same, meaning that the last value in the 
-	 * array will be deleted.
-	 * Precondition: The length of the original array is greater than 1.
-	 * @param values The array to change. The length of this array must be greater than 1.
-	 * @param newValue The value to insert at the beginning of the array.
-	 * @return The shifted array, with the new value at index 0.
-	 */
-	public static double[] shiftValues(double[] values, double newValue) {
-		if(values.length < 1) {
-			return new double[] { newValue };
-		}
-
-		double[] newArray = new double[values.length];
-		for(int i=0; i<values.length - 1; i++) {
-			newArray[i + 1] = values[i];
-		}
-
-		newArray[0] = newValue;
-		return newArray;
-	}
-
-	/**
-	 * Calculates the average of a set of numbers.
-	 * @param values The set to average.
-	 * @return The average value of the set.
-	 */
-	public static double average(double[] values) {
-		double avg = 0;
-		for(double value : values) {
-			avg += value;
-		}
-
-		return avg / values.length;
-	}
-
-	/**
-	 * Differentiates an array once.
-	 * @param array The array to differentiate
-	 * @return An array containing the changes in all values of the original array
-	 */
-	public static double[] differentiate(double[] array) {
-		if(array.length < 1) {
-			return new double[] {0};
-		}
-
-		double[] differentiated = new double[array.length - 1];
-		for(int i=1; i<array.length; i++) {
-			differentiated[i - 1] = array[i] - array[i - 1];
-		}
-
-		return differentiated;
-	}
-
-	/**
-	 * Differentiates an array multiple times. 
-	 * @param array The array to differentiate
-	 * @param times The number of times to differentiate the array.
-	 * @return Differentiated array.
-	 */
-	public static double[] differentiate(double[] array, int times) {
-		double[] differentiated = array;
-		for(int i=0; i<times; i++) {
-			differentiated = differentiate(differentiated);
-		}
-
-		return differentiated;
-	}
-
     /**
      * Returns the number in the set that is closest to zero.
      * @param set An array of doubles to parse
@@ -340,9 +238,9 @@ public class HyperdriveUtil {
 	}
 
 	/**
-	 * Gets the angle that the robot needs to turn through to acheive a heading.
+	 * Gets the angle that the robot needs to turn through to achieve a heading.
 	 * @param angle   The angle of the robot
-	 * @param heading The desired heading to be acheived.
+	 * @param heading The desired heading to be achieved.
 	 * @return        The angle that the robot needs to turn to have its desired heading.
 	 */
 	public static double getAngleToHeading(double angle, double heading) {
@@ -355,7 +253,7 @@ public class HyperdriveUtil {
 
 	/**
 	 * Tests the equality of two values, then prints and returns the result.
-	 * Print string will be displayed on RioLog as an error reading: "Assertion [assertionID] SUCCEEDED/FAILED."
+	 * Print string will be displayed on RioLog as an error reading: "Assertion [assertionName] SUCCEEDED/FAILED."
 	 * @param assertionName The informational name of the assertion. Will be used in the printout.
 	 * @param item1       The first item to test.
 	 * @param item2       The second item to test.

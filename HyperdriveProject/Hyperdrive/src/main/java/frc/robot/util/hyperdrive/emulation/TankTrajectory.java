@@ -9,7 +9,7 @@ import frc.robot.util.hyperdrive.util.Units;
 
 /**
  * Represents the trajectory of a tank-style robot as it moves through a Path.
- * This class will provide programmers with the target velocities of the left
+ * This class provides programmers with the target velocities of the left
  * and right motors. This class can be created using the {@link #TankTrajectory(Trajectory, double)} 
  * constructor, and can also be created by the {@link Trajectory} class using 
  * {@link Trajectory #getTankTrajectory()}.
@@ -154,7 +154,7 @@ public class TankTrajectory extends Trajectory {
     }
 
     /**
-     * Returns the target velocity of the left drive wheels in order to stay on course 
+     * Returns the target velocity of the left drive wheels needed to stay on course 
      * with the path currently being driven. This value is returned in the raw motor controller units
      * (assuming that a call to {@link #convertTime(frc.robot.util.hyperdrive.util.Units.TIME)} was made
      * with the right time unit), so the target velocity of the motors can be directly set to this value. 

@@ -10,7 +10,7 @@ import java.nio.file.Files;
 import edu.wpi.first.wpilibj.DriverStation;
 
 /**
- * Represents a Path that can be rendered on the screen.
+ * Represents a Path that can be driven by the robot.
  */
 public class Path {
     private Point2D[] points;

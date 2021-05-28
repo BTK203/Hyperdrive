@@ -9,16 +9,18 @@ import frc.robot.util.hyperdrive.HyperdriveConstants;
 
 /** 
  * A class that calculates the heading of a tank-style robot using only the drivetrain
- * encoders. This class can be used in place of a gyro if none is present on a robot,
- * and can only drift when the robot is moving (as opposed to a physical gyro drifting
- * naturally). 
+ * encoders. In its current state of development, this class has shown to be reliable for 
+ * constant velocity and slightly varied acceleration cases, but drifts as far as 20 degrees 
+ * in 5 seconds when motor speed and robot direction is frequently varied. Therefore, this
+ * class should not replace an actual gyro on competition robots but can be used for tests
+ * and experiments.
  * <br><br>
  * This class' functionality is dependent on the positions reported by the drivetrain's 
  * motor encoders. That being said, in order for the heading reported by this class to
  * stay accurate, the wheels CANNOT DRIFT. When the robot drifts or slides, the positions
  * reported by the encoders no longer truly represent the displacement of that wheel from
  * it's starting position. Therefore, the gyro cannot accurately calculate the robots
- * angular displacment from its starting heading.
+ * angular displacement from its starting heading.
  */
 public class TankGyro {
     private double

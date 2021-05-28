@@ -9,7 +9,7 @@ import frc.robot.util.hyperdrive.util.HyperdriveUtil;
 import frc.robot.util.hyperdrive.util.Units;
 
 /** 
- * A class that will use the Preferences table on the dashboard to determine
+ * A class that uses the Preferences table on the dashboard to determine
  * a path's emulation parameters. Use this class to tune any paths that 
  * may need to be tuned, and then replace with a {@link ConstantEmulationParams}
  * that contains the tuned values from the Preferences table.
@@ -19,7 +19,7 @@ public class PreferenceEmulationParams implements IEmulateParams {
 
     /**
      * Creates a new PreferenceEmulationParams.
-     * @param The units of length to use. This should be the same value that you defined Hyperdrive with.
+     * @param units The units of length to use. This should be the same value that you defined Hyperdrive with.
      */
     public PreferenceEmulationParams(Units.LENGTH units) {
         this.units = units;

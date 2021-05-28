@@ -71,7 +71,7 @@ public class Trajectory {
 
     /**
      * Returns the maximum speed of the robot as it drives through its path.
-     * @return Maximum speed, in distance units per second.
+     * @return Maximum speed, in length units per second.
      */
     public double getMaxSpeed() {
         return maxSpeed;
@@ -79,7 +79,7 @@ public class Trajectory {
 
     /**
      * Returns the minimum speed of the robot as it drives through its path.
-     * @return Minimum speed, in distance units per second.
+     * @return Minimum speed, in length units per second.
      */
     public double getMinSpeed() {
         return minSpeed;

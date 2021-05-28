@@ -9,8 +9,9 @@ import frc.robot.util.hyperdrive.util.HyperdriveUtil;
 import frc.robot.util.hyperdrive.util.Units;
 
 /** 
- * A set of parameters that a {@code Path} will use to drive the robot
- * through it. Default values can be accessed using ConstantEmulationParams.getDefaults().
+ * A set of parameters that Hyperdrive will use to drive the robot
+ * through a path. Default values can be accessed using 
+ * {@link ConstantEmulationParams #getDefaults(frc.robot.util.hyperdrive.util.Units.LENGTH)}
  * If you wish to tune the parameters for your robot, use the {@link PreferenceEmulationParams}
  * class instead.
  */
@@ -100,6 +101,7 @@ public class ConstantEmulationParams implements IEmulateParams {
     
     /**
      * Returns the default values for robots to use, in whatever unit is supplied.
+     * @param units The units of length that are being used.
      * @return A {@link ConstantEmulationParams} containing the default parameters for path driving.
      */
     public static ConstantEmulationParams getDefaults(Units.LENGTH units) {

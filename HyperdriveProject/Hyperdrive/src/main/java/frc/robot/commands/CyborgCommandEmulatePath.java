@@ -51,7 +51,7 @@ public class CyborgCommandEmulatePath extends CommandBase {
    * @param path The Path that the robot will drive.
    */
   public CyborgCommandEmulatePath(SubsystemDrive drivetrain, Hyperdrive hyperdrive, Path path) {
-    this(drivetrain, hyperdrive, path, ConstantEmulationParams.getDefaults(hyperdrive.getDistanceUnits()));
+    this(drivetrain, hyperdrive, path, ConstantEmulationParams.getDefaults(hyperdrive.getLengthUnits()));
   }
 
   /**
