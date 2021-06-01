@@ -9,6 +9,7 @@ import frc.robot.util.hyperdrive.Hyperdrive;
 import frc.robot.util.hyperdrive.recording.PathRecorder;
 import frc.robot.util.hyperdrive.util.Path;
 import frc.robot.util.hyperdrive.util.Point2D;
+import frc.robot.util.hyperdrive.util.Units;
 
 // NOTE:  Consider using this command inline, rather than writing a subclass.  For more
 // information, see:
@@ -19,7 +20,7 @@ public class InstantCommandCreateRandomPath extends InstantCommand {
   private Point2D currentPoint;
 
   public InstantCommandCreateRandomPath(String destination, Hyperdrive hyperdrive) {
-    this.recorder = new PathRecorder(destination);
+    this.recorder = new PathRecorder(destination, Units.LENGTH.INCHES);
     this.hyperdrive = hyperdrive;
     this.recorder.init();
     this.currentPoint = new Point2D(0, 0, 0);

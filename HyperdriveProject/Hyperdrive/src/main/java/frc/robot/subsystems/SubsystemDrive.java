@@ -13,6 +13,7 @@ import frc.robot.Constants;
 import frc.robot.util.hyperdrive.Hyperdrive;
 import frc.robot.util.hyperdrive.util.Point2D;
 import frc.robot.util.hyperdrive.util.TankGyro;
+import frc.robot.util.hyperdrive.util.Units;
 
 public class SubsystemDrive extends SubsystemBase {
   private CANSparkMax
@@ -40,7 +41,7 @@ public class SubsystemDrive extends SubsystemBase {
     rightPosition = 0;
     heading = 0;
 
-    hyperdrive = new Hyperdrive();
+    hyperdrive = new Hyperdrive(Units.LENGTH.INCHES, 0.472);
     gyro = new TankGyro(24, 0.472);
 
     setFollowers();

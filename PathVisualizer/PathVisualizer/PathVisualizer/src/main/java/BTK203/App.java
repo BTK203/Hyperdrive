@@ -18,7 +18,7 @@ public final class App {
     }
 
     /**
-     * Returns the program's GUI
+     * Returns the program's manager
      */
     public static PathVisualizerManager getManager() {
         return manager;
