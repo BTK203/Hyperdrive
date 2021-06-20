@@ -1,9 +1,7 @@
 package BTK203.ui;
 
-import javax.swing.BoxLayout;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
-import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.UIManager;
@@ -16,7 +14,6 @@ import BTK203.util.IRenderable;
 import BTK203.util.Path;
 import BTK203.util.Point2D;
 import BTK203.util.Position;
-import BTK203.util.Util;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
