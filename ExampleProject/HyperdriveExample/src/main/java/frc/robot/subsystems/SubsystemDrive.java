@@ -105,8 +105,9 @@ public class SubsystemDrive extends SubsystemBase {
    * @param f The kF to set.
    * @param izone The izone to set.
    * @param outLimit The maximum allowed output.
+   * @param ramp The closed loop ramp rate, in seconds, to set.
    */
-  public void setPIDF(double p, double i, double d, double f, double izone, double outLimit) {
+  public void setPIDF(double p, double i, double d, double f, double izone, double outLimit, double ramp) {
     //set constants on left motor controller
     leftMaster.getPIDController().setP(p);
     leftMaster.getPIDController().setI(i);
@@ -114,6 +115,7 @@ public class SubsystemDrive extends SubsystemBase {
     leftMaster.getPIDController().setFF(f);
     leftMaster.getPIDController().setIZone(izone);
     leftMaster.getPIDController().setOutputRange(-1 * outLimit, outLimit);
+    leftMaster.setClosedLoopRampRate(ramp);
 
     //set constants on right motor controller
     rightMaster.getPIDController().setP(p);
@@ -122,6 +124,7 @@ public class SubsystemDrive extends SubsystemBase {
     rightMaster.getPIDController().setFF(f);
     rightMaster.getPIDController().setIZone(izone);
     rightMaster.getPIDController().setOutputRange(-1 * outLimit, outLimit);
+    rightMaster.setClosedLoopRampRate(ramp);
   }
 
   /**

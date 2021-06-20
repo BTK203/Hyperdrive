@@ -32,9 +32,10 @@ public class CyborgCommandEmulatePath extends CommandBase {
       kD = HyperdriveUtil.getAndSetDouble("Drive Velocity kD", 0),
       kF = HyperdriveUtil.getAndSetDouble("Drive Velocity kF", 0),
       iZone = HyperdriveUtil.getAndSetDouble("Drive Velocity IZone", 0),
-      outLimit = HyperdriveUtil.getAndSetDouble("Drive Velocity Output Limit", 1);
+      outLimit = HyperdriveUtil.getAndSetDouble("Drive Velocity Output Limit", 1),
+      ramp = HyperdriveUtil.getAndSetDouble("Drive PID Ramp", 0.1875);
 
-    drivetrain.setPIDF(kP, kI, kD, kF, iZone, outLimit);
+    drivetrain.setPIDF(kP, kI, kD, kF, iZone, outLimit, ramp);
 
     IEmulateParams parameters = new PreferenceEmulationParams(Units.LENGTH.INCHES);
     drivetrain.getHyperdrive().loadPath(drivetrain.getHyperdrive().getRecordedPath(), parameters);
