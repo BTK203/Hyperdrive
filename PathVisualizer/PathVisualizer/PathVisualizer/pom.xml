@@ -64,11 +64,11 @@
         <artifactId>maven-checkstyle-plugin</artifactId>
         <version>${maven-checkstyle-plugin.version}</version>
         <dependencies>
-          <dependency>
+          <!-- <dependency>
             <groupId>com.puppycrawl.tools</groupId>
             <artifactId>checkstyle</artifactId>
             <version>${checkstyle.version}</version>
-          </dependency>
+          </dependency> -->
           <dependency>
             <groupId>com.github.ngeor</groupId>
             <artifactId>checkstyle-rules</artifactId>
@@ -85,7 +85,7 @@
             <id>checkstyle</id>
             <phase>none</phase>
             <goals>
-              <goal>check</goal>
+              <goal>none</goal>
             </goals>
           </execution>
         </executions>

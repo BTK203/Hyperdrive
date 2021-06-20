@@ -25,8 +25,6 @@ public class PathVisualizerManager {
     private SocketHelper socketHelper;
     private HashMap<String, String> preferences;
     private HashMap<String, Integer> names;
-    private boolean updatedBefore;
-    private long lastReconnectTime;
 
     /**
      * Initalizes all needed components of the program.
@@ -37,8 +35,6 @@ public class PathVisualizerManager {
         readPreferences();
 
         names = new HashMap<String, Integer>();
-        updatedBefore = false;
-        lastReconnectTime = 0;
 
         //resolve default IP address and port. Keep this section of code below the call to readPreferences().
         String defaultIPAddress = getPreference("defaultIPAddress", "10.36.95.2");
