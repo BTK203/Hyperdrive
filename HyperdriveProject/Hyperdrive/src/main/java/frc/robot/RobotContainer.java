@@ -9,10 +9,10 @@ import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.RunCommand;
 import frc.robot.commands.CyborgCommandEmulatePath;
 import frc.robot.commands.CyborgCommandRecordPath;
 import frc.robot.commands.InstantCommandCreateRandomPath;
-import frc.robot.commands.InstantCommandDisplace;
 import frc.robot.commands.InstantCommandSetRobotPosition;
 import frc.robot.subsystems.SubsystemDrive;
 import frc.robot.util.hyperdrive.util.HyperdriveUtil;
@@ -41,15 +41,13 @@ public class RobotContainer {
    * edu.wpi.first.wpilibj2.command.button.JoystickButton}.
    */
   private void configureButtonBindings() {
+    //default driving command
+    drivetrain.setDefaultCommand(new RunCommand( () -> { drivetrain.driveWithKeyboardInput(); }, drivetrain));
+
     SmartDashboard.putData("Emulate", new CyborgCommandEmulatePath(drivetrain, drivetrain.getHyperdrive(), new Path("src/main/java/frc/robot/points.txt")));
     SmartDashboard.putData("Record", new CyborgCommandRecordPath(drivetrain.getHyperdrive()));
     SmartDashboard.putData("Create Random", new InstantCommandCreateRandomPath("src/main/java/frc/robot/random.txt", drivetrain.getHyperdrive()));
     SmartDashboard.putData("Zero Coords", new InstantCommand(() -> drivetrain.zeroPositionAndHeading()));
-    SmartDashboard.putData("Zero Gyro", new InstantCommand(() -> drivetrain.zeroGyro()));
-    SmartDashboard.putData("Zero Positions", new InstantCommand(() -> drivetrain.zeroMotorPositions()));
-    SmartDashboard.putData("Randomize", new InstantCommand(() -> drivetrain.randomize()));
-    SmartDashboard.putData("Displace Random", new InstantCommand(() -> drivetrain.displaceRandomly()));
-    SmartDashboard.putData("Displace", new InstantCommandDisplace(drivetrain));
     SmartDashboard.putData("Set Pos", new InstantCommandSetRobotPosition(drivetrain));
   }
 

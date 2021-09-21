@@ -8,6 +8,10 @@ package frc.robot.util.hyperdrive;
  * This class stores constants (public static final) that are used by Hyperdrive.
  */
 public class HyperdriveConstants {
+    //this constructor exists so that no one can create an instance of this class.
+    private HyperdriveConstants() {
+    }
+
     //recorder constants
     public static final int PATH_RECORDER_DISTANCE_INTERVAL = 4;
 
@@ -49,4 +53,5 @@ public class HyperdriveConstants {
     public static final int
         DEFAULT_POINT_SKIP_COUNT = 2,
         DEFAULT_IMMEDIATE_PATH_SIZE = 7;
+
 }

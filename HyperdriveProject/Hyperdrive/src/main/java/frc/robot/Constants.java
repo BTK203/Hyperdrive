@@ -20,4 +20,6 @@ public final class Constants {
         RIGHT_SLAVE_ID = 4;
 
     public static final int WHEEL_BASE_WIDTH = 30; //inches
+
+    public static final double KEYBOARD_RAMP_PERCENT_PER_SECOND = 2;
 }

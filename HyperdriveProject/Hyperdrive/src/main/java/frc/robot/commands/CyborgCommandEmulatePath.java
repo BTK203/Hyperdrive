@@ -72,11 +72,12 @@ public class CyborgCommandEmulatePath extends CommandBase {
   }
 
   // Called every time the scheduler runs while the command is scheduled.
+  //TODO: FIX
   @Override
   public void execute() {
     TankTrajectory trajectory = hyperdrive.calculateNextMovements().getTankTrajectory(Constants.WHEEL_BASE_WIDTH).convertTime(Units.TIME.MINUTES);
-    drivetrain.setLeftVelocity(trajectory.getLeftVelocity());
-    drivetrain.setRightVelocity(trajectory.getRightVelocity());
+    // drivetrain.setLeftVelocity(trajectory.getLeftVelocity());
+    // drivetrain.setRightVelocity(trajectory.getRightVelocity());
 
     SmartDashboard.putNumber("Current point", hyperdrive.getCurrentPoint());
     SmartDashboard.putNumber("Total points", hyperdrive.getTotalPoints());
