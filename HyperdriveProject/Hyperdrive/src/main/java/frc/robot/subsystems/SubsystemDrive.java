@@ -64,7 +64,7 @@ public class SubsystemDrive extends SubsystemBase {
       2,
       HyperdriveUtil.convertDistance(6, Units.LENGTH.INCHES, Units.LENGTH.METERS), 
       HyperdriveUtil.convertDistance(20, Units.LENGTH.INCHES, Units.LENGTH.METERS), 
-      7.31,
+      0.316,
       110, 
       Units.FORCE.POUND, 
       mupuMeters
@@ -95,7 +95,7 @@ public class SubsystemDrive extends SubsystemBase {
    * Keyboard input will only be captured if the key listener window is focused.
    */
   public void driveWithKeyboardInput() {
-    double increment = lastIterationTime / Constants.KEYBOARD_RAMP_PERCENT_PER_SECOND; //unit; percent
+    double increment = lastIterationTime * Constants.KEY_THROTTLE_PER_SECOND; //unit; percent
 
     //forward input
     if(KeyboardListener.getWPressed()) {

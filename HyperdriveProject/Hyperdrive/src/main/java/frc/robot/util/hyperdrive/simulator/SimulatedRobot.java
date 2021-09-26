@@ -28,7 +28,10 @@ public class SimulatedRobot  {
     //runtime values
     private double
         leftVelocity,
-        rightVelocity;
+        rightVelocity,
+        lastLeftVelocity,
+        lastRightVelocity,
+        lastTimeInterval;
 
     private double
         leftPositionMotorUnits,
@@ -137,9 +140,23 @@ public class SimulatedRobot  {
      * @return The position of the robot after it drives for the specified time interval
      */
     public Point2D update(double leftPercentOutput, double rightPercentOutput, double timeInterval) {
+        //calculate theoretical percent outputs to determine whether or not to brake
+        double 
+            theoreticalLeftOutput = calculatePercentOutput(leftVelocity, lastLeftVelocity, lastTimeInterval),
+            theoreticalRightOutput = calculatePercentOutput(rightVelocity, lastRightVelocity, lastTimeInterval);
+
+        SmartDashboard.putNumber("theoretical left output", theoreticalLeftOutput);
+
+        //determine whether or not the motor is braking
+        boolean
+            leftBraking = leftPercentOutput < theoreticalLeftOutput,
+            rightBraking = rightPercentOutput < theoreticalRightOutput;
+
+        SmartDashboard.putBoolean("left braking", leftBraking);
+
         double
-            leftDisplacement = calculateLinearDisplacement(leftPercentOutput, leftVelocity, timeInterval),
-            rightDisplacement = calculateLinearDisplacement(rightPercentOutput, rightVelocity, timeInterval),
+            leftDisplacement = calculateLinearDisplacement(leftPercentOutput, leftVelocity, timeInterval, leftBraking),
+            rightDisplacement = calculateLinearDisplacement(rightPercentOutput, rightVelocity, timeInterval, rightBraking),
             distanceDriven = (leftDisplacement + rightDisplacement) / 2;
 
         SmartDashboard.putNumber("leftPercent", leftPercentOutput);
@@ -148,12 +165,22 @@ public class SimulatedRobot  {
         SmartDashboard.putNumber("timeInterval", timeInterval);
 
         //update velocities
-        leftVelocity = calculateNewVelocity(leftPercentOutput, leftVelocity, timeInterval);
-        rightVelocity = calculateNewVelocity(rightPercentOutput, rightVelocity, timeInterval);
+        lastLeftVelocity = leftVelocity;
+        lastRightVelocity = rightVelocity;
+        leftVelocity = calculateNewVelocity(leftPercentOutput, leftVelocity, timeInterval, leftBraking);
+        rightVelocity = calculateNewVelocity(rightPercentOutput, rightVelocity, timeInterval, rightBraking);
+
+        //update time interval
+        lastTimeInterval = timeInterval;
+
+        SmartDashboard.putNumber("left velocity after", leftVelocity);
 
         //update motor positions
         leftPositionMotorUnits += leftDisplacement * motorUnitsPerUnit;
         rightPositionMotorUnits += rightDisplacement * motorUnitsPerUnit;
+
+        SmartDashboard.putNumber("left pos motor units", leftPositionMotorUnits);
+        SmartDashboard.putNumber("left pos meters", leftPositionMotorUnits / motorUnitsPerUnit);
 
         //update gyro based on positions
         gyro.update(leftPositionMotorUnits, rightPositionMotorUnits); //will update the return value of getCurrentHeading()
@@ -164,31 +191,112 @@ public class SimulatedRobot  {
     }
 
     /**
+     * Calculates the acceleration of the robot.
+     * @param percentOut The percent output of the motors.
+     * @param initialVelocity The linear initial velocity of the robot.
+     * @return The acceleration of the robot in meters per second per second.
+     */
+    private double calculateAcceleration(double percentOut, double initialVelocity, boolean braking) {
+        /**
+         * Acceleration Equation:
+         * a = (p * n * (A * V0 * B * C + Tm0)) / (r * m * i)
+         * 
+         * Where:
+         * p = percent output of motors
+         * n = number of motors per side of robot.
+         * A = torque curve slope of motor
+         * B = motor units per unit value
+         * v0 = initial linear velocity of robot
+         * C = 60 seconds per minute
+         * Tm0 = initial torque of robot
+         * r = radius of wheels being driven by motors
+         * m = mass of robot
+         * i = gear ratio of gearbox
+         */
+
+        if(braking) {
+            return 
+                calculateAcceleration(1, 0, false)
+                + calculateAcceleration(percentOut, initialVelocity, false)
+                - calculateAcceleration(1, initialVelocity, false);
+        }
+
+        double slope = motor.getTorqueCurveSlope()
+                    * initialVelocity
+                    * motorUnitsPerUnit
+                    * 60.0; //seconds per minute
+
+        double top = percentOut * motorsPerSide * (slope + motor.getInitialTorque());
+        double bottom = wheelRadius * robotMass * gearRatio;
+
+        double acceleration = top / bottom;
+
+        SmartDashboard.putNumber("wheel radius", wheelRadius);
+        SmartDashboard.putNumber("Rboot mass", robotMass);
+        SmartDashboard.putNumber("top", top);
+        SmartDashboard.putNumber("bottom", bottom);
+
+        return acceleration;
+    }
+
+    /**
      * Calculates the new velocity of a set of motors.
      * @param percentOut The percent output of the motors.
      * @param initialVelocity The linear initial velocity of the robot. 
      * @param timeInterval The time interval for which the robot drives.
      * @return The new linear velocity of the set of motors.
      */
-    private double calculateNewVelocity(double percentOut, double initialVelocity, double timeInterval) {
-        //only takes into account the slope of the torque curve.
-        double sloped = percentOut
-                    * motorsPerSide
-                    * motor.getTorqueCurveSlope()
-                    * motorUnitsPerUnit
-                    * 60 //seconds per minute
-                    * initialVelocity
-                    * timeInterval; //Unit of entire value: Nms
+    private double calculateNewVelocity(double percentOut, double initialVelocity, double timeInterval, boolean braking) {
+        /**
+         * Velocity Equation:
+         * v = v0 + at
+         * 
+         * Where:
+         * v = new velocity
+         * v0 = initial velocity
+         * a = acceleration
+         * t = time interval
+         */
 
-        //only using the y-intercept of the torque curve.
-        double intercepted = motor.getInitialTorque() * timeInterval; //Unit: Nms
+        double acceleration = calculateAcceleration(percentOut, initialVelocity, braking);
+        double velocity = initialVelocity + (acceleration * timeInterval);
+        return velocity;
+    }
 
-        //radius of wheels, mass of robot, gear ratio.
-        double rmg = wheelRadius * robotMass * gearRatio; //Unit: kgm
+    /**
+     * Calculates the theoretical percent output of the motors to maintain a certain velocity.
+     * This method is essentially an invert of the {@link #calculateNewVelocity(double, double, double)} method.
+     * @param finalVelocity The final velocity (or the one being maintained)
+     * @param initialVelocity The initial velocity
+     * @param timeInterval The time interval
+     * @return The theoretical percent output needed to maintain finalVelocity.
+     */
+    private double calculatePercentOutput(double finalVelocity, double initialVelocity, double timeInterval) {
+        /**
+         * Percent output equation:
+         * p = ( (dv / t) * r * m * i ) / ( ( A * v0 * B * C + Tm0 ) * n)
+         * 
+         * Where:
+         * dv = change in velocity (final v minus initial v)
+         * t = time interval
+         * r = radius of drive wheels
+         * m = mass of the robot
+         * i = gear ratio of gearboxes
+         * A = torque curve of motor
+         * v0 = initial velocity of robot
+         * B = motor units per unit value
+         * C = 60 seconds per minute
+         * Tm0 = initial torque of motor
+         * n = number of motors per side of robot
+         */
+        
+        double 
+            acceleration = (finalVelocity - initialVelocity) / timeInterval,
+            rmi = wheelRadius * robotMass * gearRatio,
+            torqueSloped = motor.getTorqueCurveSlope() * initialVelocity * motorUnitsPerUnit * 60.0,
+            torque = (torqueSloped + motor.getInitialTorque()) * motorsPerSide;
 
-        //new velocity
-        double newVelocity = ((sloped + intercepted) / rmg) + initialVelocity; //m/s
-        return newVelocity;
+        return (acceleration * rmi) / torque;
     }
 
     /**
@@ -198,27 +306,22 @@ public class SimulatedRobot  {
      * of the robot being calculated for.
      * @return The displacement of the side of the robot.
      */
-    private double calculateLinearDisplacement(double percentOut, double initialVelocity, double timeInterval) {
-        //only taking into account the slope of the torque curve
-        double sloped = percentOut
-                    * motorsPerSide
-                    * motor.getTorqueCurveSlope()
-                    * motorUnitsPerUnit
-                    * 60 // seconds per minute
-                    * initialVelocity
-                    * Math.pow(timeInterval, 2); //Nms^2
+    private double calculateLinearDisplacement(double percentOut, double initialVelocity, double timeInterval, boolean braking) {
+        /**
+         * Displacement equation:
+         * dx = v0t + (1/2)at^2
+         * 
+         * Where:
+         * v0 = initial velocity
+         * t = time interval
+         * a = acceleration
+         */
 
-        //only using y-intercept of the torque curve
-        double intercepted = motor.getInitialTorque() * Math.pow(timeInterval, 2); //Nms^2
-
-        //radius of wheels, mass of robot, gear ratio, all multiplied together and by 2
-        double rmg = 2 * wheelRadius * robotMass * gearRatio; //kgm
-
-        //displacement of robot with initial velocity
-        double displacementWithInitial = initialVelocity * timeInterval; //m
-
-        //linear displacement
-        double linearDisplacement = ((sloped + intercepted) / rmg) + displacementWithInitial; // m
-        return linearDisplacement;
+        double acceleration = calculateAcceleration(percentOut, initialVelocity, braking);
+        SmartDashboard.putNumber("Acceleration: ", acceleration);
+        double v0t = initialVelocity * timeInterval;
+        double atsq = 0.5 * acceleration * (timeInterval * timeInterval);
+        double displacement = v0t + atsq;
+        return displacement;
     }
 }

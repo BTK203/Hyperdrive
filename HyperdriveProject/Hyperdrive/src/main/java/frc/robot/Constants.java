@@ -21,5 +21,5 @@ public final class Constants {
 
     public static final int WHEEL_BASE_WIDTH = 30; //inches
 
-    public static final double KEYBOARD_RAMP_PERCENT_PER_SECOND = 2;
+    public static final double KEY_THROTTLE_PER_SECOND = 5;
 }
