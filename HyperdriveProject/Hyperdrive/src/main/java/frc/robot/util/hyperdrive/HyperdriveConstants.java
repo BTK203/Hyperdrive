@@ -54,4 +54,8 @@ public class HyperdriveConstants {
         DEFAULT_POINT_SKIP_COUNT = 2,
         DEFAULT_IMMEDIATE_PATH_SIZE = 7;
 
+    //simulator constants
+    public static final double
+        INTERNAL_FRICTION_ACCELERATION = 1; // m/s. Based on my experience pushing unpowered robots across rooms and timing their stops
+
 }

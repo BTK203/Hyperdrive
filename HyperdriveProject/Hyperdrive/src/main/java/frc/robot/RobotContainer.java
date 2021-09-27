@@ -44,6 +44,9 @@ public class RobotContainer {
     //default driving command
     drivetrain.setDefaultCommand(new RunCommand( () -> { drivetrain.driveWithKeyboardInput(); }, drivetrain));
 
+    //dashboard commands
+    InstantCommand setRobotPositionToPathStart = new InstantCommand( () -> { drivetrain.setPoseToRecordedPathStart(); } );
+    SmartDashboard.putData("Set Robot To Start", setRobotPositionToPathStart);
     SmartDashboard.putData("Emulate", new CyborgCommandEmulatePath(drivetrain, drivetrain.getHyperdrive(), new Path("src/main/java/frc/robot/points.txt")));
     SmartDashboard.putData("Record", new CyborgCommandRecordPath(drivetrain.getHyperdrive()));
     SmartDashboard.putData("Create Random", new InstantCommandCreateRandomPath("src/main/java/frc/robot/random.txt", drivetrain.getHyperdrive()));

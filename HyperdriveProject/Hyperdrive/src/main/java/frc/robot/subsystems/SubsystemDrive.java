@@ -64,7 +64,7 @@ public class SubsystemDrive extends SubsystemBase {
       2,
       HyperdriveUtil.convertDistance(6, Units.LENGTH.INCHES, Units.LENGTH.METERS), 
       HyperdriveUtil.convertDistance(20, Units.LENGTH.INCHES, Units.LENGTH.METERS), 
-      0.316,
+      7.14,
       110, 
       Units.FORCE.POUND, 
       mupuMeters
@@ -83,8 +83,7 @@ public class SubsystemDrive extends SubsystemBase {
     lastUpdateTime = currentTime;
 
     //update simulated robot
-    simulatedRobot.update(leftPercentOutput, rightPercentOutput, deltaTimeSeconds);
-    Point2D currentPositionAndHeading = simulatedRobot.getCurrentPositionAndHeading();
+    Point2D currentPositionAndHeading = simulatedRobot.update(leftPercentOutput, rightPercentOutput, deltaTimeSeconds);
 
     //update Hyperdrive
     hyperdrive.update(currentPositionAndHeading);
@@ -128,8 +127,8 @@ public class SubsystemDrive extends SubsystemBase {
     steeringInput = (steeringInput < -1 ? -1 : (steeringInput > 1 ? 1 : steeringInput));
 
     //calculate new percent outputs based on forward and steer inputs
-    double left = forwardInput + steeringInput;
-    double right = forwardInput - steeringInput;
+    double left = forwardInput - steeringInput;
+    double right = forwardInput + steeringInput;
 
     //make sure that left and right are between -1 and 1
     left = (left < -1 ? -1 : (left > 1 ? 1 : left));
@@ -174,6 +173,16 @@ public class SubsystemDrive extends SubsystemBase {
    */
   public void setPositionAndHeading(Point2D positionAndHeading) {
     simulatedRobot.setCurrentPositionAndHeading(positionAndHeading);
+  }
+
+  /**
+   * Sets the robot's position and heading to the start of the most recently recorded path.
+   */
+  public void setPoseToRecordedPathStart() {
+    if(hyperdrive.getRecordedPath().isValid()) { //if the most recently recorded path exists...
+      Point2D pathStart = hyperdrive.getRecordedPath().getPoints()[0];
+      simulatedRobot.setCurrentPositionAndHeading(pathStart);
+    }
   }
 
   /**

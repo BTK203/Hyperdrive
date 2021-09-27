@@ -5,6 +5,8 @@
 package frc.robot.util.hyperdrive.simulator;
 
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import frc.robot.util.hyperdrive.Hyperdrive;
+import frc.robot.util.hyperdrive.HyperdriveConstants;
 import frc.robot.util.hyperdrive.util.HyperdriveUtil;
 import frc.robot.util.hyperdrive.util.Point2D;
 import frc.robot.util.hyperdrive.util.PositionTracker;
@@ -29,8 +31,6 @@ public class SimulatedRobot  {
     private double
         leftVelocity,
         rightVelocity,
-        lastLeftVelocity,
-        lastRightVelocity,
         lastTimeInterval;
 
     private double
@@ -140,10 +140,14 @@ public class SimulatedRobot  {
      * @return The position of the robot after it drives for the specified time interval
      */
     public Point2D update(double leftPercentOutput, double rightPercentOutput, double timeInterval) {
+        //make sure leftPercentOutput and rightPercentOutput are between -1 and 1
+        leftPercentOutput = (leftPercentOutput < -1 ? -1 : (leftPercentOutput > 1 ? 1 : leftPercentOutput));
+        rightPercentOutput = (rightPercentOutput < -1 ? -1 : (rightPercentOutput > 1 ? 1 : rightPercentOutput));
+
         //calculate theoretical percent outputs to determine whether or not to brake
         double 
-            theoreticalLeftOutput = calculatePercentOutput(leftVelocity, lastLeftVelocity, lastTimeInterval),
-            theoreticalRightOutput = calculatePercentOutput(rightVelocity, lastRightVelocity, lastTimeInterval);
+            theoreticalLeftOutput = calculatePercentOutput(leftVelocity, lastTimeInterval),
+            theoreticalRightOutput = calculatePercentOutput(rightVelocity, lastTimeInterval);
 
         SmartDashboard.putNumber("theoretical left output", theoreticalLeftOutput);
 
@@ -152,12 +156,16 @@ public class SimulatedRobot  {
             leftBraking = leftPercentOutput < theoreticalLeftOutput,
             rightBraking = rightPercentOutput < theoreticalRightOutput;
 
+        //if the percent outputs are negative, then the braking values will be inverted (-1 < 0). This part fixes that
+        leftBraking = (theoreticalLeftOutput < 0 ? !leftBraking : leftBraking);
+        rightBraking = (theoreticalRightOutput < 0 ? !rightBraking : rightBraking);
+
         SmartDashboard.putBoolean("left braking", leftBraking);
 
+        //calculate the linear displacements of the wheels
         double
             leftDisplacement = calculateLinearDisplacement(leftPercentOutput, leftVelocity, timeInterval, leftBraking),
-            rightDisplacement = calculateLinearDisplacement(rightPercentOutput, rightVelocity, timeInterval, rightBraking),
-            distanceDriven = (leftDisplacement + rightDisplacement) / 2;
+            rightDisplacement = calculateLinearDisplacement(rightPercentOutput, rightVelocity, timeInterval, rightBraking);
 
         SmartDashboard.putNumber("leftPercent", leftPercentOutput);
         SmartDashboard.putNumber("leftVelocity", leftVelocity);
@@ -165,19 +173,21 @@ public class SimulatedRobot  {
         SmartDashboard.putNumber("timeInterval", timeInterval);
 
         //update velocities
-        lastLeftVelocity = leftVelocity;
-        lastRightVelocity = rightVelocity;
         leftVelocity = calculateNewVelocity(leftPercentOutput, leftVelocity, timeInterval, leftBraking);
         rightVelocity = calculateNewVelocity(rightPercentOutput, rightVelocity, timeInterval, rightBraking);
+
+        SmartDashboard.putNumber("left velocity after", leftVelocity);
+
+        leftVelocity = (Math.abs(leftVelocity) < 0.01 ? 0 : leftVelocity);
+        rightVelocity = (Math.abs(rightVelocity) < 0.01 ? 0 : rightVelocity);
 
         //update time interval
         lastTimeInterval = timeInterval;
 
-        SmartDashboard.putNumber("left velocity after", leftVelocity);
-
         //update motor positions
         leftPositionMotorUnits += leftDisplacement * motorUnitsPerUnit;
         rightPositionMotorUnits += rightDisplacement * motorUnitsPerUnit;
+        double distanceDrivenMotorUnits = (leftPositionMotorUnits + rightPositionMotorUnits) / 2.0;
 
         SmartDashboard.putNumber("left pos motor units", leftPositionMotorUnits);
         SmartDashboard.putNumber("left pos meters", leftPositionMotorUnits / motorUnitsPerUnit);
@@ -186,7 +196,7 @@ public class SimulatedRobot  {
         gyro.update(leftPositionMotorUnits, rightPositionMotorUnits); //will update the return value of getCurrentHeading()
 
         //update position of the robot
-        positionTracker.update(distanceDriven, getCurrentPositionAndHeading().getHeading());
+        positionTracker.update(distanceDrivenMotorUnits, gyro.getHeading());
         return getCurrentPositionAndHeading();
     }
 
@@ -194,12 +204,14 @@ public class SimulatedRobot  {
      * Calculates the acceleration of the robot.
      * @param percentOut The percent output of the motors.
      * @param initialVelocity The linear initial velocity of the robot.
+     * @param braking True if the robot is braking, false otherwise.
+     * @param useInternalFriction True if internal friction should be considered, false otherwise.
      * @return The acceleration of the robot in meters per second per second.
      */
     private double calculateAcceleration(double percentOut, double initialVelocity, boolean braking) {
         /**
          * Acceleration Equation:
-         * a = (p * n * (A * V0 * B * C + Tm0)) / (r * m * i)
+         * a = (A * V0 * B * C + (p * n * Tm0)) * i / (r * m)
          * 
          * Where:
          * p = percent output of motors
@@ -214,11 +226,16 @@ public class SimulatedRobot  {
          * i = gear ratio of gearbox
          */
 
-        if(braking) {
-            return 
-                calculateAcceleration(1, 0, false)
-                + calculateAcceleration(percentOut, initialVelocity, false)
-                - calculateAcceleration(1, initialVelocity, false);
+        if(braking) { //calculate acceleration if the robot is braking (a little different because the motor works differently)
+            double brakingAcceleration = -1 * (
+                calculateAcceleration(1, 0, false) - calculateAcceleration(1, initialVelocity, false)
+            );
+            
+            double nonbrakingAcceleration = calculateAcceleration(percentOut, initialVelocity, false);
+            double accel = brakingAcceleration + nonbrakingAcceleration;
+
+            accel = accelerationWithFriction(accel, initialVelocity);
+            return accel;
         }
 
         double slope = motor.getTorqueCurveSlope()
@@ -226,15 +243,31 @@ public class SimulatedRobot  {
                     * motorUnitsPerUnit
                     * 60.0; //seconds per minute
 
-        double top = percentOut * motorsPerSide * (slope + motor.getInitialTorque());
-        double bottom = wheelRadius * robotMass * gearRatio;
+        double top = (slope + (percentOut * motorsPerSide * motor.getInitialTorque())) * gearRatio;
+        double bottom = wheelRadius * robotMass;
 
         double acceleration = top / bottom;
+        acceleration = accelerationWithFriction(acceleration, initialVelocity);
+        return acceleration;
+    }
 
-        SmartDashboard.putNumber("wheel radius", wheelRadius);
-        SmartDashboard.putNumber("Rboot mass", robotMass);
-        SmartDashboard.putNumber("top", top);
-        SmartDashboard.putNumber("bottom", bottom);
+    /**
+     * Accounts for gearbox friction.
+     * @param acceleration A frictionless acceleration of the robot.
+     * @param velocity Velocity of the robot.
+     * @return New acceleration with friction accounted for.
+     */
+    private double accelerationWithFriction(double acceleration, double velocity) {
+        if(Math.abs(velocity) < 0.01) {
+            return acceleration;
+        }
+
+        //because friction moves opposite of motion, add some logic
+        if(velocity > 0) {
+            acceleration -= HyperdriveConstants.INTERNAL_FRICTION_ACCELERATION;
+        } else {
+            acceleration += HyperdriveConstants.INTERNAL_FRICTION_ACCELERATION;
+        }
 
         return acceleration;
     }
@@ -271,32 +304,29 @@ public class SimulatedRobot  {
      * @param timeInterval The time interval
      * @return The theoretical percent output needed to maintain finalVelocity.
      */
-    private double calculatePercentOutput(double finalVelocity, double initialVelocity, double timeInterval) {
+    private double calculatePercentOutput(double velocity, double timeInterval) {
         /**
          * Percent output equation:
-         * p = ( (dv / t) * r * m * i ) / ( ( A * v0 * B * C + Tm0 ) * n)
+         * p = -(A * v * B * C * i) / (n * Tm0)
          * 
          * Where:
-         * dv = change in velocity (final v minus initial v)
-         * t = time interval
-         * r = radius of drive wheels
-         * m = mass of the robot
-         * i = gear ratio of gearboxes
-         * A = torque curve of motor
-         * v0 = initial velocity of robot
-         * B = motor units per unit value
+         * A = slope of the motor torque curve
+         * v = velocity of the robot
+         * B = motor units per unit
          * C = 60 seconds per minute
+         * n = number of motors per side of the robot
          * Tm0 = initial torque of motor
-         * n = number of motors per side of robot
+         * i = gear ratio
          */
         
         double 
-            acceleration = (finalVelocity - initialVelocity) / timeInterval,
-            rmi = wheelRadius * robotMass * gearRatio,
-            torqueSloped = motor.getTorqueCurveSlope() * initialVelocity * motorUnitsPerUnit * 60.0,
-            torque = (torqueSloped + motor.getInitialTorque()) * motorsPerSide;
+            slopedTorque = -1 * (motor.getTorqueCurveSlope() * velocity * motorUnitsPerUnit * 60.0 * gearRatio),
+            initialTorque = motorsPerSide * motor.getInitialTorque(),
+            percentOutput = slopedTorque / initialTorque;
 
-        return (acceleration * rmi) / torque;
+        //percent output must be between -1 and 1
+        percentOutput = (percentOutput < -1 ? -1 : (percentOutput > 1 ? 1 : percentOutput));
+        return percentOutput;
     }
 
     /**
