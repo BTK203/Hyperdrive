@@ -1,8 +1,11 @@
 [NetworkTables Storage 3.0]
 string "/Preferences/.type"="RobotPreferences"
+double "/Preferences/Drive kD"=0
+double "/Preferences/Drive kI"=0
+double "/Preferences/Drive kP"=0
 double "/Preferences/H"=180
 double "/Preferences/Heading"=0
-double "/Preferences/Left Displacement"=0
+double "/Preferences/Left Displacement"=4.94
 double "/Preferences/PositionTracker correction ratio"=1
 double "/Preferences/Right Displacement"=-0.94
 double "/Preferences/X"=0

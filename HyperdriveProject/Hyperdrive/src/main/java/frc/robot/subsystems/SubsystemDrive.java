@@ -4,9 +4,6 @@
 
 package frc.robot.subsystems;
 
-import com.revrobotics.CANSparkMax;
-import com.revrobotics.ControlType;
-import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
@@ -16,7 +13,6 @@ import frc.robot.util.hyperdrive.simulator.SimulatedMotor;
 import frc.robot.util.hyperdrive.simulator.SimulatedRobot;
 import frc.robot.util.hyperdrive.util.HyperdriveUtil;
 import frc.robot.util.hyperdrive.util.Point2D;
-import frc.robot.util.hyperdrive.util.TankGyro;
 import frc.robot.util.hyperdrive.util.Units;
 
 /**
@@ -157,6 +153,22 @@ public class SubsystemDrive extends SubsystemBase {
   public void setPercentOutputs(double left, double right) {
     leftPercentOutput = left;
     rightPercentOutput = right;
+  }
+
+  /**
+   * Returns the left velocity of the robot.
+   * @return Linear velocity of the robot's left wheels.
+   */
+  public double getLeftVelocity() {
+    return simulatedRobot.getLeftVelocity();
+  }
+
+  /**
+   * Returns the right velocity of the robot.
+   * @return Linear velocity of the robot's right wheels.
+   */
+  public double getRightVelocity() {
+    return simulatedRobot.getRightVelocity();
   }
 
   /**

@@ -16,8 +16,8 @@ public class HyperdriveConstants {
     public static final int PATH_RECORDER_DISTANCE_INTERVAL = 4;
 
     public static final String 
-        PATH_RECORDER_DEFAULT_RECORD_PATH = "/home/lvuser/points.hpt",
-        PATH_EMULATOR_DEFAULT_RESULTS_PATH = "/home/lvuser/results.hpt";
+        PATH_RECORDER_DEFAULT_RECORD_PATH = "/home/lvuser/points.txt",
+        PATH_EMULATOR_DEFAULT_RESULTS_PATH = "/home/lvuser/results.txt";
 
     //emulator constants
     public static final int

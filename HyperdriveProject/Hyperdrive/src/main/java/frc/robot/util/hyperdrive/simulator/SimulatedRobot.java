@@ -133,6 +133,22 @@ public class SimulatedRobot  {
     }
 
     /**
+     * Returns the current left velocity of the robot.
+     * @return Linear velocity of robot's left wheels
+     */
+    public double getLeftVelocity() {
+        return leftVelocity;
+    }
+
+    /**
+     * Returns the current right velocity of the robot.
+     * @return Linear velocity of robot's right wheels
+     */
+    public double getRightVelocity() {
+        return rightVelocity;
+    }
+
+    /**
      * Calculates the new position of the robot if it was driven for a certain time interval.
      * @param leftPercentOutput The percent output of the left motors.
      * @param rightPercentOutput The percent output of the right motors.
@@ -144,21 +160,9 @@ public class SimulatedRobot  {
         leftPercentOutput = (leftPercentOutput < -1 ? -1 : (leftPercentOutput > 1 ? 1 : leftPercentOutput));
         rightPercentOutput = (rightPercentOutput < -1 ? -1 : (rightPercentOutput > 1 ? 1 : rightPercentOutput));
 
-        //calculate theoretical percent outputs to determine whether or not to brake
-        double 
-            theoreticalLeftOutput = calculatePercentOutput(leftVelocity, lastTimeInterval),
-            theoreticalRightOutput = calculatePercentOutput(rightVelocity, lastTimeInterval);
-
-        SmartDashboard.putNumber("theoretical left output", theoreticalLeftOutput);
-
-        //determine whether or not the motor is braking
         boolean
-            leftBraking = leftPercentOutput < theoreticalLeftOutput,
-            rightBraking = rightPercentOutput < theoreticalRightOutput;
-
-        //if the percent outputs are negative, then the braking values will be inverted (-1 < 0). This part fixes that
-        leftBraking = (theoreticalLeftOutput < 0 ? !leftBraking : leftBraking);
-        rightBraking = (theoreticalRightOutput < 0 ? !rightBraking : rightBraking);
+            leftBraking = isBraking(leftPercentOutput, leftVelocity, lastTimeInterval),
+            rightBraking = isBraking(rightPercentOutput, rightVelocity, lastTimeInterval);
 
         SmartDashboard.putBoolean("left braking", leftBraking);
 
@@ -353,5 +357,23 @@ public class SimulatedRobot  {
         double atsq = 0.5 * acceleration * (timeInterval * timeInterval);
         double displacement = v0t + atsq;
         return displacement;
+    }
+
+    /**
+     * Determines whether or not a motor is braking.
+     * @param percentOutput The current percent output of the motor.
+     * @param initialVelocity The velocity of the motor.
+     * @param timeInterval The time interval to consider.
+     * @return {@code true} if the motor is braking, {@code false} otherwise.
+     */
+    private boolean isBraking(double percentOutput, double initialVelocity, double timeInterval) {
+        //calculate theoretical percent outputs to determine whether or not to brake
+        double theoreticalPercentOutput = calculatePercentOutput(initialVelocity, timeInterval);
+        
+        if(theoreticalPercentOutput > 0) {
+            return percentOutput < theoreticalPercentOutput;
+        } else {
+            return percentOutput > theoreticalPercentOutput;
+        }
     }
 }

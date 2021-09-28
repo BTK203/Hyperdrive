@@ -286,6 +286,829 @@
               "_source0": "network_table:///SmartDashboard/Set Robot To Start",
               "_title": "Set Robot To Start"
             }
+          },
+          "13,1": {
+            "size": [
+              1,
+              1
+            ],
+            "content": {
+              "_type": "Text View",
+              "_source0": "network_table:///SmartDashboard/RPi Data",
+              "_title": "RPi Data"
+            }
+          },
+          "14,1": {
+            "size": [
+              2,
+              2
+            ],
+            "content": {
+              "_type": "Boolean Box",
+              "_source0": "network_table:///SmartDashboard/Spotted",
+              "_title": "Spotted",
+              "Colors/Color when true": "#7CFC00FF",
+              "Colors/Color when false": "#8B0000FF"
+            }
+          },
+          "16,1": {
+            "size": [
+              2,
+              2
+            ],
+            "content": {
+              "_type": "Boolean Box",
+              "_source0": "network_table:///SmartDashboard/Updated",
+              "_title": "Updated",
+              "Colors/Color when true": "#7CFC00FF",
+              "Colors/Color when false": "#8B0000FF"
+            }
+          },
+          "0,2": {
+            "size": [
+              2,
+              2
+            ],
+            "content": {
+              "_type": "Boolean Box",
+              "_source0": "network_table:///SmartDashboard/Drive FW Velocity",
+              "_title": "Drive FW Velocity",
+              "Colors/Color when true": "#7CFC00FF",
+              "Colors/Color when false": "#8B0000FF"
+            }
+          },
+          "2,2": {
+            "size": [
+              2,
+              1
+            ],
+            "content": {
+              "_type": "Command",
+              "_source0": "network_table:///SmartDashboard/Calibrate Turret Yaw",
+              "_title": "Calibrate Turret Yaw"
+            }
+          },
+          "4,2": {
+            "size": [
+              2,
+              1
+            ],
+            "content": {
+              "_type": "Command",
+              "_source0": "network_table:///SmartDashboard/Calibrate Turret Pitch",
+              "_title": "Calibrate Turret Pitch"
+            }
+          },
+          "9,2": {
+            "size": [
+              2,
+              1
+            ],
+            "content": {
+              "_type": "Command",
+              "_source0": "network_table:///SmartDashboard/Zero Turret",
+              "_title": "Zero Turret"
+            }
+          },
+          "11,2": {
+            "size": [
+              2,
+              1
+            ],
+            "content": {
+              "_type": "Command",
+              "_source0": "network_table:///SmartDashboard/Zero Yaw Encoder",
+              "_title": "Zero Yaw Encoder"
+            }
+          },
+          "2,3": {
+            "size": [
+              2,
+              1
+            ],
+            "content": {
+              "_type": "Command",
+              "_source0": "network_table:///SmartDashboard/Zero Drivetrain Encoders",
+              "_title": "Zero Drivetrain Encoders"
+            }
+          },
+          "4,3": {
+            "size": [
+              2,
+              1
+            ],
+            "content": {
+              "_type": "Command",
+              "_source0": "network_table:///SmartDashboard/Zero Gyro",
+              "_title": "Zero Gyro"
+            }
+          },
+          "6,3": {
+            "size": [
+              2,
+              1
+            ],
+            "content": {
+              "_type": "Command",
+              "_source0": "network_table:///SmartDashboard/Zero All Drivetrain",
+              "_title": "Zero All Drivetrain"
+            }
+          },
+          "8,3": {
+            "size": [
+              2,
+              1
+            ],
+            "content": {
+              "_type": "Command",
+              "_source0": "network_table:///SmartDashboard/Record Path",
+              "_title": "Record Path"
+            }
+          },
+          "10,3": {
+            "size": [
+              2,
+              1
+            ],
+            "content": {
+              "_type": "Command",
+              "_source0": "network_table:///SmartDashboard/Emulate Path",
+              "_title": "Emulate Path"
+            }
+          },
+          "12,3": {
+            "size": [
+              2,
+              1
+            ],
+            "content": {
+              "_type": "Command",
+              "_source0": "network_table:///SmartDashboard/Test Turret Position",
+              "_title": "Test Turret Position"
+            }
+          },
+          "14,3": {
+            "size": [
+              2,
+              1
+            ],
+            "content": {
+              "_type": "Command",
+              "_source0": "network_table:///SmartDashboard/Run Intake",
+              "_title": "Run Intake"
+            }
+          },
+          "16,3": {
+            "size": [
+              2,
+              1
+            ],
+            "content": {
+              "_type": "Command",
+              "_source0": "network_table:///SmartDashboard/Test DD",
+              "_title": "Test DD"
+            }
+          },
+          "0,4": {
+            "size": [
+              2,
+              1
+            ],
+            "content": {
+              "_type": "Command",
+              "_source0": "network_table:///SmartDashboard/Test SDD",
+              "_title": "Test SDD"
+            }
+          },
+          "2,4": {
+            "size": [
+              2,
+              1
+            ],
+            "content": {
+              "_type": "Command",
+              "_source0": "network_table:///SmartDashboard/Test Velocity",
+              "_title": "Test Velocity"
+            }
+          },
+          "4,4": {
+            "size": [
+              2,
+              1
+            ],
+            "content": {
+              "_type": "Command",
+              "_source0": "network_table:///SmartDashboard/Test Chase",
+              "_title": "Test Chase"
+            }
+          },
+          "18,1": {
+            "size": [
+              1,
+              1
+            ],
+            "content": {
+              "_type": "ComboBox Chooser",
+              "_source0": "network_table:///SmartDashboard/Auto Mode",
+              "_title": "Auto Mode"
+            }
+          },
+          "6,2": {
+            "size": [
+              1,
+              1
+            ],
+            "content": {
+              "_type": "ComboBox Chooser",
+              "_source0": "network_table:///SmartDashboard/Drive Scheme",
+              "_title": "Drive Scheme"
+            }
+          },
+          "13,2": {
+            "size": [
+              1,
+              1
+            ],
+            "content": {
+              "_type": "ComboBox Chooser",
+              "_source0": "network_table:///SmartDashboard/Aligning Model",
+              "_title": "Aligning Model"
+            }
+          },
+          "18,2": {
+            "size": [
+              1,
+              1
+            ],
+            "content": {
+              "_type": "Text View",
+              "_source0": "network_table:///SmartDashboard/Raw Drive Velocity",
+              "_title": "Raw Drive Velocity"
+            }
+          },
+          "18,3": {
+            "size": [
+              1,
+              1
+            ],
+            "content": {
+              "_type": "Text View",
+              "_source0": "network_table:///SmartDashboard/Fastest Speed",
+              "_title": "Fastest Speed"
+            }
+          },
+          "6,4": {
+            "size": [
+              1,
+              1
+            ],
+            "content": {
+              "_type": "Text View",
+              "_source0": "network_table:///SmartDashboard/Right Position",
+              "_title": "Right Position"
+            }
+          },
+          "7,4": {
+            "size": [
+              1,
+              1
+            ],
+            "content": {
+              "_type": "Text View",
+              "_source0": "network_table:///SmartDashboard/Left Position",
+              "_title": "Left Position"
+            }
+          },
+          "8,4": {
+            "size": [
+              1,
+              1
+            ],
+            "content": {
+              "_type": "Text View",
+              "_source0": "network_table:///SmartDashboard/Drivetrain Velocity",
+              "_title": "Drivetrain Velocity"
+            }
+          },
+          "9,4": {
+            "size": [
+              1,
+              1
+            ],
+            "content": {
+              "_type": "Text View",
+              "_source0": "network_table:///SmartDashboard/Right Output",
+              "_title": "Right Output"
+            }
+          },
+          "10,4": {
+            "size": [
+              1,
+              1
+            ],
+            "content": {
+              "_type": "Text View",
+              "_source0": "network_table:///SmartDashboard/Left Output",
+              "_title": "Left Output"
+            }
+          },
+          "11,4": {
+            "size": [
+              1,
+              1
+            ],
+            "content": {
+              "_type": "Text View",
+              "_source0": "network_table:///SmartDashboard/Right Amps",
+              "_title": "Right Amps"
+            }
+          },
+          "12,4": {
+            "size": [
+              1,
+              1
+            ],
+            "content": {
+              "_type": "Text View",
+              "_source0": "network_table:///SmartDashboard/Left Amps",
+              "_title": "Left Amps"
+            }
+          },
+          "13,4": {
+            "size": [
+              2,
+              2
+            ],
+            "content": {
+              "_type": "Boolean Box",
+              "_source0": "network_table:///SmartDashboard/NavX Connected",
+              "_title": "NavX Connected",
+              "Colors/Color when true": "#7CFC00FF",
+              "Colors/Color when false": "#8B0000FF"
+            }
+          },
+          "15,4": {
+            "size": [
+              1,
+              1
+            ],
+            "content": {
+              "_type": "Text View",
+              "_source0": "network_table:///SmartDashboard/Yaw Position",
+              "_title": "Yaw Position"
+            }
+          },
+          "16,4": {
+            "size": [
+              1,
+              1
+            ],
+            "content": {
+              "_type": "Text View",
+              "_source0": "network_table:///SmartDashboard/Pitch Position",
+              "_title": "Pitch Position"
+            }
+          },
+          "17,4": {
+            "size": [
+              2,
+              2
+            ],
+            "content": {
+              "_type": "Boolean Box",
+              "_source0": "network_table:///SmartDashboard/Yaw Forward Limit",
+              "_title": "Yaw Forward Limit",
+              "Colors/Color when true": "#7CFC00FF",
+              "Colors/Color when false": "#8B0000FF"
+            }
+          },
+          "0,5": {
+            "size": [
+              2,
+              2
+            ],
+            "content": {
+              "_type": "Boolean Box",
+              "_source0": "network_table:///SmartDashboard/Yaw Backward Limit",
+              "_title": "Yaw Backward Limit",
+              "Colors/Color when true": "#7CFC00FF",
+              "Colors/Color when false": "#8B0000FF"
+            }
+          },
+          "2,5": {
+            "size": [
+              2,
+              2
+            ],
+            "content": {
+              "_type": "Boolean Box",
+              "_source0": "network_table:///SmartDashboard/Pitch Forward Limit",
+              "_title": "Pitch Forward Limit",
+              "Colors/Color when true": "#7CFC00FF",
+              "Colors/Color when false": "#8B0000FF"
+            }
+          },
+          "4,5": {
+            "size": [
+              2,
+              2
+            ],
+            "content": {
+              "_type": "Boolean Box",
+              "_source0": "network_table:///SmartDashboard/Pitch Backward Limit",
+              "_title": "Pitch Backward Limit",
+              "Colors/Color when true": "#7CFC00FF",
+              "Colors/Color when false": "#8B0000FF"
+            }
+          },
+          "6,5": {
+            "size": [
+              1,
+              1
+            ],
+            "content": {
+              "_type": "Text View",
+              "_source0": "network_table:///SmartDashboard/Yaw Ticks",
+              "_title": "Yaw Ticks"
+            }
+          },
+          "7,5": {
+            "size": [
+              1,
+              1
+            ],
+            "content": {
+              "_type": "Text View",
+              "_source0": "network_table:///SmartDashboard/Pitch Ticks",
+              "_title": "Pitch Ticks"
+            }
+          },
+          "8,5": {
+            "size": [
+              1,
+              1
+            ],
+            "content": {
+              "_type": "Text View",
+              "_source0": "network_table:///SmartDashboard/Yaw Amps",
+              "_title": "Yaw Amps"
+            }
+          },
+          "9,5": {
+            "size": [
+              1,
+              1
+            ],
+            "content": {
+              "_type": "Text View",
+              "_source0": "network_table:///SmartDashboard/Pitch Amps",
+              "_title": "Pitch Amps"
+            }
+          },
+          "10,5": {
+            "size": [
+              1,
+              1
+            ],
+            "content": {
+              "_type": "Text View",
+              "_source0": "network_table:///SmartDashboard/Yaw Out",
+              "_title": "Yaw Out"
+            }
+          },
+          "11,5": {
+            "size": [
+              1,
+              1
+            ],
+            "content": {
+              "_type": "Text View",
+              "_source0": "network_table:///SmartDashboard/Pitch Out",
+              "_title": "Pitch Out"
+            }
+          },
+          "12,5": {
+            "size": [
+              1,
+              1
+            ],
+            "content": {
+              "_type": "Text View",
+              "_source0": "network_table:///SmartDashboard/Eater Amps",
+              "_title": "Eater Amps"
+            }
+          },
+          "15,5": {
+            "size": [
+              1,
+              1
+            ],
+            "content": {
+              "_type": "Text View",
+              "_source0": "network_table:///SmartDashboard/Slapper Amps",
+              "_title": "Slapper Amps"
+            }
+          },
+          "16,5": {
+            "size": [
+              1,
+              1
+            ],
+            "content": {
+              "_type": "Text View",
+              "_source0": "network_table:///SmartDashboard/Beater Amps",
+              "_title": "Beater Amps"
+            }
+          },
+          "6,6": {
+            "size": [
+              1,
+              1
+            ],
+            "content": {
+              "_type": "Text View",
+              "_source0": "network_table:///SmartDashboard/Feeder Amps",
+              "_title": "Feeder Amps"
+            }
+          },
+          "7,6": {
+            "size": [
+              1,
+              1
+            ],
+            "content": {
+              "_type": "Text View",
+              "_source0": "network_table:///SmartDashboard/FW Motor Velocity",
+              "_title": "FW Motor Velocity"
+            }
+          },
+          "8,6": {
+            "size": [
+              1,
+              1
+            ],
+            "content": {
+              "_type": "Text View",
+              "_source0": "network_table:///SmartDashboard/FW Wheel Velocity",
+              "_title": "FW Wheel Velocity"
+            }
+          },
+          "9,6": {
+            "size": [
+              1,
+              1
+            ],
+            "content": {
+              "_type": "Text View",
+              "_source0": "network_table:///SmartDashboard/FW Output",
+              "_title": "FW Output"
+            }
+          },
+          "10,6": {
+            "size": [
+              1,
+              1
+            ],
+            "content": {
+              "_type": "Text View",
+              "_source0": "network_table:///SmartDashboard/FW Amps",
+              "_title": "FW Amps"
+            }
+          },
+          "11,6": {
+            "size": [
+              1,
+              1
+            ],
+            "content": {
+              "_type": "Text View",
+              "_source0": "network_table:///SmartDashboard/RED",
+              "_title": "RED"
+            }
+          },
+          "12,6": {
+            "size": [
+              1,
+              1
+            ],
+            "content": {
+              "_type": "Text View",
+              "_source0": "network_table:///SmartDashboard/BLUE",
+              "_title": "BLUE"
+            }
+          },
+          "13,6": {
+            "size": [
+              1,
+              1
+            ],
+            "content": {
+              "_type": "Text View",
+              "_source0": "network_table:///SmartDashboard/GREEN",
+              "_title": "GREEN"
+            }
+          },
+          "14,6": {
+            "size": [
+              2,
+              2
+            ],
+            "content": {
+              "_type": "Boolean Box",
+              "_source0": "network_table:///SmartDashboard/Found Red",
+              "_title": "Found Red",
+              "Colors/Color when true": "#7CFC00FF",
+              "Colors/Color when false": "#8B0000FF"
+            }
+          },
+          "16,6": {
+            "size": [
+              2,
+              2
+            ],
+            "content": {
+              "_type": "Boolean Box",
+              "_source0": "network_table:///SmartDashboard/Found Green",
+              "_title": "Found Green",
+              "Colors/Color when true": "#7CFC00FF",
+              "Colors/Color when false": "#8B0000FF"
+            }
+          },
+          "18,6": {
+            "size": [
+              1,
+              1
+            ],
+            "content": {
+              "_type": "Text View",
+              "_source0": "network_table:///SmartDashboard/Spinner Amps",
+              "_title": "Spinner Amps"
+            }
+          },
+          "0,7": {
+            "size": [
+              1,
+              1
+            ],
+            "content": {
+              "_type": "Text View",
+              "_source0": "network_table:///SmartDashboard/Scissor Position",
+              "_title": "Scissor Position"
+            }
+          },
+          "1,7": {
+            "size": [
+              1,
+              1
+            ],
+            "content": {
+              "_type": "Text View",
+              "_source0": "network_table:///SmartDashboard/Winch Position",
+              "_title": "Winch Position"
+            }
+          },
+          "2,7": {
+            "size": [
+              1,
+              1
+            ],
+            "content": {
+              "_type": "Text View",
+              "_source0": "network_table:///SmartDashboard/Scissor Amps",
+              "_title": "Scissor Amps"
+            }
+          },
+          "3,7": {
+            "size": [
+              1,
+              1
+            ],
+            "content": {
+              "_type": "Text View",
+              "_source0": "network_table:///SmartDashboard/Winch Amps",
+              "_title": "Winch Amps"
+            }
+          },
+          "4,7": {
+            "size": [
+              1,
+              1
+            ],
+            "content": {
+              "_type": "Text View",
+              "_source0": "network_table:///SmartDashboard/Scissor Out",
+              "_title": "Scissor Out"
+            }
+          },
+          "5,7": {
+            "size": [
+              1,
+              1
+            ],
+            "content": {
+              "_type": "Text View",
+              "_source0": "network_table:///SmartDashboard/Winch Out",
+              "_title": "Winch Out"
+            }
+          },
+          "6,7": {
+            "size": [
+              1,
+              1
+            ],
+            "content": {
+              "_type": "Text View",
+              "_source0": "network_table:///SmartDashboard/Jevois Data",
+              "_title": "Jevois Data"
+            }
+          },
+          "7,7": {
+            "size": [
+              1,
+              1
+            ],
+            "content": {
+              "_type": "Text View",
+              "_source0": "network_table:///SmartDashboard/Power cells spotted",
+              "_title": "Power cells spotted"
+            }
+          },
+          "8,7": {
+            "size": [
+              1,
+              1
+            ],
+            "content": {
+              "_type": "Text View",
+              "_source0": "network_table:///SmartDashboard/Power Cells",
+              "_title": "Power Cells"
+            }
+          },
+          "9,7": {
+            "size": [
+              1,
+              1
+            ],
+            "content": {
+              "_type": "Text View",
+              "_source0": "network_table:///SmartDashboard/Device 1",
+              "_title": "Device 1"
+            }
+          },
+          "10,7": {
+            "size": [
+              1,
+              1
+            ],
+            "content": {
+              "_type": "Text View",
+              "_source0": "network_table:///SmartDashboard/Device 2",
+              "_title": "Device 2"
+            }
+          },
+          "11,7": {
+            "size": [
+              1,
+              1
+            ],
+            "content": {
+              "_type": "Text View",
+              "_source0": "network_table:///SmartDashboard/Device 3",
+              "_title": "Device 3"
+            }
+          },
+          "12,7": {
+            "size": [
+              1,
+              1
+            ],
+            "content": {
+              "_type": "Text View",
+              "_source0": "network_table:///SmartDashboard/Drive Scheme Layout",
+              "_title": "Drive Scheme Layout"
+            }
+          },
+          "13,7": {
+            "size": [
+              1,
+              1
+            ],
+            "content": {
+              "_type": "Text View",
+              "_source0": "network_table:///SmartDashboard/Controller Warning",
+              "_title": "Controller Warning"
+            }
+          },
+          "18,7": {
+            "size": [
+              1,
+              1
+            ],
+            "content": {
+              "_type": "Text View",
+              "_source0": "network_table:///SmartDashboard/Robot Position",
+              "_title": "Robot Position"
+            }
           }
         }
       }
@@ -322,6 +1145,72 @@
               "_type": "Subsystem Layout",
               "_source0": "network_table:///LiveWindow/Ungrouped",
               "_title": "Ungrouped",
+              "Layout/Label position": "BOTTOM",
+              "_children": [
+                {
+                  "_type": "Gyro",
+                  "_source0": "network_table:///LiveWindow/Ungrouped/navX-Sensor",
+                  "_title": "navX-Sensor",
+                  "Visuals/Major tick spacing": 45.0,
+                  "Visuals/Starting angle": 180.0,
+                  "Visuals/Show tick mark ring": true,
+                  "Visuals/Counter clockwise": false
+                },
+                {
+                  "_type": "PID Controller",
+                  "_source0": "network_table:///LiveWindow/Ungrouped/PIDController[1]",
+                  "_title": "PIDController[1]"
+                },
+                {
+                  "_type": "PID Controller",
+                  "_source0": "network_table:///LiveWindow/Ungrouped/PIDController[2]",
+                  "_title": "PIDController[2]"
+                },
+                {
+                  "_type": "PID Controller",
+                  "_source0": "network_table:///LiveWindow/Ungrouped/PIDController[4]",
+                  "_title": "PIDController[4]"
+                },
+                {
+                  "_type": "PID Controller",
+                  "_source0": "network_table:///LiveWindow/Ungrouped/PIDController[3]",
+                  "_title": "PIDController[3]"
+                },
+                {
+                  "_type": "PID Controller",
+                  "_source0": "network_table:///LiveWindow/Ungrouped/PIDController[5]",
+                  "_title": "PIDController[5]"
+                },
+                {
+                  "_type": "PID Controller",
+                  "_source0": "network_table:///LiveWindow/Ungrouped/PIDController[6]",
+                  "_title": "PIDController[6]"
+                }
+              ]
+            }
+          },
+          "8,0": {
+            "size": [
+              4,
+              7
+            ],
+            "content": {
+              "_type": "Subsystem Layout",
+              "_source0": "network_table:///LiveWindow/SubsystemIntake",
+              "_title": "SubsystemIntake",
+              "Layout/Label position": "BOTTOM",
+              "_children": []
+            }
+          },
+          "12,0": {
+            "size": [
+              4,
+              7
+            ],
+            "content": {
+              "_type": "Subsystem Layout",
+              "_source0": "network_table:///LiveWindow/SubsystemFeeder",
+              "_title": "SubsystemFeeder",
               "Layout/Label position": "BOTTOM",
               "_children": []
             }
@@ -462,7 +1351,7 @@
               "_title": "/SmartDashboard/Current Robot Position"
             }
           },
-          "7,2": {
+          "0,5": {
             "size": [
               2,
               1
@@ -473,7 +1362,7 @@
               "_title": "/SmartDashboard/Record"
             }
           },
-          "7,3": {
+          "0,6": {
             "size": [
               2,
               1
@@ -483,15 +1372,38 @@
               "_source0": "network_table:///SmartDashboard/Set Robot To Start",
               "_title": "/SmartDashboard/Set Robot To Start"
             }
+          },
+          "0,4": {
+            "size": [
+              2,
+              1
+            ],
+            "content": {
+              "_type": "Command",
+              "_source0": "network_table:///SmartDashboard/Emulate",
+              "_title": "/SmartDashboard/Emulate"
+            }
+          },
+          "3,1": {
+            "size": [
+              6,
+              6
+            ],
+            "content": {
+              "_type": "Robot Preferences",
+              "_source0": "network_table:///Preferences",
+              "_title": "/Preferences",
+              "Miscellaneous/Show search box": true
+            }
           }
         }
       }
     }
   ],
   "windowGeometry": {
-    "x": -6.0,
-    "y": -6.0,
-    "width": 1292.0,
-    "height": 698.6666870117188
+    "x": 1529.3333740234375,
+    "y": 0.0,
+    "width": 653.3333129882812,
+    "height": 686.6666870117188
   }
 }
