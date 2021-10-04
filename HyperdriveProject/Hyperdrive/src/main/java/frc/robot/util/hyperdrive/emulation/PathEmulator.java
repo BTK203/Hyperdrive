@@ -9,6 +9,7 @@ import frc.robot.util.hyperdrive.util.Path;
 import frc.robot.util.hyperdrive.util.Point2D;
 import frc.robot.util.hyperdrive.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.util.hyperdrive.Hyperdrive;
 import frc.robot.util.hyperdrive.HyperdriveConstants;
 import frc.robot.util.hyperdrive.recording.PathRecorder;
@@ -260,6 +261,11 @@ public class PathEmulator {
         double immediateDistance = getDistanceOfPath(immediatePath); //unit: in
         double immediateTurn = getTurnOfPath(immediatePath); //unit: degrees
         double headingChange = HyperdriveUtil.getAngleToHeading(immediatePath[1].getHeading(), immediatePath[immediatePath.length - 1].getHeading());
+
+        SmartDashboard.putNumber("immediate turn", immediateTurn);
+        SmartDashboard.putNumber("immediate dist", immediateDistance);
+        SmartDashboard.putNumber("heading change", headingChange);
+        SmartDashboard.putNumber("point", currentPointIndex);
 
         //figure out if the robot is about switch directions (forward to backward or vice versa). If so, the robot will want to make a large turn. So we zero it.
         double turnToHeadingDifference = Math.abs(HyperdriveUtil.getAngleToHeading(headingChange, immediateTurn));

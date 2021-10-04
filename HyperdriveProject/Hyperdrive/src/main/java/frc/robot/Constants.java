@@ -19,7 +19,7 @@ public final class Constants {
         RIGHT_MASTER_ID = 3,
         RIGHT_SLAVE_ID = 4;
 
-    public static final int WHEEL_BASE_WIDTH = 30; //inches
+    public static final double WHEEL_BASE_WIDTH = 0.5; //meters
 
     public static final double KEY_THROTTLE_PER_SECOND = 5;
 }

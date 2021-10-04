@@ -172,6 +172,30 @@ public class SubsystemDrive extends SubsystemBase {
   }
 
   /**
+   * Returns the left velocity of the robot in motor units.
+   * @return Left velocity of robot in motor units
+   */
+  public double getLeftVelocityMotorUnits() {
+    double leftVelocity = getLeftVelocity(); //currently in meters per second
+    leftVelocity *= 60; //meters per minute
+    leftVelocity = hyperdrive.toMotorUnits(leftVelocity);
+
+    return leftVelocity;
+  }
+
+  /**
+   * Returns the right velocity of the robot in motor units.
+   * @return Right velocity of the robot in motor units
+   */
+  public double getRightVelocityMotorUnits() {
+    double rightVelocity = getRightVelocity();
+    rightVelocity *= 60;
+    rightVelocity = hyperdrive.toMotorUnits(rightVelocity);
+
+    return rightVelocity;
+  }
+
+  /**
    * Zeros the Hyperdrive position. Note that because the robot 
    */
   public void zeroPositionAndHeading() {
