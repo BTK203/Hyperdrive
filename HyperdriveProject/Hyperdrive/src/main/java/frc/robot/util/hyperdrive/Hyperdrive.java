@@ -301,24 +301,6 @@ public class Hyperdrive {
     }
 
     /**
-     * Loads a {@link Path} for Hyperdrive to emulate. Sets emulation parameters to
-     * the defaults.
-     * @param path The path for the robot to drive.
-     */
-    public void loadPath(Path path) {
-        emulator.load(path);
-    }
-
-    /**
-     * Loads a {@link Path} for Hyperdrive to emulate. Sets emualtion parameters to 
-     * the defaults.
-     * @param filePath The location of the path which the robot will drive.
-     */
-    public void loadPath(String filePath) {
-        emulator.load(new Path(filePath));
-    }
-
-    /**
      * Forces Hyperdrive to record the results of the driven path to the file location
      * provided.
      * @param filePath The location of the new results file.

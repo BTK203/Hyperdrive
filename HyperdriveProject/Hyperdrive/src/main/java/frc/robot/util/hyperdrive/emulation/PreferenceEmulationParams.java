@@ -6,6 +6,7 @@ package frc.robot.util.hyperdrive.emulation;
 
 import frc.robot.util.hyperdrive.HyperdriveConstants;
 import frc.robot.util.hyperdrive.util.HyperdriveUtil;
+import frc.robot.util.hyperdrive.util.PIDFAConfig;
 import frc.robot.util.hyperdrive.util.Units;
 
 /** 
@@ -65,4 +66,14 @@ public class PreferenceEmulationParams implements IEmulateParams {
         return (int) HyperdriveUtil.getAndSetDouble("Emulate Path Size", HyperdriveConstants.DEFAULT_IMMEDIATE_PATH_SIZE);
     }
     
+    @Override
+    public PIDFAConfig getPIDFAConfig() {
+        return new PIDFAConfig(
+            HyperdriveUtil.getAndSetDouble("Hyperdrive kP", 0),
+            HyperdriveUtil.getAndSetDouble("Hyperdrive kI", 0), 
+            HyperdriveUtil.getAndSetDouble("Hyperdrive kD", 0), 
+            HyperdriveUtil.getAndSetDouble("Hyperdrive kF", 0), 
+            HyperdriveUtil.getAndSetDouble("Hyperdrive Full Acceleration", 5)
+        );
+    }
 }

@@ -39,9 +39,9 @@ public class CyborgCommandEmulatePath extends CommandBase {
    * @param hyperdrive The robot's {@link Hyperdrive}.
    * @param parameters The parameters for Hyperdrive to use while driving the robot through the path.
    */
-  public CyborgCommandEmulatePath(SubsystemDrive drivetrain, Hyperdrive hyperdriveIEmulateParams, IEmulateParams parameters) {
+  public CyborgCommandEmulatePath(SubsystemDrive drivetrain, Hyperdrive hyperdrive, IEmulateParams parameters) {
     this.drivetrain = drivetrain;
-    this.hyperdrive = drivetrain.getHyperdrive();
+    this.hyperdrive = hyperdrive;
     this.parameters = parameters;
 
     addRequirements(this.drivetrain);

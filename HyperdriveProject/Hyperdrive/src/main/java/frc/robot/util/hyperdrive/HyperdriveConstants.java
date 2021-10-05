@@ -4,6 +4,8 @@
 
 package frc.robot.util.hyperdrive;
 
+import frc.robot.util.hyperdrive.util.PIDFAConfig;
+
 /**
  * This class stores constants (public static final) that are used by Hyperdrive.
  */

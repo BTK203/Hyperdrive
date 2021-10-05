@@ -89,15 +89,6 @@ public class PathEmulator {
     }
 
     /**
-     * Loads the PathEmulator with the given {@link Path} and the default parameters. Other than that, 
-     * this method displays the same qualities of {@link #load(Path, IEmulateParams)}.
-     * @param path The path to load.
-     */
-    public void load(Path path) {
-        load(path, ConstantEmulationParams.getDefaults(lengthUnit));
-    }
-
-    /**
      * Changes the location of the file where results are stored.
      * @param filePath The new file to record path results to.
      */
@@ -214,7 +205,7 @@ public class PathEmulator {
         //if path is too short, then end the path.
         if(points.length <= 1) {
             pathFinished = true;
-            return new Trajectory(0, 0, 0, 0, 0, motorUnitsPerUnit); //no movement trajectory
+            return new Trajectory(0, 0, 0, parameters, motorUnitsPerUnit); //no movement trajectory
         }
         
         //resolve the point that the robot is currently at and where we want to aim
@@ -254,7 +245,7 @@ public class PathEmulator {
         }
 
         if(immediatePath.length < 2) {
-            return new Trajectory(0, 0, 0, parameters.getMaximumSpeed(), parameters.getMinimumSpeed(), motorUnitsPerUnit);
+            return new Trajectory(0, 0, 0, parameters, motorUnitsPerUnit);
         }
 
         //draw an "arc" that closely fits the path. The arc will be used to calculate the robot velocity and turn magnitude.
@@ -291,7 +282,7 @@ public class PathEmulator {
         }
 
         pathFinished = currentPointIndex >= path.getPoints().length - parameters.getPointSkipCount() - 2; //path will be finished when the immediate path can only be two points long.
-        return new Trajectory(velocity, immediateDistance, immediateTurn, parameters.getMaximumSpeed(), parameters.getMinimumSpeed(), motorUnitsPerUnit);
+        return new Trajectory(velocity, immediateDistance, immediateTurn, parameters, motorUnitsPerUnit);
     }
 
     /**
