@@ -1,30 +1,13 @@
-THINGS TO DO (sequentially):
+THINGS TO DO:
 
-Stuff to implement:
-- Manual drive distance setting (for test purposes) ...done 
-- Manual position setting (for test purposes) ...done
-- Write chord-based displacement for position tracking ...done
+- Decide how to track the SimulatedRobot's acceleration. Options are:
+    - Keep record of motors (CIM, NEO, Falcon) and calculate acceleration based on the power curves of those motors.
+    This would be more accurate, but the physics would be difficult. Power curves have clearly defined equations for 
+    wattage as a function of RPM, so we could use an energy equation to figure out the force if we could confirm how 
+    percent output affects the wattage (currently thinking the wattage is recorded at 100% output, but we should check)
 
-Unit tests
-- Test position calculation for tank drive (it will work swerve is this passes) ...done
-- Test Path Recording ...done
-- Test trajectory / right and left velocity calculation for tank drive. ...done
-- Test tank gyro ...done
+    - Keep record of maximum velocity and acceleration and assume that the percent output affects those linearly. This
+    is definitely the easier option, but would not be as accurate.
 
-Todos
-- Resolve any TODOs in code ...done
-
-Version Control
-- Clean the project ...done
-- Make GitHub repo ...done
-
-Integration testing
-- Test position tracking with both "always linear" mode and "chord" mode.
-- Test functionality on (hopefully 2019) robot.
-- When/If time allows, test on 2021 robot. On this test, try to implement the code as fast as possible.
-
-Documentation
-- Create the Manual
-
-Version Control again
-- If tests produced satisfactory results, release the code.
+- Once the SimulatedRobot is solid, do the physics to figure out how to calculate displacement given the percent outputs
+of the motors. Then, implement it.

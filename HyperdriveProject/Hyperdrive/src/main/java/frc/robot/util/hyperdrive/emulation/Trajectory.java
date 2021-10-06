@@ -19,10 +19,9 @@ public class Trajectory {
     protected double
         velocity,
         distance,
-        turn,
-        maxSpeed,
-        minSpeed;
+        turn;
 
+    protected final IEmulateParams parameters;
     protected final double motorUnitsPerUnit;
 
     /**
@@ -36,13 +35,26 @@ public class Trajectory {
      * @param motorUnitsPerUnit A scalar to convert from motor units to actual units. See the 
      * {@link Hyperdrive} constructor for more.
      */
-    public Trajectory(double velocity, double distance, double turn, double maxSpeed, double minSpeed, final double motorUnitsPerUnit) {
-        this.velocity = velocity;
-        this.distance = distance;
-        this.turn     = turn;
-        this.maxSpeed = maxSpeed;
-        this.minSpeed = minSpeed;
+    public Trajectory(double velocity, double distance, double turn, final IEmulateParams parameters, final double motorUnitsPerUnit) {
+        this.velocity   = velocity;
+        this.distance   = distance;
+        this.turn       = turn;
+        this.parameters = parameters;
         this.motorUnitsPerUnit = motorUnitsPerUnit;
+    }
+
+    /**
+     * Creates a new Trajectory, copying the specified Trajectory
+     * @param trajectory The trajectory to copy.
+     */
+    public Trajectory(Trajectory trajectory) {
+        this(
+            trajectory.getVelocity(), 
+            trajectory.getDistance(), 
+            trajectory.getTurn(), 
+            trajectory.getParameters(),
+            trajectory.getMotorUnitsPerUnit()
+        );
     }
 
     /**
@@ -69,20 +81,8 @@ public class Trajectory {
         return turn;
     }
 
-    /**
-     * Returns the maximum speed of the robot as it drives through its path.
-     * @return Maximum speed, in length units per second.
-     */
-    public double getMaxSpeed() {
-        return maxSpeed;
-    }
-
-    /**
-     * Returns the minimum speed of the robot as it drives through its path.
-     * @return Minimum speed, in length units per second.
-     */
-    public double getMinSpeed() {
-        return minSpeed;
+    public IEmulateParams getParameters() {
+        return parameters;
     }
 
     /**

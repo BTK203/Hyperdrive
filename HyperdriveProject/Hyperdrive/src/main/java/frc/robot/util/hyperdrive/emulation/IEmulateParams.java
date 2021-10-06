@@ -4,6 +4,8 @@
 
 package frc.robot.util.hyperdrive.emulation;
 
+import frc.robot.util.hyperdrive.util.PIDFAConfig;
+
 /**
  * Parameters for the robot to use while driving through a Path. These parameters include
  * overturn, maximum and minimum speeds, the positional correction inhibitor, the positional
@@ -79,4 +81,14 @@ public interface IEmulateParams {
      * @return Number of points ahead of the robot to use to determine future turns.
      */
     public int getImmediatePathSize();
+
+    /**
+     * Gets the robots PIDFA configuration, which contains the user-configurable kP, kI, kD, kF and acceleration values
+     * necessary to figure out what percent output to drive the motors at. If this method is being called from a
+     * {@link PreferenceEmulationParams}, all of these values will be pulled from the Preferences table on the dashboard.
+     * If this method is being called from a {@link ConstantEmulationParams}, these values will be whatever they were 
+     * initialized as.
+     * @return PIDFA config.
+     */
+    public PIDFAConfig getPIDFAConfig();
 }

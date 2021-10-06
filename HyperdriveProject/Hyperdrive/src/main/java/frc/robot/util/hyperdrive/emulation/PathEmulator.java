@@ -9,6 +9,7 @@ import frc.robot.util.hyperdrive.util.Path;
 import frc.robot.util.hyperdrive.util.Point2D;
 import frc.robot.util.hyperdrive.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.util.hyperdrive.Hyperdrive;
 import frc.robot.util.hyperdrive.HyperdriveConstants;
 import frc.robot.util.hyperdrive.recording.PathRecorder;
@@ -85,15 +86,6 @@ public class PathEmulator {
     public void load(Path path, IEmulateParams parameters) {
         this.path = path;
         this.parameters = parameters;
-    }
-
-    /**
-     * Loads the PathEmulator with the given {@link Path} and the default parameters. Other than that, 
-     * this method displays the same qualities of {@link #load(Path, IEmulateParams)}.
-     * @param path The path to load.
-     */
-    public void load(Path path) {
-        load(path, ConstantEmulationParams.getDefaults(lengthUnit));
     }
 
     /**
@@ -213,7 +205,7 @@ public class PathEmulator {
         //if path is too short, then end the path.
         if(points.length <= 1) {
             pathFinished = true;
-            return new Trajectory(0, 0, 0, 0, 0, motorUnitsPerUnit); //no movement trajectory
+            return new Trajectory(0, 0, 0, parameters, motorUnitsPerUnit); //no movement trajectory
         }
         
         //resolve the point that the robot is currently at and where we want to aim
@@ -253,13 +245,18 @@ public class PathEmulator {
         }
 
         if(immediatePath.length < 2) {
-            return new Trajectory(0, 0, 0, parameters.getMaximumSpeed(), parameters.getMinimumSpeed(), motorUnitsPerUnit);
+            return new Trajectory(0, 0, 0, parameters, motorUnitsPerUnit);
         }
 
         //draw an "arc" that closely fits the path. The arc will be used to calculate the robot velocity and turn magnitude.
         double immediateDistance = getDistanceOfPath(immediatePath); //unit: in
         double immediateTurn = getTurnOfPath(immediatePath); //unit: degrees
         double headingChange = HyperdriveUtil.getAngleToHeading(immediatePath[1].getHeading(), immediatePath[immediatePath.length - 1].getHeading());
+
+        SmartDashboard.putNumber("immediate turn", immediateTurn);
+        SmartDashboard.putNumber("immediate dist", immediateDistance);
+        SmartDashboard.putNumber("heading change", headingChange);
+        SmartDashboard.putNumber("point", currentPointIndex);
 
         //figure out if the robot is about switch directions (forward to backward or vice versa). If so, the robot will want to make a large turn. So we zero it.
         double turnToHeadingDifference = Math.abs(HyperdriveUtil.getAngleToHeading(headingChange, immediateTurn));
@@ -285,7 +282,7 @@ public class PathEmulator {
         }
 
         pathFinished = currentPointIndex >= path.getPoints().length - parameters.getPointSkipCount() - 2; //path will be finished when the immediate path can only be two points long.
-        return new Trajectory(velocity, immediateDistance, immediateTurn, parameters.getMaximumSpeed(), parameters.getMinimumSpeed(), motorUnitsPerUnit);
+        return new Trajectory(velocity, immediateDistance, immediateTurn, parameters, motorUnitsPerUnit);
     }
 
     /**

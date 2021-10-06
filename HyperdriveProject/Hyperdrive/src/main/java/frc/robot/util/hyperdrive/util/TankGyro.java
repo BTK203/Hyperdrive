@@ -129,7 +129,7 @@ public class TankGyro {
      * @param rightPosition The position of the drivetrain's right wheels in motor units.
      */
     public void update(double leftPosition, double rightPosition) {
-        // this method uses velocities to calculate heading instead of simply uses the positions directly to
+        // this method uses velocities to calculate heading instead of simply using the positions directly to
         // reduce drift that is caused by acceleration.
 
         long currentTime = System.currentTimeMillis();
@@ -157,7 +157,9 @@ public class TankGyro {
         }
 
         double changeInHeadingDegrees = Math.toDegrees(changeInHeading);
-        heading += changeInHeadingDegrees;
+        if(!Double.isNaN(changeInHeadingDegrees)) { //sometimes happens when the robot initializes really fast (deltaTime is 0)
+            heading += changeInHeadingDegrees;
+        }
 
         lastLeftPosition      = leftPosition;
         lastRightPosition     = rightPosition;

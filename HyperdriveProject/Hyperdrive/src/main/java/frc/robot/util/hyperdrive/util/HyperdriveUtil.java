@@ -14,6 +14,10 @@ import edu.wpi.first.wpilibj.Preferences;
  * this class is the worst in this library.
  */
 public class HyperdriveUtil {
+	//This constructor exists so that no one can create an instance of this class.
+	private HyperdriveUtil() {
+	}
+
 	/**
 	 *	Kind of self explanatory, but with some spice
 	 *	Use this mainly as a get method to retrieve values the user types into the smart dash
