@@ -22,6 +22,7 @@ public class Trajectory {
         turn;
 
     protected final IEmulateParams parameters;
+    protected final IController controller;
     protected final double motorUnitsPerUnit;
 
     /**
@@ -35,11 +36,19 @@ public class Trajectory {
      * @param motorUnitsPerUnit A scalar to convert from motor units to actual units. See the 
      * {@link Hyperdrive} constructor for more.
      */
-    public Trajectory(double velocity, double distance, double turn, final IEmulateParams parameters, final double motorUnitsPerUnit) {
+    public Trajectory(
+        double velocity, 
+        double distance,
+        double turn, 
+        final IEmulateParams parameters, 
+        final IController controller, 
+        final double motorUnitsPerUnit
+    ) {
         this.velocity   = velocity;
         this.distance   = distance;
         this.turn       = turn;
         this.parameters = parameters;
+        this.controller = controller;
         this.motorUnitsPerUnit = motorUnitsPerUnit;
     }
 
@@ -53,6 +62,7 @@ public class Trajectory {
             trajectory.getDistance(), 
             trajectory.getTurn(), 
             trajectory.getParameters(),
+            trajectory.getController(),
             trajectory.getMotorUnitsPerUnit()
         );
     }
@@ -81,8 +91,20 @@ public class Trajectory {
         return turn;
     }
 
+    /**
+     * Returns the parameters that this Trajectory uses.
+     * @return Parameters used to drive the robot.
+     */
     public IEmulateParams getParameters() {
         return parameters;
+    }
+
+    /**
+     * Returns the controller that this Trajectory uses.
+     * @return Controller used to drive the robot.
+     */
+    public IController getController() {
+        return controller;
     }
 
     /**

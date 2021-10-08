@@ -8,10 +8,14 @@ import frc.robot.util.hyperdrive.util.HyperdriveUtil;
 import frc.robot.util.hyperdrive.util.Path;
 import frc.robot.util.hyperdrive.util.Point2D;
 import frc.robot.util.hyperdrive.util.Units;
+
+import javax.swing.Icon;
+
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.util.hyperdrive.Hyperdrive;
 import frc.robot.util.hyperdrive.HyperdriveConstants;
+import frc.robot.util.hyperdrive.enumeration.DriveStyle;
 import frc.robot.util.hyperdrive.recording.PathRecorder;
 
 /** 
@@ -24,6 +28,7 @@ import frc.robot.util.hyperdrive.recording.PathRecorder;
 public class PathEmulator {
     private Path path;
     private IEmulateParams parameters;
+    private IController controller;
     private PathRecorder recorder;
     private boolean 
         isForwards,
@@ -34,6 +39,7 @@ public class PathEmulator {
         motorUnitsPerUnit,
         robotWeightNewtons;
 
+    private final DriveStyle driveStyle;
     private final Units.LENGTH lengthUnit;
 
     /**
@@ -48,7 +54,16 @@ public class PathEmulator {
      * @param path The Path to pre-load
      * @param parameters The IEmulateParams to pre-load
      */
-    public PathEmulator(final double motorUnitsPerUnit, final Units.LENGTH lengthUnit, final double robotWeight, final Units.FORCE weightUnit, Path path, IEmulateParams parameters) {
+    public PathEmulator(
+        final DriveStyle driveStyle,
+        final double motorUnitsPerUnit, 
+        final Units.LENGTH lengthUnit, 
+        final double robotWeight, 
+        final Units.FORCE weightUnit, 
+        Path path, 
+        IEmulateParams parameters
+    ) {
+        this.driveStyle = driveStyle;
         this.path = path;
         this.parameters = parameters;
         this.motorUnitsPerUnit = motorUnitsPerUnit;
@@ -58,6 +73,10 @@ public class PathEmulator {
         this.isForwards = true;
         this.pathFinished = true; //call load() to correct this
         this.currentPointIndex = 0;
+
+        //create placeholder controller. Actual controller will be created by the performInitialCalculations() method
+        //before emulation starts
+        createController();
     }
 
     /**
@@ -71,8 +90,22 @@ public class PathEmulator {
      * @param weightUnit The unit of weight that the robot was measured in.
      * motor units to this unit.
      */
-    public PathEmulator(final double motorUnitsPerUnit, final Units.LENGTH lengthUnit, final double robotWeight, Units.FORCE weightUnit) {
-        this(motorUnitsPerUnit, lengthUnit, robotWeight, weightUnit, null, null);
+    public PathEmulator(
+        final DriveStyle driveStyle,
+        final double motorUnitsPerUnit, 
+        final Units.LENGTH lengthUnit, 
+        final double robotWeight, 
+        Units.FORCE weightUnit
+    ) {
+        this(
+            driveStyle, 
+            motorUnitsPerUnit, 
+            lengthUnit, 
+            robotWeight, 
+            weightUnit, 
+            new Path(new Point2D[] { new Point2D(0, 0, 0) }),
+            new PreferenceEmulationParams(lengthUnit)
+        );
     }
 
     /**
@@ -138,6 +171,10 @@ public class PathEmulator {
 
             pathFinished = true;
         }
+
+        //now that path and parameters are loaded, and the robot is ready to emulate a path, create the controller that it 
+        //will be driven with.
+        createController();
     }
 
     /**
@@ -205,7 +242,7 @@ public class PathEmulator {
         //if path is too short, then end the path.
         if(points.length <= 1) {
             pathFinished = true;
-            return new Trajectory(0, 0, 0, parameters, motorUnitsPerUnit); //no movement trajectory
+            return new Trajectory(0, 0, 0, parameters, controller, motorUnitsPerUnit); //no movement trajectory
         }
         
         //resolve the point that the robot is currently at and where we want to aim
@@ -245,7 +282,7 @@ public class PathEmulator {
         }
 
         if(immediatePath.length < 2) {
-            return new Trajectory(0, 0, 0, parameters, motorUnitsPerUnit);
+            return new Trajectory(0, 0, 0, parameters, controller, motorUnitsPerUnit);
         }
 
         //draw an "arc" that closely fits the path. The arc will be used to calculate the robot velocity and turn magnitude.
@@ -282,7 +319,7 @@ public class PathEmulator {
         }
 
         pathFinished = currentPointIndex >= path.getPoints().length - parameters.getPointSkipCount() - 2; //path will be finished when the immediate path can only be two points long.
-        return new Trajectory(velocity, immediateDistance, immediateTurn, parameters, motorUnitsPerUnit);
+        return new Trajectory(velocity, immediateDistance, immediateTurn, parameters, controller, motorUnitsPerUnit);
     }
 
     /**
@@ -371,5 +408,23 @@ public class PathEmulator {
         bestSpeed = (bestSpeed > maxSpeed ? maxSpeed : (bestSpeed < minSpeed ? minSpeed : bestSpeed));
 
         return bestSpeed;
+    }
+
+    /**
+     * Creates and sets a new {@link IController}, using the current values of parameters and driveStyle.
+     */
+    private void createController() {
+        switch(driveStyle) {
+            case TANK: {
+                controller = new TankController(parameters);
+            }
+            break;
+
+            default: {
+                String msg = "DriveStyle " + driveStyle + " not supported!";
+                DriverStation.reportError(msg, true);
+                throw new RuntimeException(msg);
+            }
+        }
     }
 }

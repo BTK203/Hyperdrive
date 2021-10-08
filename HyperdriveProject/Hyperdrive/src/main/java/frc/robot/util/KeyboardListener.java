@@ -8,6 +8,7 @@ import java.awt.KeyEventDispatcher;
 import java.awt.KeyboardFocusManager;
 import java.awt.event.KeyEvent;
 import java.awt.Dimension;
+import java.awt.HeadlessException;
 
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -39,7 +40,13 @@ public class KeyboardListener {
     }
 
     public static void start() {
-        JFrame inputArea = new JFrame();
+        JFrame inputArea;
+        try {
+            inputArea = new JFrame();
+        } catch(HeadlessException ex) {
+            DriverStation.reportError("KeyboardListener could not start becuase the system does not support it.", true);
+            return;
+        }
         inputArea.setPreferredSize(new Dimension(100, 100));
         inputArea.add(new JLabel("Focus this window to enter keyboard input"));
         inputArea.setVisible(true);

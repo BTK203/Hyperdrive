@@ -4,6 +4,7 @@
 
 package frc.robot.util.hyperdrive.emulation;
 
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.controller.PIDController;
 import frc.robot.util.hyperdrive.util.HyperdriveUtil;
 import frc.robot.util.hyperdrive.util.Units;
@@ -182,22 +183,7 @@ public class TankTrajectory extends Trajectory {
      * @return Target left percent output of the left motors.
      */
     public double getLeftPercentOutput(double currentLeftVelocity) {
-        //define shorter names for the p, i, and d values
-        double
-            kP = parameters.getPIDFAConfig().getkP(),
-            kI = parameters.getPIDFAConfig().getkI(),
-            kD = parameters.getPIDFAConfig().getkD();
-        
-        //create and configure controller
-        PIDController controller = new PIDController(kP, kI, kD);
-        controller.setSetpoint(getLeftVelocity());
-        
-        //calculate output
-        double output = controller.calculate(currentLeftVelocity);
-        output += parameters.getPIDFAConfig().getkF(); //add feed-forward
-
-        controller.close();
-        return output;
+        return controller.calculateOutput(TankController.LEFT_CONTROLLER, getLeftVelocity(), currentLeftVelocity);
     }
 
     /**
@@ -206,21 +192,6 @@ public class TankTrajectory extends Trajectory {
      * @return Target right percent output of the right motors.
      */
     public double getRightPercentOutput(double currentRightVelocity) {
-        //define shorter names for the p, i, and d values
-        double
-            kP = parameters.getPIDFAConfig().getkP(),
-            kI = parameters.getPIDFAConfig().getkI(),
-            kD = parameters.getPIDFAConfig().getkD();
-
-        //define and configure controller
-        PIDController controller = new PIDController(kP, kI, kD);
-        controller.setSetpoint(currentRightVelocity);
-
-        //calculate output
-        double output = controller.calculate(currentRightVelocity);
-        output += parameters.getPIDFAConfig().getkF(); //feed forward
-
-        controller.close();
-        return output;
+        return controller.calculateOutput(TankController.RIGHT_CONTROLLER, getRightVelocity(), currentRightVelocity);
     }
 }

@@ -9,6 +9,7 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 import frc.robot.util.KeyboardListener;
 import frc.robot.util.hyperdrive.Hyperdrive;
+import frc.robot.util.hyperdrive.enumeration.DriveStyle;
 import frc.robot.util.hyperdrive.simulator.SimulatedMotor;
 import frc.robot.util.hyperdrive.simulator.SimulatedRobot;
 import frc.robot.util.hyperdrive.util.HyperdriveUtil;
@@ -52,7 +53,7 @@ public class SubsystemDrive extends SubsystemBase {
     double mupuMeters = 0.472 / mupuConversionFactor;
 
     //define hyperdrive
-    hyperdrive = new Hyperdrive(Units.LENGTH.METERS, mupuMeters, Units.FORCE.POUND, 110);
+    hyperdrive = new Hyperdrive(DriveStyle.TANK, Units.LENGTH.METERS, mupuMeters, Units.FORCE.POUND, 110);
 
     //define simulated robot
     simulatedRobot = new SimulatedRobot(

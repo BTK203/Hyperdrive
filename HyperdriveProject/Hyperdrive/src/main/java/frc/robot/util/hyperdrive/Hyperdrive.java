@@ -8,6 +8,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.util.hyperdrive.emulation.IEmulateParams;
 import frc.robot.util.hyperdrive.emulation.PathEmulator;
 import frc.robot.util.hyperdrive.emulation.Trajectory;
+import frc.robot.util.hyperdrive.enumeration.DriveStyle;
 import frc.robot.util.hyperdrive.pathvisualizer.PVHost;
 import frc.robot.util.hyperdrive.recording.PathRecorder;
 import frc.robot.util.hyperdrive.util.Path;
@@ -30,6 +31,7 @@ public class Hyperdrive {
     private PathEmulator    emulator;
     private boolean         currentlyRecording;
 
+    private final DriveStyle driveStyle;
     private final Units.LENGTH lengthUnits;
     private final double       motorUnitsPerUnit;
 
@@ -48,12 +50,20 @@ public class Hyperdrive {
      * @param robotWeight The weight of the robot.
      * @param pvPort The port to use for communicating with PathVisualizer. Defaults to 3695.
      */
-    public Hyperdrive(final Units.LENGTH lengthUnit, final double motorUnitsPerUnit, final Units.FORCE weightUnit, final double robotWeight, int pvPort) {
+    public Hyperdrive(
+        final DriveStyle driveStyle,
+        final Units.LENGTH lengthUnit, 
+        final double motorUnitsPerUnit, 
+        final Units.FORCE weightUnit, 
+        final double robotWeight, 
+        int pvPort
+    ) {
+        this.driveStyle = driveStyle;
         this.lengthUnits = lengthUnit;
         this.pvHost = new PVHost(pvPort);
         this.tracker = new PositionTracker(motorUnitsPerUnit);
         this.recorder = new PathRecorder(HyperdriveConstants.PATH_RECORDER_DEFAULT_RECORD_PATH, lengthUnit);
-        this.emulator = new PathEmulator(motorUnitsPerUnit, lengthUnit, robotWeight, weightUnit);
+        this.emulator = new PathEmulator(driveStyle, motorUnitsPerUnit, lengthUnit, robotWeight, weightUnit);
         this.motorUnitsPerUnit = motorUnitsPerUnit;
     }
 
@@ -67,8 +77,14 @@ public class Hyperdrive {
      * @param weightUnit The unit of weight that the robot is measured in.
      * @param robotWeight The weight of the robot.
      */
-    public Hyperdrive(final Units.LENGTH distanceUnits, final double motorUnitsPerUnit, final Units.FORCE weightUnit, final double robotWeight) {
-        this(distanceUnits, motorUnitsPerUnit, weightUnit, robotWeight, 3695);
+    public Hyperdrive(
+        final DriveStyle driveStyle,
+        final Units.LENGTH distanceUnits, 
+        final double motorUnitsPerUnit, 
+        final Units.FORCE weightUnit, 
+        final double robotWeight
+    ) {
+        this(driveStyle, distanceUnits, motorUnitsPerUnit, weightUnit, robotWeight, 3695);
     }
 
     /**
@@ -79,8 +95,8 @@ public class Hyperdrive {
      * {@link #Hyperdrive(frc.robot.util.hyperdrive.util.Units.LENGTH, double, double, frc.robot.util.hyperdrive.util.Units.FORCE, int)}
      * for full explanation.
      */
-    public Hyperdrive(final Units.LENGTH lengthUnit, final double motorUnitsPerUnit) {
-        this(lengthUnit, motorUnitsPerUnit, Units.FORCE.POUND, 125);
+    public Hyperdrive(final DriveStyle driveStyle, final Units.LENGTH lengthUnit, final double motorUnitsPerUnit) {
+        this(driveStyle, lengthUnit, motorUnitsPerUnit, Units.FORCE.POUND, 125);
     }
 
     /**

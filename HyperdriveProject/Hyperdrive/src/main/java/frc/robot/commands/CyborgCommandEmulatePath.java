@@ -14,6 +14,7 @@ import frc.robot.util.hyperdrive.HyperdriveConstants;
 import frc.robot.util.hyperdrive.emulation.ConstantEmulationParams;
 import frc.robot.util.hyperdrive.emulation.IEmulateParams;
 import frc.robot.util.hyperdrive.emulation.PreferenceEmulationParams;
+import frc.robot.util.hyperdrive.emulation.TankController;
 import frc.robot.util.hyperdrive.emulation.TankTrajectory;
 import frc.robot.util.hyperdrive.util.HyperdriveUtil;
 import frc.robot.util.hyperdrive.util.Path;
@@ -29,9 +30,6 @@ public class CyborgCommandEmulatePath extends CommandBase {
   private SubsystemDrive drivetrain;
   private Hyperdrive hyperdrive;
   private IEmulateParams parameters;
-  private PIDController 
-    leftController,
-    rightController;
 
   /**
    * Creates a new CyborgCommandEmulatePath. This constructor overrides all defaults to the user-specified arguments.
@@ -61,15 +59,6 @@ public class CyborgCommandEmulatePath extends CommandBase {
   public void initialize() {
     hyperdrive.loadPath(hyperdrive.getRecordedPath(), parameters);
     hyperdrive.performInitialCalculations();
-
-    //get PID stuff
-    double
-      kp = HyperdriveUtil.getAndSetDouble("Drive kP", 0),
-      ki = HyperdriveUtil.getAndSetDouble("Drive kI", 0),
-      kd = HyperdriveUtil.getAndSetDouble("Drive kD", 0);
-
-    leftController = new PIDController(kp, ki, kd);
-    rightController = new PIDController(kp, ki, kd);
   }
 
   // Called every time the scheduler runs while the command is scheduled.
@@ -80,14 +69,10 @@ public class CyborgCommandEmulatePath extends CommandBase {
                                   .convertTime(Units.TIME.MINUTES)
                                   .invertTurn();
 
-    //set appropriate setpoints
-    leftController.setSetpoint(trajectory.getLeftVelocity());
-    rightController.setSetpoint(trajectory.getRightVelocity());
-    
     //calculate percent outputs
     double
-      leftPercent = leftController.calculate(drivetrain.getLeftVelocityMotorUnits()),
-      rightPercent = rightController.calculate(drivetrain.getRightVelocityMotorUnits());
+      leftPercent = trajectory.getLeftPercentOutput(drivetrain.getLeftVelocityMotorUnits()),
+      rightPercent = trajectory.getRightPercentOutput(drivetrain.getRightVelocityMotorUnits());
 
     //set the percent outputs
     drivetrain.setPercentOutputs(leftPercent, rightPercent);
@@ -101,10 +86,7 @@ public class CyborgCommandEmulatePath extends CommandBase {
     SmartDashboard.putNumber("Left percent", leftPercent);
     SmartDashboard.putNumber("Right percent", rightPercent);
 
-    SmartDashboard.putNumber("left error", leftController.getPositionError());
-    SmartDashboard.putNumber("left velocity world units", drivetrain.getLeftVelocity());
-    SmartDashboard.putNumber("left velocity motor units", hyperdrive.toMotorUnits(drivetrain.getLeftVelocity()));
-
+    
     SmartDashboard.putNumber("Target left velocity", trajectory.getLeftVelocity());
     SmartDashboard.putNumber("Target right velocity", trajectory.getRightVelocity());
   }
