@@ -1380,6 +1380,36 @@
                   "_type": "PID Controller",
                   "_source0": "network_table:///LiveWindow/Ungrouped/PIDController[11]",
                   "_title": "PIDController[11]"
+                },
+                {
+                  "_type": "PID Controller",
+                  "_source0": "network_table:///LiveWindow/Ungrouped/PIDController[13]",
+                  "_title": "PIDController[13]"
+                },
+                {
+                  "_type": "PID Controller",
+                  "_source0": "network_table:///LiveWindow/Ungrouped/PIDController[14]",
+                  "_title": "PIDController[14]"
+                },
+                {
+                  "_type": "PID Controller",
+                  "_source0": "network_table:///LiveWindow/Ungrouped/PIDController[16]",
+                  "_title": "PIDController[16]"
+                },
+                {
+                  "_type": "PID Controller",
+                  "_source0": "network_table:///LiveWindow/Ungrouped/PIDController[15]",
+                  "_title": "PIDController[15]"
+                },
+                {
+                  "_type": "PID Controller",
+                  "_source0": "network_table:///LiveWindow/Ungrouped/PIDController[18]",
+                  "_title": "PIDController[18]"
+                },
+                {
+                  "_type": "PID Controller",
+                  "_source0": "network_table:///LiveWindow/Ungrouped/PIDController[17]",
+                  "_title": "PIDController[17]"
                 }
               ]
             }
@@ -1546,17 +1576,6 @@
               "_title": "/SmartDashboard/Current Robot Position"
             }
           },
-          "0,5": {
-            "size": [
-              2,
-              1
-            ],
-            "content": {
-              "_type": "Command",
-              "_source0": "network_table:///SmartDashboard/Record",
-              "_title": "/SmartDashboard/Record"
-            }
-          },
           "0,6": {
             "size": [
               2,
@@ -1588,6 +1607,17 @@
               "_type": "Text View",
               "_source0": "network_table:///SmartDashboard/Left percent",
               "_title": "/SmartDashboard/Left percent"
+            }
+          },
+          "0,5": {
+            "size": [
+              2,
+              1
+            ],
+            "content": {
+              "_type": "Command",
+              "_source0": "network_table:///SmartDashboard/Record",
+              "_title": "/SmartDashboard/Record"
             }
           },
           "3,1": {
@@ -1785,7 +1815,7 @@
     }
   ],
   "windowGeometry": {
-    "x": 1527.3333740234375,
+    "x": 1529.3333740234375,
     "y": 0.0,
     "width": 653.3333129882812,
     "height": 686.6666870117188

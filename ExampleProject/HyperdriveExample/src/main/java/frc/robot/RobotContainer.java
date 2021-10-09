@@ -13,7 +13,6 @@ import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import frc.robot.commands.CyborgCommandEmulatePath;
 import frc.robot.commands.CyborgCommandRecordPath;
-import frc.robot.commands.CyborgCommandTestVelocity;
 import frc.robot.subsystems.SubsystemDrive;
 
 /**
@@ -54,7 +53,6 @@ public class RobotContainer {
     InstantCommand zeroDrivetrain = new InstantCommand( () -> { zeroDrivetrain(); } );
     SmartDashboard.putData(zeroDrivetrain);    
 
-    SmartDashboard.putData(new CyborgCommandTestVelocity(SUB_DRIVE));
     SmartDashboard.putData(new CyborgCommandRecordPath(SUB_DRIVE));
     SmartDashboard.putData(new CyborgCommandEmulatePath(SUB_DRIVE));
   }

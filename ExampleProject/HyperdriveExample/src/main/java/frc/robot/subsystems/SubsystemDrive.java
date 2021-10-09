@@ -6,7 +6,6 @@ package frc.robot.subsystems;
 
 import com.kauailabs.navx.frc.AHRS;
 import com.revrobotics.CANSparkMax;
-import com.revrobotics.ControlType;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
 import edu.wpi.first.wpilibj.Joystick;
@@ -98,51 +97,13 @@ public class SubsystemDrive extends SubsystemBase {
   }
 
   /**
-   * Sets the PIDF constants of the drivetrain motors.
-   * @param p The kP to set.
-   * @param i The kI to set.
-   * @param d The kD to set.
-   * @param f The kF to set.
-   * @param izone The izone to set.
-   * @param outLimit The maximum allowed output.
-   * @param ramp The closed loop ramp rate, in seconds, to set.
+   * Sets the percent output of the motors.
+   * @param left Left percent output (-1 to 1)
+   * @param right Right percent output (-1 to 1)
    */
-  public void setPIDF(double p, double i, double d, double f, double izone, double outLimit, double ramp) {
-    //set constants on left motor controller
-    leftMaster.getPIDController().setP(p);
-    leftMaster.getPIDController().setI(i);
-    leftMaster.getPIDController().setD(d);
-    leftMaster.getPIDController().setFF(f);
-    leftMaster.getPIDController().setIZone(izone);
-    leftMaster.getPIDController().setOutputRange(-1 * outLimit, outLimit);
-    leftMaster.setClosedLoopRampRate(ramp);
-
-    //set constants on right motor controller
-    rightMaster.getPIDController().setP(p);
-    rightMaster.getPIDController().setI(i);
-    rightMaster.getPIDController().setD(d);
-    rightMaster.getPIDController().setFF(f);
-    rightMaster.getPIDController().setIZone(izone);
-    rightMaster.getPIDController().setOutputRange(-1 * outLimit, outLimit);
-    rightMaster.setClosedLoopRampRate(ramp);
-  }
-
-  /**
-   * Sets the velocities of the left and right drivetrain motors.
-   * @param leftVelocity The target velocity of the left motors, in RPM.
-   * @param rightVelocity The target velocity of the right motors, in RPM.
-   */
-  public void setVelocities(double leftVelocity, double rightVelocity) {
-    leftMaster.getPIDController().setReference(leftVelocity, ControlType.kVelocity);
-    rightMaster.getPIDController().setReference(rightVelocity, ControlType.kVelocity);
-  }
-
-  /**
-   * Sets the output of the motors to 0.
-   */
-  public void stop() {
-    leftMaster.set(0);
-    rightMaster.set(0);
+  public void setOutputs(double left, double right) {
+    leftMaster.set(left);
+    rightMaster.set(right);
   }
 
   /**
