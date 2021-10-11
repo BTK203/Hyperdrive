@@ -15,16 +15,19 @@ In order for Hyperdrive to work on your robot, it must meet these requirements:
 
 ## Installation
 To install Hyperdrive, simply extract the hyperdrive folder from the [latest release](https://github.com/BTK203/Hyperdrive/releases/latest) into a folder in your robot project named "util".
+
 ![logo](https://github.com/BTK203/Hyperdrive/blob/develop/images/hyperdrive-install.png?raw=true)
 
 ## Implementation
 ### Measuring needed values
 Hyperdrive needs two values to work on your robot: A scalar to convert motor rotations to linear positions, and the wheelbase width of your robot.
 
-**To measure your motor unit scalar**, use a tape measure to drive your robot a known distance, such as 10 feet. Then, calculate how much your motor positions changed. For example, if your motors start at 0 rotations and end at 49.44 rotations after the robot drives 120 inches, your value would be:
+**To measure your motor unit scalar**, use a tape measure to drive your robot a known distance, such as 10 feet. Then, calculate how much your motor positions changed. Then divide the change in your motor positions by the distance that the robot drove. For example, if your motors start at 0 rotations and end at 49.44 rotations after the robot drives 120 inches, your value would be:
+
 ![logo](https://github.com/BTK203/Hyperdrive/blob/develop/images/mupu-equation.png?raw=true)
 
 **To measure your robot's wheelbase width**, simply use a tape measure to find the distance between your robot's wheels:
+
 ![logo](https://github.com/BTK203/Hyperdrive/blob/develop/images/wheelbase.png?raw=true)
 
 Remember to keep units consistent! If you used inches to determine your motor units scalar, measure the wheelbase width in inches!
@@ -34,7 +37,7 @@ After these values are measured, save them somewhere safe, like the Constants cl
 ### Adding Hyperdrive to your code
 To add Hyperdrive to your code, simply add a Hyperdrive object to your drivetrain class, then call update() in your periodic() method:
 
-```
+```java
   private Hyperdrive hyperdrive; // Hyperdrive object
 
   /** Creates a new SubsystemDrive. */
@@ -49,7 +52,7 @@ To add Hyperdrive to your code, simply add a Hyperdrive object to your drivetrai
   }
   ```
 
-```
+```java
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
@@ -64,7 +67,7 @@ To add Hyperdrive to your code, simply add a Hyperdrive object to your drivetrai
 
 For ease of access, add an accessor for the Hyperdrive object:
 
-```
+```java
   /**
    * Returns the drivetrain's Hyperdrive object.
    */
@@ -78,7 +81,7 @@ Make sure your drivetrain has public methods for setting percent outputs and get
 ### Zeroing
 Hyperdrive keeps track of the robot's 2-D position on the field. At times, you may want to zero it. This is an example of a method in the drivetrain that would zero the motors, gyro, and Hyperdrive:
 
-```
+```java
   /**
    * Zeros the motors, the gyro, and Hyperdrive.
    */
@@ -90,9 +93,13 @@ Hyperdrive keeps track of the robot's 2-D position on the field. At times, you m
   }
 ```
 
+## Using Hyperdrive to Drive Your Robot
+The following commands are templates that you can use to get Hyperdrive driving your robot around. However, you may need to change some names and method calls.
+In these examples, `SubsystemDrive` refers to some drivetrain subsystem, and `getLeftVelocityMotorUnits()` (and its right counterpart) is a method that directly returns the velocity of the left motor encoder.
+
 ### Recording Paths
 Use this simple Command to record paths
-```
+```java
 public class RecordPath extends CommandBase {
   private Hyperdrive hyperdrive;
 
@@ -127,7 +134,7 @@ public class RecordPath extends CommandBase {
 
 ### Emulating Paths
 Use this Command to emulate paths.
-```
+```java
 public class EmulatePath extends CommandBase {
   private SubsystemDrive drivetrain;
 
@@ -182,6 +189,6 @@ public class EmulatePath extends CommandBase {
 ```
 
 ## PathVisualizer
-PathVisualizer is a graphical application that can be used to view paths that the robot drives. It can communicate directly with the robot to receive and display real-time robot position and path data. It can also be used to load paths from and save paths to the robot. 
+PathVisualizer is a graphical application that can be used to view paths that the robot drives. It can communicate directly with the robot to receive and display real-time robot position and path data. It can also be used to load paths from and save paths to the robot. Simply enter the robot's IPv4 address and port, then press "connect".
 ![logo](https://github.com/BTK203/Hyperdrive/blob/develop/images/pathvisualizer.png?raw=true)
 
