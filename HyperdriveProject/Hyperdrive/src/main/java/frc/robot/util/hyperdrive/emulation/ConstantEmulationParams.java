@@ -41,6 +41,7 @@ public class ConstantEmulationParams implements IEmulateParams {
      * @param coefficientOfStaticFriction The coefficient of static friction between the robot's wheels and the floor's surface. Lower values = slower turns.
      * @param pointSkipCount The number of points ahead of the robot to ignore when making decisions about turns.
      * @param immediatePathSize The number of points ahead of the robot (after pointSkipCount) to look at to make desicions about turns.
+     * @param pidfaConfig The PIDF and acceleration settings to use.
      */
     public ConstantEmulationParams(
         double overturn,

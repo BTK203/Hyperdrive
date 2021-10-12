@@ -5,7 +5,7 @@ An easy-to-implement autonomous driving library for FRC robots, developed by FRC
 
 The actual library itself is located inside of its testing environment at [HyperdriveProject/Hyperdrive/src/main/java/frc/robot/util/hyperdrive](https://github.com/BTK203/Hyperdrive/tree/develop/HyperdriveProject/Hyperdrive/src/main/java/frc/robot/util/hyperdrive).
 
-NOTE: This readme provides basic instructions for installing and using Hyperdrive. For a step-by-step tutorial, see the [Hyperdrive manual](https://github.com/BTK203/Hyperdrive/blob/main/Hyperdrive%20Manual.pdf).
+**Check out the class and method reference at [https://btk203.github.io/Hyperdrive/](https://btk203.github.io/Hyperdrive/)!**
 
 ## Prerequisites
 In order for Hyperdrive to work on your robot, it must meet these requirements:
@@ -19,6 +19,9 @@ To install Hyperdrive, simply extract the hyperdrive folder from the [latest rel
 ![logo](https://github.com/BTK203/Hyperdrive/blob/develop/images/hyperdrive-install.png?raw=true)
 
 ## Implementation
+
+NOTE: This readme provides basic instructions for installing and using Hyperdrive. For a step-by-step tutorial, see the [Hyperdrive manual](https://github.com/BTK203/Hyperdrive/blob/main/Hyperdrive%20Manual.pdf).
+
 ### Measuring needed values
 Hyperdrive needs two values to work on your robot: A scalar to convert motor rotations to linear positions, and the wheelbase width of your robot.
 

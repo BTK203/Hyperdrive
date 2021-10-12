@@ -29,6 +29,7 @@ public class PathRecorder {
     /**
      * Creates a new PathRecorder writing to the given file.
      * @param file The absolute file path of the file to record to.
+     * @param distanceUnits The units of length to use.
      */
     public PathRecorder(String file, final Units.LENGTH distanceUnits) {
         this.file = file;

@@ -5,6 +5,7 @@
 package frc.robot.util.hyperdrive.emulation;
 
 import frc.robot.util.hyperdrive.util.PIDFAConfig;
+import frc.robot.util.hyperdrive.Hyperdrive;
 
 /**
  * Parameters for the robot to use while driving through a Path. These parameters include

@@ -9,8 +9,6 @@ import frc.robot.util.hyperdrive.util.Path;
 import frc.robot.util.hyperdrive.util.Point2D;
 import frc.robot.util.hyperdrive.util.Units;
 
-import javax.swing.Icon;
-
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.util.hyperdrive.Hyperdrive;
@@ -45,7 +43,8 @@ public class PathEmulator {
     /**
      * Creates a new PathEmulator that is pre-loaded with the given {@code Path}
      * and {@code IEmulateParams}. Any call to the {@link #isLoaded()} method will
-     * return true unless the {@link #load()} method is called with {@code null} objects.
+     * return true unless the {@link #load(Path, IEmulateParams)} method is called with {@code null} objects.
+     * @param driveStyle The drivetrain style of the robot.
      * @param motorUnitsPerUnit The number of motor units that equate to one actual unit. 
      * For full explanation, see the constructor for the {@link Hyperdrive} class.
      * @param lengthUnit The unit of distance that will be used.
@@ -83,6 +82,7 @@ public class PathEmulator {
      * Creates an empty PathEmulator. The object will not do anything or return any
      * non-zero calculation until its path and parameters are set using {@link #load(Path, IEmulateParams)}.
      * Users can check the state of the PathEmulator using the {@link #isLoaded()} method.
+     * @param driveStyle The drivetrain style of the robot.
      * @param motorUnitsPerUnit The number of motor units that equate to one actual unit. 
      * @param lengthUnit The unit of distance that should be used. The motorUnitsPerUnit value should convert
      * For full explantion, see the constructor for the {@link Hyperdrive} class.
@@ -211,11 +211,11 @@ public class PathEmulator {
 
     /**
      * Determines whether or not this PathEmulator has both a path and parameters to do trajectory 
-     * calculations with. If this method returns false, any calls to {@link #calculateTrajectory()}
+     * calculations with. If this method returns false, any calls to {@link #calculateTrajectory(Point2D)}
      * will return trajectories with 0 speed, 0 displacement, and 0 turn, which will cause the robot
      * to stand still. Should this happen, this PathEmulator's {@link #load(Path, IEmulateParams)}
      * method must be called with non-null objects.
-     * @return {@code true if the PathEmulator is ready to do trajectory calculations, and {@code false} otherwise.
+     * @return {@code true} if the PathEmulator is ready to do trajectory calculations, and {@code false} otherwise.
      */
     public boolean isLoaded() {
         return path != null && parameters != null;

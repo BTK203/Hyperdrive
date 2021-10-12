@@ -24,6 +24,8 @@ public class PIDFAConfig {
      * @param kD The kD value to use.
      * @param kF The kF value to use.
      * @param accel The maximum acceleration of the robot at full throttle.
+     * @param minOut The minimum allowed percent output of the robot.
+     * @param maxOut The maximum allowed percent output of the robot.
      */
     public PIDFAConfig(double kP, double kI, double kD, double kF, double accel, double minOut, double maxOut) {
         this.kP = kP;

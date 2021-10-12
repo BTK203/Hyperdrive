@@ -5,7 +5,6 @@
 package frc.robot.util.hyperdrive.simulator;
 
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import frc.robot.util.hyperdrive.Hyperdrive;
 import frc.robot.util.hyperdrive.HyperdriveConstants;
 import frc.robot.util.hyperdrive.util.HyperdriveUtil;
 import frc.robot.util.hyperdrive.util.Point2D;
@@ -46,6 +45,7 @@ public class SimulatedRobot  {
      * and the default motor units per unit value of 0.472.
      * @param motor The type of motor being used.
      * @param wheelRadius The radius of the drive wheels.
+     * @param wheelBaseWidth The length between the two sets of wheels on the simulated robot
      * @param gearRatio The gear ratio of the gearbox (wheel RPM / motor RPM)
      * @param robotWeight The weight of the robot.
      * @param weightUnit The units used to specify the weight.

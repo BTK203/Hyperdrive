@@ -4,8 +4,6 @@
 
 package frc.robot.util.hyperdrive.emulation;
 
-import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.controller.PIDController;
 import frc.robot.util.hyperdrive.util.HyperdriveUtil;
 import frc.robot.util.hyperdrive.util.Units;
 

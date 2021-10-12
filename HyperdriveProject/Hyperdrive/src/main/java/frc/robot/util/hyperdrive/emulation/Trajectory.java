@@ -31,8 +31,8 @@ public class Trajectory {
      * @param velocity The velocity of the robot.
      * @param distance The length of the path immediately ahead of the robot.
      * @param turn The magnitude of the turn immediately ahead of the robot, in radians.
-     * @param maxSpeed The maximum speed of the robot, in distance units per second, as it drives its path.
-     * @param minSpeed The minimum speed of the robot, in distance units per second, as it drives its path.
+     * @param parameters The parameters being used for driving.
+     * @param controller The controller to use to calculate outputs
      * @param motorUnitsPerUnit A scalar to convert from motor units to actual units. See the 
      * {@link Hyperdrive} constructor for more.
      */
