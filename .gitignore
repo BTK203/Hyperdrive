@@ -27,3 +27,13 @@ PathVisualizer/PathVisualizer/PathVisualizer/target
 
 #PathVisualizer "prefs.txt" files
 prefs.txt
+
+other unneed Hyperdrive-related files
+points.txt
+
+#unneeded wpilib files
+*.ini*
+networktables.ini.bak
+pvworkspace.txt
+networktables.ini
+/HyperdriveProject/Hyperdrive/src/main/java/frc/robot/points.txt
