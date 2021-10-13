@@ -6,6 +6,7 @@ package frc.robot.util.hyperdrive.emulation;
 
 import frc.robot.util.hyperdrive.HyperdriveConstants;
 import frc.robot.util.hyperdrive.util.HyperdriveUtil;
+import frc.robot.util.hyperdrive.util.PIDFAConfig;
 import frc.robot.util.hyperdrive.util.Units;
 
 /** 
@@ -28,6 +29,8 @@ public class ConstantEmulationParams implements IEmulateParams {
         pointSkipCount,
         immediatePathSize;
 
+    private PIDFAConfig pidfaConfig;
+
     /**
      * Creates a new ConstantEmulationParams, describing the parameters that are to be followed as the robot emulates a {@code Path}.
      * @param overturn Increases or decreases the magnitude of any future turn of the {@code Path} by multiplying the turn by this amount.
@@ -38,6 +41,7 @@ public class ConstantEmulationParams implements IEmulateParams {
      * @param coefficientOfStaticFriction The coefficient of static friction between the robot's wheels and the floor's surface. Lower values = slower turns.
      * @param pointSkipCount The number of points ahead of the robot to ignore when making decisions about turns.
      * @param immediatePathSize The number of points ahead of the robot (after pointSkipCount) to look at to make desicions about turns.
+     * @param pidfaConfig The PIDF and acceleration settings to use.
      */
     public ConstantEmulationParams(
         double overturn,
@@ -47,7 +51,8 @@ public class ConstantEmulationParams implements IEmulateParams {
         double positionalCorrectionDistance,
         double coefficientOfStaticFriction,
         int pointSkipCount,
-        int immediatePathSize
+        int immediatePathSize,
+        PIDFAConfig pidfaConfig
     ) {
         this.overturn = overturn;
         this.minimumSpeed = minimumSpeed;
@@ -57,6 +62,7 @@ public class ConstantEmulationParams implements IEmulateParams {
         this.coefficientOfStaticFriction = coefficientOfStaticFriction;
         this.pointSkipCount = pointSkipCount;
         this.immediatePathSize = immediatePathSize;
+        this.pidfaConfig = pidfaConfig;
     }
 
     @Override
@@ -98,13 +104,20 @@ public class ConstantEmulationParams implements IEmulateParams {
     public int getImmediatePathSize() {
         return immediatePathSize;
     }
+
+    @Override
+    public PIDFAConfig getPIDFAConfig() {
+        return pidfaConfig;
+    }
     
     /**
      * Returns the default values for robots to use, in whatever unit is supplied.
      * @param units The units of length that are being used.
+     * @param pidfaConfig The PIDFA config to use. There is no default value for this because defining 
+     * default nonzero PID values could be dangerous.
      * @return A {@link ConstantEmulationParams} containing the default parameters for path driving.
      */
-    public static ConstantEmulationParams getDefaults(Units.LENGTH units) {
+    public static ConstantEmulationParams getDefaults(Units.LENGTH units, PIDFAConfig pidfaConfig) {
         return new ConstantEmulationParams(
             HyperdriveConstants.DEFAULT_OVERTURN,
             HyperdriveUtil.convertDistance(HyperdriveConstants.DEFAULT_MIN_SPEED_IPS, Units.LENGTH.INCHES, units),
@@ -113,7 +126,8 @@ public class ConstantEmulationParams implements IEmulateParams {
             HyperdriveConstants.DEFAULT_POSITIONAL_CORRECT_DISTANCE,
             HyperdriveConstants.DEFAULT_COEFFICIENT_OF_STATIC_FRICTION,
             HyperdriveConstants.DEFAULT_POINT_SKIP_COUNT,
-            HyperdriveConstants.DEFAULT_IMMEDIATE_PATH_SIZE
+            HyperdriveConstants.DEFAULT_IMMEDIATE_PATH_SIZE,
+            pidfaConfig
         );
     }
 }

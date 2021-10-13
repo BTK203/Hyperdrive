@@ -27,6 +27,6 @@ public class InstantCommandSetRobotPosition extends InstantCommand {
       y = HyperdriveUtil.getAndSetDouble("Y", 0),
       h = HyperdriveUtil.getAndSetDouble("H", 0);
 
-    drivetrain.setPosition(new Point2D(x, y, h));
+    drivetrain.setPositionAndHeading(new Point2D(x, y, h));
   }
 }

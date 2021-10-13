@@ -8,12 +8,16 @@ package frc.robot.util.hyperdrive;
  * This class stores constants (public static final) that are used by Hyperdrive.
  */
 public class HyperdriveConstants {
+    //this constructor exists so that no one can create an instance of this class.
+    private HyperdriveConstants() {
+    }
+
     //recorder constants
     public static final int PATH_RECORDER_DISTANCE_INTERVAL = 4;
 
     public static final String 
-        PATH_RECORDER_DEFAULT_RECORD_PATH = "/home/lvuser/points.hpt",
-        PATH_EMULATOR_DEFAULT_RESULTS_PATH = "/home/lvuser/results.hpt";
+        PATH_RECORDER_DEFAULT_RECORD_PATH = "/home/lvuser/points.txt",
+        PATH_EMULATOR_DEFAULT_RESULTS_PATH = "/home/lvuser/results.txt";
 
     //emulator constants
     public static final int
@@ -49,4 +53,9 @@ public class HyperdriveConstants {
     public static final int
         DEFAULT_POINT_SKIP_COUNT = 2,
         DEFAULT_IMMEDIATE_PATH_SIZE = 7;
+
+    //simulator constants
+    public static final double
+        INTERNAL_FRICTION_ACCELERATION = 1; // m/s. Based on my experience pushing unpowered robots across rooms and timing their stops
+
 }

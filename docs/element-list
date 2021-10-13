@@ -1,0 +1,7 @@
+frc.robot.util.hyperdrive
+frc.robot.util.hyperdrive.emulation
+frc.robot.util.hyperdrive.enumeration
+frc.robot.util.hyperdrive.pathvisualizer
+frc.robot.util.hyperdrive.recording
+frc.robot.util.hyperdrive.simulator
+frc.robot.util.hyperdrive.util

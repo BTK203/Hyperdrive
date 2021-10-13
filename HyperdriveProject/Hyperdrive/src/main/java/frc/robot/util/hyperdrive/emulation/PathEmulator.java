@@ -8,9 +8,12 @@ import frc.robot.util.hyperdrive.util.HyperdriveUtil;
 import frc.robot.util.hyperdrive.util.Path;
 import frc.robot.util.hyperdrive.util.Point2D;
 import frc.robot.util.hyperdrive.util.Units;
+
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.util.hyperdrive.Hyperdrive;
 import frc.robot.util.hyperdrive.HyperdriveConstants;
+import frc.robot.util.hyperdrive.enumeration.DriveStyle;
 import frc.robot.util.hyperdrive.recording.PathRecorder;
 
 /** 
@@ -23,6 +26,7 @@ import frc.robot.util.hyperdrive.recording.PathRecorder;
 public class PathEmulator {
     private Path path;
     private IEmulateParams parameters;
+    private IController controller;
     private PathRecorder recorder;
     private boolean 
         isForwards,
@@ -33,12 +37,14 @@ public class PathEmulator {
         motorUnitsPerUnit,
         robotWeightNewtons;
 
+    private final DriveStyle driveStyle;
     private final Units.LENGTH lengthUnit;
 
     /**
      * Creates a new PathEmulator that is pre-loaded with the given {@code Path}
      * and {@code IEmulateParams}. Any call to the {@link #isLoaded()} method will
-     * return true unless the {@link #load()} method is called with {@code null} objects.
+     * return true unless the {@link #load(Path, IEmulateParams)} method is called with {@code null} objects.
+     * @param driveStyle The drivetrain style of the robot.
      * @param motorUnitsPerUnit The number of motor units that equate to one actual unit. 
      * For full explanation, see the constructor for the {@link Hyperdrive} class.
      * @param lengthUnit The unit of distance that will be used.
@@ -47,7 +53,16 @@ public class PathEmulator {
      * @param path The Path to pre-load
      * @param parameters The IEmulateParams to pre-load
      */
-    public PathEmulator(final double motorUnitsPerUnit, final Units.LENGTH lengthUnit, final double robotWeight, final Units.FORCE weightUnit, Path path, IEmulateParams parameters) {
+    public PathEmulator(
+        final DriveStyle driveStyle,
+        final double motorUnitsPerUnit, 
+        final Units.LENGTH lengthUnit, 
+        final double robotWeight, 
+        final Units.FORCE weightUnit, 
+        Path path, 
+        IEmulateParams parameters
+    ) {
+        this.driveStyle = driveStyle;
         this.path = path;
         this.parameters = parameters;
         this.motorUnitsPerUnit = motorUnitsPerUnit;
@@ -57,12 +72,17 @@ public class PathEmulator {
         this.isForwards = true;
         this.pathFinished = true; //call load() to correct this
         this.currentPointIndex = 0;
+
+        //create placeholder controller. Actual controller will be created by the performInitialCalculations() method
+        //before emulation starts
+        createController();
     }
 
     /**
      * Creates an empty PathEmulator. The object will not do anything or return any
      * non-zero calculation until its path and parameters are set using {@link #load(Path, IEmulateParams)}.
      * Users can check the state of the PathEmulator using the {@link #isLoaded()} method.
+     * @param driveStyle The drivetrain style of the robot.
      * @param motorUnitsPerUnit The number of motor units that equate to one actual unit. 
      * @param lengthUnit The unit of distance that should be used. The motorUnitsPerUnit value should convert
      * For full explantion, see the constructor for the {@link Hyperdrive} class.
@@ -70,8 +90,22 @@ public class PathEmulator {
      * @param weightUnit The unit of weight that the robot was measured in.
      * motor units to this unit.
      */
-    public PathEmulator(final double motorUnitsPerUnit, final Units.LENGTH lengthUnit, final double robotWeight, Units.FORCE weightUnit) {
-        this(motorUnitsPerUnit, lengthUnit, robotWeight, weightUnit, null, null);
+    public PathEmulator(
+        final DriveStyle driveStyle,
+        final double motorUnitsPerUnit, 
+        final Units.LENGTH lengthUnit, 
+        final double robotWeight, 
+        Units.FORCE weightUnit
+    ) {
+        this(
+            driveStyle, 
+            motorUnitsPerUnit, 
+            lengthUnit, 
+            robotWeight, 
+            weightUnit, 
+            new Path(new Point2D[] { new Point2D(0, 0, 0) }),
+            new PreferenceEmulationParams(lengthUnit)
+        );
     }
 
     /**
@@ -85,15 +119,6 @@ public class PathEmulator {
     public void load(Path path, IEmulateParams parameters) {
         this.path = path;
         this.parameters = parameters;
-    }
-
-    /**
-     * Loads the PathEmulator with the given {@link Path} and the default parameters. Other than that, 
-     * this method displays the same qualities of {@link #load(Path, IEmulateParams)}.
-     * @param path The path to load.
-     */
-    public void load(Path path) {
-        load(path, ConstantEmulationParams.getDefaults(lengthUnit));
     }
 
     /**
@@ -146,6 +171,10 @@ public class PathEmulator {
 
             pathFinished = true;
         }
+
+        //now that path and parameters are loaded, and the robot is ready to emulate a path, create the controller that it 
+        //will be driven with.
+        createController();
     }
 
     /**
@@ -182,11 +211,11 @@ public class PathEmulator {
 
     /**
      * Determines whether or not this PathEmulator has both a path and parameters to do trajectory 
-     * calculations with. If this method returns false, any calls to {@link #calculateTrajectory()}
+     * calculations with. If this method returns false, any calls to {@link #calculateTrajectory(Point2D)}
      * will return trajectories with 0 speed, 0 displacement, and 0 turn, which will cause the robot
      * to stand still. Should this happen, this PathEmulator's {@link #load(Path, IEmulateParams)}
      * method must be called with non-null objects.
-     * @return {@code true if the PathEmulator is ready to do trajectory calculations, and {@code false} otherwise.
+     * @return {@code true} if the PathEmulator is ready to do trajectory calculations, and {@code false} otherwise.
      */
     public boolean isLoaded() {
         return path != null && parameters != null;
@@ -213,7 +242,7 @@ public class PathEmulator {
         //if path is too short, then end the path.
         if(points.length <= 1) {
             pathFinished = true;
-            return new Trajectory(0, 0, 0, 0, 0, motorUnitsPerUnit); //no movement trajectory
+            return new Trajectory(0, 0, 0, parameters, controller, motorUnitsPerUnit); //no movement trajectory
         }
         
         //resolve the point that the robot is currently at and where we want to aim
@@ -253,13 +282,18 @@ public class PathEmulator {
         }
 
         if(immediatePath.length < 2) {
-            return new Trajectory(0, 0, 0, parameters.getMaximumSpeed(), parameters.getMinimumSpeed(), motorUnitsPerUnit);
+            return new Trajectory(0, 0, 0, parameters, controller, motorUnitsPerUnit);
         }
 
         //draw an "arc" that closely fits the path. The arc will be used to calculate the robot velocity and turn magnitude.
         double immediateDistance = getDistanceOfPath(immediatePath); //unit: in
         double immediateTurn = getTurnOfPath(immediatePath); //unit: degrees
         double headingChange = HyperdriveUtil.getAngleToHeading(immediatePath[1].getHeading(), immediatePath[immediatePath.length - 1].getHeading());
+
+        SmartDashboard.putNumber("immediate turn", immediateTurn);
+        SmartDashboard.putNumber("immediate dist", immediateDistance);
+        SmartDashboard.putNumber("heading change", headingChange);
+        SmartDashboard.putNumber("point", currentPointIndex);
 
         //figure out if the robot is about switch directions (forward to backward or vice versa). If so, the robot will want to make a large turn. So we zero it.
         double turnToHeadingDifference = Math.abs(HyperdriveUtil.getAngleToHeading(headingChange, immediateTurn));
@@ -285,7 +319,7 @@ public class PathEmulator {
         }
 
         pathFinished = currentPointIndex >= path.getPoints().length - parameters.getPointSkipCount() - 2; //path will be finished when the immediate path can only be two points long.
-        return new Trajectory(velocity, immediateDistance, immediateTurn, parameters.getMaximumSpeed(), parameters.getMinimumSpeed(), motorUnitsPerUnit);
+        return new Trajectory(velocity, immediateDistance, immediateTurn, parameters, controller, motorUnitsPerUnit);
     }
 
     /**
@@ -374,5 +408,23 @@ public class PathEmulator {
         bestSpeed = (bestSpeed > maxSpeed ? maxSpeed : (bestSpeed < minSpeed ? minSpeed : bestSpeed));
 
         return bestSpeed;
+    }
+
+    /**
+     * Creates and sets a new {@link IController}, using the current values of parameters and driveStyle.
+     */
+    private void createController() {
+        switch(driveStyle) {
+            case TANK: {
+                controller = new TankController(parameters);
+            }
+            break;
+
+            default: {
+                String msg = "DriveStyle " + driveStyle + " not supported!";
+                DriverStation.reportError(msg, true);
+                throw new RuntimeException(msg);
+            }
+        }
     }
 }

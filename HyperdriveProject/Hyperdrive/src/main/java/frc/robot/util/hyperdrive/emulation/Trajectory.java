@@ -19,10 +19,10 @@ public class Trajectory {
     protected double
         velocity,
         distance,
-        turn,
-        maxSpeed,
-        minSpeed;
+        turn;
 
+    protected final IEmulateParams parameters;
+    protected final IController controller;
     protected final double motorUnitsPerUnit;
 
     /**
@@ -31,18 +31,40 @@ public class Trajectory {
      * @param velocity The velocity of the robot.
      * @param distance The length of the path immediately ahead of the robot.
      * @param turn The magnitude of the turn immediately ahead of the robot, in radians.
-     * @param maxSpeed The maximum speed of the robot, in distance units per second, as it drives its path.
-     * @param minSpeed The minimum speed of the robot, in distance units per second, as it drives its path.
+     * @param parameters The parameters being used for driving.
+     * @param controller The controller to use to calculate outputs
      * @param motorUnitsPerUnit A scalar to convert from motor units to actual units. See the 
      * {@link Hyperdrive} constructor for more.
      */
-    public Trajectory(double velocity, double distance, double turn, double maxSpeed, double minSpeed, final double motorUnitsPerUnit) {
-        this.velocity = velocity;
-        this.distance = distance;
-        this.turn     = turn;
-        this.maxSpeed = maxSpeed;
-        this.minSpeed = minSpeed;
+    public Trajectory(
+        double velocity, 
+        double distance,
+        double turn, 
+        final IEmulateParams parameters, 
+        final IController controller, 
+        final double motorUnitsPerUnit
+    ) {
+        this.velocity   = velocity;
+        this.distance   = distance;
+        this.turn       = turn;
+        this.parameters = parameters;
+        this.controller = controller;
         this.motorUnitsPerUnit = motorUnitsPerUnit;
+    }
+
+    /**
+     * Creates a new Trajectory, copying the specified Trajectory
+     * @param trajectory The trajectory to copy.
+     */
+    public Trajectory(Trajectory trajectory) {
+        this(
+            trajectory.getVelocity(), 
+            trajectory.getDistance(), 
+            trajectory.getTurn(), 
+            trajectory.getParameters(),
+            trajectory.getController(),
+            trajectory.getMotorUnitsPerUnit()
+        );
     }
 
     /**
@@ -70,19 +92,19 @@ public class Trajectory {
     }
 
     /**
-     * Returns the maximum speed of the robot as it drives through its path.
-     * @return Maximum speed, in length units per second.
+     * Returns the parameters that this Trajectory uses.
+     * @return Parameters used to drive the robot.
      */
-    public double getMaxSpeed() {
-        return maxSpeed;
+    public IEmulateParams getParameters() {
+        return parameters;
     }
 
     /**
-     * Returns the minimum speed of the robot as it drives through its path.
-     * @return Minimum speed, in length units per second.
+     * Returns the controller that this Trajectory uses.
+     * @return Controller used to drive the robot.
      */
-    public double getMinSpeed() {
-        return minSpeed;
+    public IController getController() {
+        return controller;
     }
 
     /**

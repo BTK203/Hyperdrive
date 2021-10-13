@@ -37,7 +37,7 @@ public class PositionTracker {
      * meters, etc). This should be the same value that was passed into the {@link Hyperdrive} constructor.
      * @param x The starting X-coordinate of the robot.
      * @param y The starting Y-coordinate of the robot.
-     * @param angle The starting heading angle of the robot in degrees. (0 = towards positive X. Positive = CCW)
+     * @param heading The starting heading angle of the robot in degrees. (0 = towards positive X. Positive = CCW)
      */
     public PositionTracker(final double motorUnitsPerUnit, double x, double y, double heading) {
         this.motorUnitsPerUnit = motorUnitsPerUnit;

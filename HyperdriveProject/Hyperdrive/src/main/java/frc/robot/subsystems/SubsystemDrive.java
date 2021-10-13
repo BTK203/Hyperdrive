@@ -4,199 +4,229 @@
 
 package frc.robot.subsystems;
 
-import com.revrobotics.CANSparkMax;
-import com.revrobotics.ControlType;
-import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
+import frc.robot.util.KeyboardListener;
 import frc.robot.util.hyperdrive.Hyperdrive;
+import frc.robot.util.hyperdrive.enumeration.DriveStyle;
+import frc.robot.util.hyperdrive.simulator.SimulatedMotor;
+import frc.robot.util.hyperdrive.simulator.SimulatedRobot;
+import frc.robot.util.hyperdrive.util.HyperdriveUtil;
 import frc.robot.util.hyperdrive.util.Point2D;
-import frc.robot.util.hyperdrive.util.TankGyro;
 import frc.robot.util.hyperdrive.util.Units;
 
+/**
+ * The test environment's drivetrain subsystem class. This class also serves as a simulator for 
+ * testing. 
+ */
 public class SubsystemDrive extends SubsystemBase {
-  private CANSparkMax
-    leftMaster,
-    leftSlave,
-    rightMaster,
-    rightSlave;
-  
+  //runtime values
   private double
-    leftPosition,
-    rightPosition,
-    heading;
+    leftPercentOutput,
+    rightPercentOutput;
 
+  private double
+    forwardInput,
+    steeringInput;
+
+  //time
+  private double lastIterationTime;
+  private long lastUpdateTime;
+
+  //tools
+  private SimulatedRobot simulatedRobot;
   private Hyperdrive hyperdrive;
-  private TankGyro gyro;
 
-  /** Creates a new SubsystemDrive. */
+  /** 
+   * The SubsystemDrive of the test environment. Works with a Simulated Robot to 
+   * simulate actual driving.
+   */
   public SubsystemDrive() {
-    leftMaster  = new CANSparkMax(Constants.LEFT_MASTER_ID, MotorType.kBrushless);
-    rightMaster = new CANSparkMax(Constants.RIGHT_MASTER_ID, MotorType.kBrushless);
-    leftSlave   = new CANSparkMax(Constants.LEFT_SLAVE_ID, MotorType.kBrushless);
-    rightSlave  = new CANSparkMax(Constants.RIGHT_SLAVE_ID, MotorType.kBrushless);
+    leftPercentOutput = 0;
+    rightPercentOutput = 0;
 
-    leftPosition = 0;
-    rightPosition = 0;
-    heading = 0;
+    lastUpdateTime = System.currentTimeMillis();
 
-    hyperdrive = new Hyperdrive(Units.LENGTH.INCHES, 0.472);
-    gyro = new TankGyro(24, 0.472);
+    //get motor units per unit value, but convert it to motor units per meter (instead of inch)
+    double mupuConversionFactor = HyperdriveUtil.convertDistance(1, Units.LENGTH.INCHES, Units.LENGTH.METERS);
+    double mupuMeters = 0.472 / mupuConversionFactor;
 
-    setFollowers();
+    //define hyperdrive
+    hyperdrive = new Hyperdrive(DriveStyle.TANK, Units.LENGTH.METERS, mupuMeters, Units.FORCE.POUND, 110);
+
+    //define simulated robot
+    simulatedRobot = new SimulatedRobot(
+      SimulatedMotor.NEO, 
+      2,
+      HyperdriveUtil.convertDistance(6, Units.LENGTH.INCHES, Units.LENGTH.METERS), 
+      HyperdriveUtil.convertDistance(20, Units.LENGTH.INCHES, Units.LENGTH.METERS), 
+      7.14,
+      110, 
+      Units.FORCE.POUND, 
+      mupuMeters
+    );
+
+    KeyboardListener.start();
   }
 
   @Override
   public void periodic() {
-    // This method will be called once per scheduler run
-    hyperdrive.update(leftPosition, rightPosition, heading);
-    gyro.update(leftPosition, rightPosition);
-    heading = gyro.getHeading();
+    //get change in time
+    long currentTime = System.currentTimeMillis();
+    long deltaTime = currentTime - lastUpdateTime;
+    double deltaTimeSeconds = deltaTime / 1000.0; //1000 ms in a second
+    lastIterationTime = deltaTimeSeconds;
+    lastUpdateTime = currentTime;
 
-    SmartDashboard.putNumber("Left Position", leftPosition);
-    SmartDashboard.putNumber("Right Position", rightPosition);
-    SmartDashboard.putNumber("Heading", heading);
+    //update simulated robot
+    Point2D currentPositionAndHeading = simulatedRobot.update(leftPercentOutput, rightPercentOutput, deltaTimeSeconds);
+
+    //update Hyperdrive
+    hyperdrive.update(currentPositionAndHeading);
+  }
+
+  /**
+   * Drives the simulated robot using input from the keyboard.
+   * Keyboard input will only be captured if the key listener window is focused.
+   */
+  public void driveWithKeyboardInput() {
+    double increment = lastIterationTime * Constants.KEY_THROTTLE_PER_SECOND; //unit; percent
+
+    //forward input
+    if(KeyboardListener.getWPressed()) {
+      forwardInput += increment;
+    } else if(KeyboardListener.getSPressed()) {
+      forwardInput -= increment;
+    } else {
+      //gravitate to 0
+      forwardInput += (forwardInput < 0 ? increment : -1 * increment);
+      if(forwardInput < increment) {
+        forwardInput = 0;
+      }
+    }
+
+    //steering input
+    if(KeyboardListener.getAPressed()) {
+      steeringInput += increment;
+    } else if(KeyboardListener.getDPressed()) {
+      steeringInput -= increment;
+    } else {
+      //gravitate to 0
+      steeringInput += (steeringInput < 0 ? increment : -1 * increment);
+      if(steeringInput < increment) {
+        steeringInput = 0;
+      }
+    }
+
+    //make sure that forwardInput and steeringInput are between -1 and 1
+    forwardInput = (forwardInput < -1 ? -1 : (forwardInput > 1 ? 1 : forwardInput));
+    steeringInput = (steeringInput < -1 ? -1 : (steeringInput > 1 ? 1 : steeringInput));
+
+    //calculate new percent outputs based on forward and steer inputs
+    double left = forwardInput - steeringInput;
+    double right = forwardInput + steeringInput;
+
+    //make sure that left and right are between -1 and 1
+    left = (left < -1 ? -1 : (left > 1 ? 1 : left));
+    right = (right < -1 ? -1 : (right > 1 ? 1 : right));
+
+    SmartDashboard.putNumber("left", left);
+    SmartDashboard.putNumber("right", right);
+
+    //set left and right
+    setPercentOutputs(left, right);
   }
 
   /**
    * Returns the drivetrain's {@link Hyperdrive}.
-   * @return
+   * @return The drivetrain's Hyperdrive tool.
    */
   public Hyperdrive getHyperdrive() {
     return hyperdrive;
   }
 
   /**
-   * Zeros the Hyperdrive position.
+   * Sets the percent outputs of the robot.
+   * @param left The left percent output
+   * @param right The right percent output.
+   */
+  public void setPercentOutputs(double left, double right) {
+    leftPercentOutput = left;
+    rightPercentOutput = right;
+  }
+
+  /**
+   * Returns the left velocity of the robot.
+   * @return Linear velocity of the robot's left wheels.
+   */
+  public double getLeftVelocity() {
+    return simulatedRobot.getLeftVelocity();
+  }
+
+  /**
+   * Returns the right velocity of the robot.
+   * @return Linear velocity of the robot's right wheels.
+   */
+  public double getRightVelocity() {
+    return simulatedRobot.getRightVelocity();
+  }
+
+  /**
+   * Returns the left velocity of the robot in motor units.
+   * @return Left velocity of robot in motor units
+   */
+  public double getLeftVelocityMotorUnits() {
+    double leftVelocity = getLeftVelocity(); //currently in meters per second
+    leftVelocity *= 60; //meters per minute
+    leftVelocity = hyperdrive.toMotorUnits(leftVelocity);
+
+    return leftVelocity;
+  }
+
+  /**
+   * Returns the right velocity of the robot in motor units.
+   * @return Right velocity of the robot in motor units
+   */
+  public double getRightVelocityMotorUnits() {
+    double rightVelocity = getRightVelocity();
+    rightVelocity *= 60;
+    rightVelocity = hyperdrive.toMotorUnits(rightVelocity);
+
+    return rightVelocity;
+  }
+
+  /**
+   * Zeros the Hyperdrive position. Note that because the robot 
    */
   public void zeroPositionAndHeading() {
     hyperdrive.zeroPositionAndHeading(true);
+    simulatedRobot.zeroPositionAndHeading();
   }
 
   /**
-   * Zeros the tank gyro, waiting for encoders before it does such.
+   * Sets the position and heading of the robot.
+   * @param positionAndHeading new position and heading.
    */
-  public void zeroGyro() {
-    gyro.zeroHeading(true);
+  public void setPositionAndHeading(Point2D positionAndHeading) {
+    simulatedRobot.setCurrentPositionAndHeading(positionAndHeading);
   }
 
   /**
-   * Zeros the position readouts of the motors.
+   * Sets the robot's position and heading to the start of the most recently recorded path.
    */
-  public void zeroMotorPositions() {
-    leftPosition = 0;
-    rightPosition = 0;
-    heading = 0;
-  }
-
-  /**
-   * Sets random stuff
-   */
-  public void randomize() {
-    leftPosition = (Math.random() * 100) - 50;
-    rightPosition = (Math.random() * 100) - 50;
-    heading = (Math.random() * 360) - 180;
-
-    double x = (Math.random() * 100);
-    double y = (Math.random() * 100);
-    hyperdrive.setPositionAndHeading(new Point2D(x, y, heading));
-  }
-
-  /**
-   * Displaces the robot in a random direction.
-   */
-  public void displaceRandomly() {
-    leftPosition += (Math.random() * 8) + 2;
-    rightPosition += (Math.random() * 8) + 2;
-    heading += (Math.random() * 40) - 20;
-  }
-
-  /**
-   * Displaces the drivetrain
-   * @param leftDisplacement Amount to add to left position
-   * @param rightDisplacement Amount to add to right displacement
-   */
-  public void displace(double leftDisplacement, double rightDisplacement) {
-    leftPosition += leftDisplacement;
-    rightPosition += rightDisplacement;
-  }
-
-  /**
-   * Sets the heading.
-   * @param heading new heading
-   */
-  public void setAbsoluteHeading(double heading) {
-    this.heading = heading;
-  }
-  
-  /**
-   * Sets the position
-   * @param position new position
-   */
-  public void setPosition(Point2D position) {
-    hyperdrive.setPositionAndHeading(position);
-    this.heading = position.getHeading();
-  }
-
-  /**
-   * Sets the PID constants of the master controllers.
-   * @param p P gain
-   * @param i I gain
-   * @param d D gain
-   * @param f Feed-Forward
-   * @param izone Margin of error, inside which the I will take effect.
-   * @param outLimit Maximum allowed output.
-   */
-  public void setPIDF(double p, double i, double d, double f, double izone, double outLimit) {
-    leftMaster.getPIDController().setP(p);
-    leftMaster.getPIDController().setI(i);
-    leftMaster.getPIDController().setD(d);
-    leftMaster.getPIDController().setFF(f);
-    leftMaster.getPIDController().setIZone(izone);
-    leftMaster.getPIDController().setOutputRange(outLimit * -1, outLimit);
-
-    rightMaster.getPIDController().setP(p);
-    rightMaster.getPIDController().setI(i);
-    rightMaster.getPIDController().setD(d);
-    rightMaster.getPIDController().setFF(f);
-    rightMaster.getPIDController().setIZone(izone);
-    rightMaster.getPIDController().setOutputRange(outLimit * -1, outLimit);
-  }
-
-  /**
-   * Sets the target velocity of the left motors.
-   * @param leftVelocity PID velocity target of left motors.
-   */
-  public void setLeftVelocity(double leftVelocity) {
-    leftMaster.getPIDController().setReference(leftVelocity, ControlType.kVelocity);
-  }
-
-  /**
-   * Sets the target velocity of the right motors.
-   * @param rightVelocity PID velocity target of right motors.
-   */
-  public void setRightVelocity(double rightVelocity) {
-    rightMaster.getPIDController().setReference(rightVelocity, ControlType.kVelocity);
+  public void setPoseToRecordedPathStart() {
+    if(hyperdrive.getRecordedPath().isValid()) { //if the most recently recorded path exists...
+      Point2D pathStart = hyperdrive.getRecordedPath().getPoints()[0];
+      simulatedRobot.setCurrentPositionAndHeading(pathStart);
+    }
   }
 
   /**
    * Stops the drivetrain motors.
    */
   public void stop() {
-    leftMaster.set(0);
-    leftSlave.set(0);
-    rightMaster.set(0);
-    rightSlave.set(0);
+    setPercentOutputs(0, 0);
   }
 
-  /**
-   * Sets the slave motors as "following" the master motors.
-   * This means that PID and output demands only need to be sent
-   * to the master motors, and the slave motors will simply match their output.
-   */
-  private void setFollowers() {
-    leftSlave.follow(leftMaster);
-    rightSlave.follow(rightMaster);
-  }
 }

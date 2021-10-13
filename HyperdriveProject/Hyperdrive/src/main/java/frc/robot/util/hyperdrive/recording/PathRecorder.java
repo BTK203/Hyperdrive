@@ -29,6 +29,7 @@ public class PathRecorder {
     /**
      * Creates a new PathRecorder writing to the given file.
      * @param file The absolute file path of the file to record to.
+     * @param distanceUnits The units of length to use.
      */
     public PathRecorder(String file, final Units.LENGTH distanceUnits) {
         this.file = file;
@@ -49,7 +50,33 @@ public class PathRecorder {
             buffer = new BufferedWriter(writer);
             initialized = true;
         } catch (IOException ex) {
-            DriverStation.reportError("IO EXCEPTION: " + ex.getMessage(), true);
+            //this will happen when simulating the robot on a Windows system (/home/lvuser doesn't exist),
+            //so this part will try opening the file in the local directory.
+            try {
+                //get the last slash in the file path to figure out the local file name.
+                DriverStation.reportWarning(
+                    "IO Exception on primary file path " + file + ", falling back to local path.\n" +
+                    "Exception: " + ex.getMessage(), true);
+
+                int
+                    lastFSlash = file.lastIndexOf("/"),
+                    lastBSlash = file.lastIndexOf("\\"),
+                    slash = (lastFSlash > -1 ? lastFSlash : lastBSlash);
+                    
+                String fallbackPath = file.substring(slash + 1);
+
+                if(slash < 0) {
+                    DriverStation.reportError("Could not resolve fallback path.", true);
+                    return;
+                }
+
+                writer = new FileWriter(fallbackPath);
+                buffer = new BufferedWriter(writer);
+                initialized = true;
+                file = fallbackPath;
+            } catch (IOException ex2) {
+                DriverStation.reportError("IO EXCEPTION ON FALLBACK: " + ex2.getMessage(), true);
+            }
         }
     }
 

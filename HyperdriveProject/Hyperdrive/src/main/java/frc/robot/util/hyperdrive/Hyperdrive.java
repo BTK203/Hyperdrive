@@ -8,12 +8,14 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.util.hyperdrive.emulation.IEmulateParams;
 import frc.robot.util.hyperdrive.emulation.PathEmulator;
 import frc.robot.util.hyperdrive.emulation.Trajectory;
+import frc.robot.util.hyperdrive.enumeration.DriveStyle;
 import frc.robot.util.hyperdrive.pathvisualizer.PVHost;
 import frc.robot.util.hyperdrive.recording.PathRecorder;
 import frc.robot.util.hyperdrive.util.Path;
 import frc.robot.util.hyperdrive.util.Point2D;
 import frc.robot.util.hyperdrive.util.PositionTracker;
 import frc.robot.util.hyperdrive.util.Units;
+import frc.robot.util.hyperdrive.simulator.SimulatedRobot;
 
 /** 
  * A tool for autonomously driving the robot around. This tool will handle communication with the PathVisualizer app 
@@ -30,11 +32,13 @@ public class Hyperdrive {
     private PathEmulator    emulator;
     private boolean         currentlyRecording;
 
+    private final DriveStyle driveStyle;
     private final Units.LENGTH lengthUnits;
     private final double       motorUnitsPerUnit;
 
     /**
      * Creates a new Hyperdrive. 
+     * @param driveStyle The style of drivetrain of the robot.
      * @param lengthUnit The units of distance that the robot will use.
      * @param motorUnitsPerUnit The number of motor position units (ticks, rotations, etc) that are in one
      * length measurement unit (inches, feet, meters, etc). To get this value, drive the robot a set distance
@@ -48,39 +52,55 @@ public class Hyperdrive {
      * @param robotWeight The weight of the robot.
      * @param pvPort The port to use for communicating with PathVisualizer. Defaults to 3695.
      */
-    public Hyperdrive(final Units.LENGTH lengthUnit, final double motorUnitsPerUnit, final Units.FORCE weightUnit, final double robotWeight, int pvPort) {
+    public Hyperdrive(
+        final DriveStyle driveStyle,
+        final Units.LENGTH lengthUnit, 
+        final double motorUnitsPerUnit, 
+        final Units.FORCE weightUnit, 
+        final double robotWeight, 
+        int pvPort
+    ) {
+        this.driveStyle = driveStyle;
         this.lengthUnits = lengthUnit;
         this.pvHost = new PVHost(pvPort);
         this.tracker = new PositionTracker(motorUnitsPerUnit);
         this.recorder = new PathRecorder(HyperdriveConstants.PATH_RECORDER_DEFAULT_RECORD_PATH, lengthUnit);
-        this.emulator = new PathEmulator(motorUnitsPerUnit, lengthUnit, robotWeight, weightUnit);
+        this.emulator = new PathEmulator(this.driveStyle, motorUnitsPerUnit, lengthUnit, robotWeight, weightUnit);
         this.motorUnitsPerUnit = motorUnitsPerUnit;
     }
 
     /**
      * Creates a new Hyperdrive, using the default PathVisualizer port, 3695.
+     * @param driveStyle The style of drivetrain of the robot.
      * @param distanceUnits The units to measure length in.
      * @param motorUnitsPerUnit The number of motor position units (ticks, rotations, etc) that are in one 
      * length measurement unit (inches, feet, meters, etc). See javadoc for
-     * {@link #Hyperdrive(frc.robot.util.hyperdrive.util.Units.LENGTH, double, double, frc.robot.util.hyperdrive.util.Units.FORCE, int)}
+     * {@link #Hyperdrive(DriveStyle, Units.LENGTH, double, Units.FORCE, double, int)}
      * for full explanation.
      * @param weightUnit The unit of weight that the robot is measured in.
      * @param robotWeight The weight of the robot.
      */
-    public Hyperdrive(final Units.LENGTH distanceUnits, final double motorUnitsPerUnit, final Units.FORCE weightUnit, final double robotWeight) {
-        this(distanceUnits, motorUnitsPerUnit, weightUnit, robotWeight, 3695);
+    public Hyperdrive(
+        final DriveStyle driveStyle,
+        final Units.LENGTH distanceUnits, 
+        final double motorUnitsPerUnit, 
+        final Units.FORCE weightUnit, 
+        final double robotWeight
+    ) {
+        this(driveStyle, distanceUnits, motorUnitsPerUnit, weightUnit, robotWeight, 3695);
     }
 
     /**
      * Creates a new Hyperdrive, using the default robot weight, 125 pounds, and PathVisualizer port, 3695.
+     * @param driveStyle The style of drivetrain of the robot.
      * @param lengthUnit The units to measure length in.
      * @param motorUnitsPerUnit The number of motor position units (ticks, rotations, etc) that are in one 
      * length measurement unit (inches, feet, meters, etc). See javadoc for
-     * {@link #Hyperdrive(frc.robot.util.hyperdrive.util.Units.LENGTH, double, double, frc.robot.util.hyperdrive.util.Units.FORCE, int)}
+     * {@link #Hyperdrive(DriveStyle, Units.LENGTH, double, Units.FORCE, double, int)}
      * for full explanation.
      */
-    public Hyperdrive(final Units.LENGTH lengthUnit, final double motorUnitsPerUnit) {
-        this(lengthUnit, motorUnitsPerUnit, Units.FORCE.POUND, 125);
+    public Hyperdrive(final DriveStyle driveStyle, final Units.LENGTH lengthUnit, final double motorUnitsPerUnit) {
+        this(driveStyle, lengthUnit, motorUnitsPerUnit, Units.FORCE.POUND, 125);
     }
 
     /**
@@ -133,6 +153,34 @@ public class Hyperdrive {
      */
     public void update(double leftDistance, double rightDistance, double heading) {
         update((leftDistance + rightDistance ) / 2, heading);
+    }
+
+    /**
+     * Updates the Hyperdrive using a manual position. This position could be 
+     * obtained by another system that your team prefers to use, or it could 
+     * be a simulated position generated by a {@link SimulatedRobot}. Simulated
+     * positions are acceptable if Hyperdrive is being simulated, but are discouraged
+     * on physical robots. For physical robots, use a position obtained by sensors,
+     * or use the {@link #update(double, double)} or {@link #update(double, double, double)}
+     * methods. Although the simulator is highly accurate, values obtained
+     * from actual sensors will generally be better.
+     * <br><br>
+     * It is recommended taht this method be called in one of the robot's
+     * {@code periodic()} methods. It is possible to call this method in a {@code while}
+     * loop in a separate Thread, but the programmer(s) should be careful of how 
+     * often they reference encoder values from their motor controllers, as this 
+     * can overload the CAN network and cause undesired motor behavior.
+     * 
+     * @param positionAndHeading The manual position and heading of the robot.
+     */
+    public void update(Point2D positionAndHeading) {
+        tracker.setPositionAndHeading(positionAndHeading);
+        pvHost.update(positionAndHeading);
+        SmartDashboard.putString("Current Robot Position", positionAndHeading.toString());
+
+        if(currentlyRecording) {
+            recorder.recordPoint(positionAndHeading);
+        }
     }
 
     /**
@@ -273,24 +321,6 @@ public class Hyperdrive {
     }
 
     /**
-     * Loads a {@link Path} for Hyperdrive to emulate. Sets emulation parameters to
-     * the defaults.
-     * @param path The path for the robot to drive.
-     */
-    public void loadPath(Path path) {
-        emulator.load(path);
-    }
-
-    /**
-     * Loads a {@link Path} for Hyperdrive to emulate. Sets emualtion parameters to 
-     * the defaults.
-     * @param filePath The location of the path which the robot will drive.
-     */
-    public void loadPath(String filePath) {
-        emulator.load(new Path(filePath));
-    }
-
-    /**
      * Forces Hyperdrive to record the results of the driven path to the file location
      * provided.
      * @param filePath The location of the new results file.
@@ -365,7 +395,7 @@ public class Hyperdrive {
     
     /**
      * Converts a measurement made in common units (inches, meters, etc) to motor units (ticks, revolutions, etc), using the
-     * motorUnitsPerUnit measurement provided by the {@link #Hyperdrive(frc.robot.util.hyperdrive.util.Units.LENGTH, double, double, frc.robot.util.hyperdrive.util.Units.FORCE, int)}
+     * motorUnitsPerUnit measurement provided by the Hyperdrive
      * constructor.
      * @param commonUnitMeasurement Measurement in common units.
      * @return Equivilent length in motor units.

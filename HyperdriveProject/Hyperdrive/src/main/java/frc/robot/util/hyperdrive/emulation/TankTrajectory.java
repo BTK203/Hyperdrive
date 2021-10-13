@@ -28,7 +28,7 @@ public class TankTrajectory extends Trajectory {
      * parallel to the width of the robot.
      */
     public TankTrajectory(Trajectory trajectory, double wheelBaseWidth) {
-        super(trajectory.getVelocity(), trajectory.getDistance(), trajectory.getTurn(), trajectory.getMaxSpeed(), trajectory.getMinSpeed(), trajectory.getMotorUnitsPerUnit());
+        super(trajectory);
 
         //calculate left and right wheel velocities.
         boolean isForwards = trajectory.getVelocity() >= 0;
@@ -64,16 +64,16 @@ public class TankTrajectory extends Trajectory {
                 leftSpeed = Math.abs(unboundedLeftVelocity),
                 rightSpeed = Math.abs(unboundedRightVelocity);
 
-            if(leftSpeed > getMaxSpeed()) {
-                double overflow = leftSpeed - getMaxSpeed();
+            if(leftSpeed > parameters.getMaximumSpeed()) {
+                double overflow = leftSpeed - parameters.getMaximumSpeed();
                 rightSpeed -= overflow;
-                leftSpeed = getMaxSpeed();
+                leftSpeed = parameters.getMaximumSpeed();
             }
 
-            if(rightSpeed > getMaxSpeed()) {
-                double overflow = rightSpeed - getMaxSpeed();
+            if(rightSpeed > parameters.getMaximumSpeed()) {
+                double overflow = rightSpeed - parameters.getMaximumSpeed();
                 leftSpeed -= overflow;
-                rightSpeed = getMaxSpeed();
+                rightSpeed = parameters.getMaximumSpeed();
             }
 
             this.leftVelocity = leftNegative ? -1 * leftSpeed : leftSpeed;
@@ -173,5 +173,23 @@ public class TankTrajectory extends Trajectory {
      */
     public double getRightVelocity() {
         return rightVelocity * getMotorUnitsPerUnit();
+    }
+
+    /**
+     * Calculates percent output of the left wheels needed to continue driving the path at this point.
+     * @param currentLeftVelocity The velocity of the right motors at this moment, in motor units.
+     * @return Target left percent output of the left motors.
+     */
+    public double getLeftPercentOutput(double currentLeftVelocity) {
+        return controller.calculateOutput(TankController.LEFT_CONTROLLER, getLeftVelocity(), currentLeftVelocity);
+    }
+
+    /**
+     * Calculates the percent output of the right wheels needed to continue driving the path at this point.
+     * @param currentRightVelocity The velocity of the right motors at this moment, in motor units.
+     * @return Target right percent output of the right motors.
+     */
+    public double getRightPercentOutput(double currentRightVelocity) {
+        return controller.calculateOutput(TankController.RIGHT_CONTROLLER, getRightVelocity(), currentRightVelocity);
     }
 }
