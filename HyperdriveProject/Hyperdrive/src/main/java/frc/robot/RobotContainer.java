@@ -16,7 +16,6 @@ import frc.robot.commands.InstantCommandCreateRandomPath;
 import frc.robot.commands.InstantCommandSetRobotPosition;
 import frc.robot.subsystems.SubsystemDrive;
 import frc.robot.util.hyperdrive.util.HyperdriveUtil;
-import frc.robot.util.hyperdrive.util.Path;
 import frc.robot.util.hyperdrive.util.Units;
 
 /**

@@ -11,6 +11,7 @@ import frc.robot.util.hyperdrive.util.Units;
 
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import frc.robot.Constants;
 import frc.robot.util.hyperdrive.Hyperdrive;
 import frc.robot.util.hyperdrive.HyperdriveConstants;
 import frc.robot.util.hyperdrive.enumeration.DriveStyle;
@@ -25,6 +26,7 @@ import frc.robot.util.hyperdrive.recording.PathRecorder;
  */
 public class PathEmulator {
     private Path path;
+    private double[] speedmap; //array containing maximum speeds at all points in path
     private IEmulateParams parameters;
     private IController controller;
     private PathRecorder recorder;
@@ -173,8 +175,9 @@ public class PathEmulator {
         }
 
         //now that path and parameters are loaded, and the robot is ready to emulate a path, create the controller that it 
-        //will be driven with.
+        //will be driven with. Also create the speedmap to provide guidelines for speed
         createController();
+        calculateSpeedmap();
     }
 
     /**
@@ -281,45 +284,13 @@ public class PathEmulator {
             immediatePath[i] = nextPoints[i - 1];
         }
 
+        //dont try to drive short paths
         if(immediatePath.length < 2) {
             return new Trajectory(0, 0, 0, parameters, controller, motorUnitsPerUnit);
         }
 
-        //draw an "arc" that closely fits the path. The arc will be used to calculate the robot velocity and turn magnitude.
-        double immediateDistance = getDistanceOfPath(immediatePath); //unit: in
-        double immediateTurn = getTurnOfPath(immediatePath); //unit: degrees
-        double headingChange = HyperdriveUtil.getAngleToHeading(immediatePath[1].getHeading(), immediatePath[immediatePath.length - 1].getHeading());
-
-        SmartDashboard.putNumber("immediate turn", immediateTurn);
-        SmartDashboard.putNumber("immediate dist", immediateDistance);
-        SmartDashboard.putNumber("heading change", headingChange);
-        SmartDashboard.putNumber("point", currentPointIndex);
-
-        //figure out if the robot is about switch directions (forward to backward or vice versa). If so, the robot will want to make a large turn. So we zero it.
-        double turnToHeadingDifference = Math.abs(HyperdriveUtil.getAngleToHeading(headingChange, immediateTurn));
-        boolean shouldZeroTurn = turnToHeadingDifference > HyperdriveConstants.EMULATE_MAX_HEADING_TO_TURN_DIFFERENCE;    
-
-        //add positional correction to heading by making the robot aim for 2 points ahead of us
-        Point2D targetPoint = points[currentPointIndex + 2];
-        if(robotPosition.getDistanceFrom(targetPoint) > parameters.getPositionalCorrectionDistance()) {
-            double positionalCorrection = HyperdriveUtil.getAngleToHeading(forwardsify(robotPosition.getHeading()), robotPosition.getHeadingTo(targetPoint));
-            positionalCorrection *= robotPosition.getDistanceFrom(targetPoint) * parameters.getPositionalCorrectionInhibitor();
-            immediateTurn += positionalCorrection;
-        }
-
-        immediateTurn *= parameters.getOverturn();
-
-        immediateTurn = Math.toRadians(immediateTurn); //The Trajectory class requires values in radians.
-        double radius = immediateDistance / immediateTurn;
-        double baseSpeed = calculateBestTangentialSpeed(radius);
-        double velocity = (isForwards ? baseSpeed : -1 * baseSpeed);
-        
-        if(shouldZeroTurn) {
-            immediateTurn = 0;
-        }
-
-        pathFinished = currentPointIndex >= path.getPoints().length - parameters.getPointSkipCount() - 2; //path will be finished when the immediate path can only be two points long.
-        return new Trajectory(velocity, immediateDistance, immediateTurn, parameters, controller, motorUnitsPerUnit);
+        //once we have our immediate path, calculate a trajectory for it
+        return calculateTrajectoryForImmediatePath(immediatePath, points, robotPosition);
     }
 
     /**
@@ -426,5 +397,75 @@ public class PathEmulator {
                 throw new RuntimeException(msg);
             }
         }
+    }
+
+    /**
+     * Calculates a speed map based on the currently loaded path and parameters.
+     * The speedmap array will then be populated.
+     */
+    private void calculateSpeedmap() {
+        final double maxAccel = parameters.getPIDFAConfig().getAccel();
+        Point2D[] points = path.getPoints();
+        double[] speedmap = new double[points.length];
+
+        //assemble rough speedmap
+        int mapPopulatedSize = speedmap.length - parameters.getImmediatePathSize(); //the number of points in the speedmap that are actually defined
+        for(int i=0; i<mapPopulatedSize; i++) {
+            Point2D currentPoint = points[i];
+            Point2D[] immediatePath = getNextNPoints(points, i, parameters.getImmediatePathSize());
+
+            //calculate trajectory for the path (theoretically) ahead
+            Trajectory goalTrajectory = calculateTrajectoryForImmediatePath(immediatePath, points, currentPoint);
+            double speed = goalTrajectory.getVelocity();
+            speedmap[i] = speed;
+        }
+
+        //Smooth the map so that no acceleration is greater than the maximum
+        //TODO: do this
+    }
+
+    /**
+     * Calculates the trajectory needed for the robot to drive through a short path immediately ahead of it.
+     * @param immediatePath An array of points describing the path immediately ahead of the robot.
+     * @param wholePath The entire path that the robot is driving.
+     * @param robotPosition The current position of the robot.
+     * @return A Trajectory object containing information needed to drive the robot through the immediate path.
+     */
+    private Trajectory calculateTrajectoryForImmediatePath(Point2D[] immediatePath, Point2D[] wholePath, Point2D robotPosition) {
+        //draw an "arc" that closely fits the path. The arc will be used to calculate the robot velocity and turn magnitude.
+        double immediateDistance = getDistanceOfPath(immediatePath); //unit: in
+        double immediateTurn = getTurnOfPath(immediatePath); //unit: degrees
+        double headingChange = HyperdriveUtil.getAngleToHeading(immediatePath[1].getHeading(), immediatePath[immediatePath.length - 1].getHeading());
+
+        SmartDashboard.putNumber("immediate turn", immediateTurn);
+        SmartDashboard.putNumber("immediate dist", immediateDistance);
+        SmartDashboard.putNumber("heading change", headingChange);
+        SmartDashboard.putNumber("point", currentPointIndex);
+
+        //figure out if the robot is about switch directions (forward to backward or vice versa). If so, the robot will want to make a large turn. So we zero it.
+        double turnToHeadingDifference = Math.abs(HyperdriveUtil.getAngleToHeading(headingChange, immediateTurn));
+        boolean shouldZeroTurn = turnToHeadingDifference > HyperdriveConstants.EMULATE_MAX_HEADING_TO_TURN_DIFFERENCE;    
+
+        //add positional correction to heading by making the robot aim for 2 points ahead of us
+        Point2D targetPoint = wholePath[currentPointIndex + 2];
+        if(robotPosition.getDistanceFrom(targetPoint) > parameters.getPositionalCorrectionDistance()) {
+            double positionalCorrection = HyperdriveUtil.getAngleToHeading(forwardsify(robotPosition.getHeading()), robotPosition.getHeadingTo(targetPoint));
+            positionalCorrection *= robotPosition.getDistanceFrom(targetPoint) * parameters.getPositionalCorrectionInhibitor();
+            immediateTurn += positionalCorrection;
+        }
+
+        immediateTurn *= parameters.getOverturn();
+
+        immediateTurn = Math.toRadians(immediateTurn); //The Trajectory class requires values in radians.
+        double radius = immediateDistance / immediateTurn;
+        double baseSpeed = calculateBestTangentialSpeed(radius);
+        double velocity = (isForwards ? baseSpeed : -1 * baseSpeed);
+        
+        if(shouldZeroTurn) {
+            immediateTurn = 0;
+        }
+
+        pathFinished = currentPointIndex >= path.getPoints().length - parameters.getPointSkipCount() - 2; //path will be finished when the immediate path can only be two points long.
+        return new Trajectory(velocity, immediateDistance, immediateTurn, parameters, controller, motorUnitsPerUnit);
     }
 }

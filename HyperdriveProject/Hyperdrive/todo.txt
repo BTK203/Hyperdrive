@@ -1,13 +1,1 @@
-THINGS TO DO:
-
-- Decide how to track the SimulatedRobot's acceleration. Options are:
-    - Keep record of motors (CIM, NEO, Falcon) and calculate acceleration based on the power curves of those motors.
-    This would be more accurate, but the physics would be difficult. Power curves have clearly defined equations for 
-    wattage as a function of RPM, so we could use an energy equation to figure out the force if we could confirm how 
-    percent output affects the wattage (currently thinking the wattage is recorded at 100% output, but we should check)
-
-    - Keep record of maximum velocity and acceleration and assume that the percent output affects those linearly. This
-    is definitely the easier option, but would not be as accurate.
-
-- Once the SimulatedRobot is solid, do the physics to figure out how to calculate displacement given the percent outputs
-of the motors. Then, implement it.
+REMOVE SMARTDASHBOARD PUTNUMBERS
