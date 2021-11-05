@@ -13,7 +13,7 @@ public class HyperdriveConstants {
     }
 
     //recorder constants
-    public static final int PATH_RECORDER_DISTANCE_INTERVAL = 4;
+    public static final int PATH_RECORDER_DISTANCE_INTERVAL = 4; //inches
 
     public static final String 
         PATH_RECORDER_DEFAULT_RECORD_PATH = "/home/lvuser/points.txt",
@@ -57,5 +57,4 @@ public class HyperdriveConstants {
     //simulator constants
     public static final double
         INTERNAL_FRICTION_ACCELERATION = 1; // m/s. Based on my experience pushing unpowered robots across rooms and timing their stops
-
 }

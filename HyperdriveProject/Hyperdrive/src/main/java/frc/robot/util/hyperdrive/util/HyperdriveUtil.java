@@ -256,21 +256,6 @@ public class HyperdriveUtil {
 	}
 
 	/**
-	 * Tests the equality of two values, then prints and returns the result.
-	 * Print string will be displayed on RioLog as an error reading: "Assertion [assertionName] SUCCEEDED/FAILED."
-	 * @param assertionName The informational name of the assertion. Will be used in the printout.
-	 * @param item1       The first item to test.
-	 * @param item2       The second item to test.
-	 * @return            True if item1 equals item2. False otherwise.
-	 */
-	public static boolean assertEquals(String assertionName, Object item1, Object item2) {
-		boolean success = item1.equals(item2);
-		String message = "Assertion " + assertionName + " " + (success ? "SUCCEEDED" : "FAILED") + "." + " Item 1: " + item1.toString() + " | Item 2: " + item2.toString();
-		DriverStation.reportError(message, false);
-		return success;
-	}
-
-	/**
 	 * Returns a list of files.
 	 * @param directory The directory to search
 	 * @param specifyDirectories If true, add a tag specifying whether or not a file is a directory.
@@ -306,4 +291,55 @@ public class HyperdriveUtil {
             return new String[0];
         }
     }
+
+	/**
+	 * Loads values from a file into a double array.
+	 * @param filename The name of the file to load from.
+	 * @return An array containing the values in the array.
+	 */
+	public static double[] loadValuesFromFile(String filename) {
+		try {
+			String contents = Files.readString(java.nio.file.Path.of(filename));
+			String[] split = contents.split(" ");
+			
+			//load values into program as doubles
+			ArrayList<Double> valuesList = new ArrayList<Double>();
+			for(int i=0; i<split.length; i++) {
+				try {
+					valuesList.add(Double.valueOf(split[i]));
+				} catch(NumberFormatException ex) {
+				}
+			}
+
+			//convert valuesList to an array
+			double[] valuesToReturn = new double[valuesList.size()];
+			for(int i=0; i<valuesList.size(); i++) {
+				valuesToReturn[i] = valuesList.get(i);
+			}
+
+			return valuesToReturn;
+		} catch(IOException ex) {
+			DriverStation.reportError("Could not read values from file " + filename + "!", true);
+			return new double[0];
+		}
+
+	}
+
+	/**
+	 * Saves double values to a file.
+	 * @param values The values to save.
+	 * @param fileName The name of the file to save the values to.
+	 */
+	public static void saveValuesToFile(double[] values, String fileName) {
+		String contentsToWrite = "";
+		for(int i=0; i<values.length; i++) {
+			contentsToWrite += Double.valueOf(values[i]).toString() + "\n";
+		}
+
+		try {
+			Files.writeString(java.nio.file.Path.of(fileName), contentsToWrite);
+		} catch(IOException ex) {
+			DriverStation.reportError("Could not write to file " + fileName + "!\nError: " + ex.getMessage(), true);
+		}
+	}
 }

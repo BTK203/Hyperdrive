@@ -79,7 +79,6 @@ public class CyborgCommandEmulatePath extends CommandBase {
 
     SmartDashboard.putNumber("Left percent", leftPercent);
     SmartDashboard.putNumber("Right percent", rightPercent);
-
     
     SmartDashboard.putNumber("Target left velocity", trajectory.getLeftVelocity());
     SmartDashboard.putNumber("Target right velocity", trajectory.getRightVelocity());
