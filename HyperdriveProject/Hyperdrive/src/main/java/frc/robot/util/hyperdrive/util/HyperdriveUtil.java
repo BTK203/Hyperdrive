@@ -243,12 +243,12 @@ public class HyperdriveUtil {
 
 	/**
 	 * Gets the angle that the robot needs to turn through to achieve a heading.
-	 * @param angle   The angle of the robot
-	 * @param heading The desired heading to be achieved.
+	 * @param heading1   The angle of the robot
+	 * @param heading2 The desired heading to be achieved.
 	 * @return        The angle that the robot needs to turn to have its desired heading.
 	 */
-	public static double getAngleToHeading(double angle, double heading) {
-		double angle1 = heading - angle;         //angle to heading without crossing 0
+	public static double getAngleBetweenHeadings(double heading1, double heading2) {
+		double angle1 = heading2 - heading1;         //angle to heading without crossing 0
 		double angle2 = angle1 - 360;
 		double angle3 = angle1 + 360;
 
