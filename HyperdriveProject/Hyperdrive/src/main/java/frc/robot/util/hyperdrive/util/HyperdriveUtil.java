@@ -300,6 +300,7 @@ public class HyperdriveUtil {
 	public static double[] loadValuesFromFile(String filename) {
 		try {
 			String contents = Files.readString(java.nio.file.Path.of(filename));
+			contents = contents.replace('\n', ' ');
 			String[] split = contents.split(" ");
 			
 			//load values into program as doubles

@@ -9,7 +9,7 @@ import frc.robot.util.hyperdrive.util.Units;
 // the WPILib BSD license file in the root directory of this project.
 
 /** 
- * Helper for the {@link HyperdriveTests} class.
+ * Helper for the {@link HyperdriveUtilTests} class.
  */
 public class HyperdriveTestHelper {
     /**
@@ -22,9 +22,17 @@ public class HyperdriveTestHelper {
         PathEmulator emulator = new PathEmulator(DriveStyle.TANK, 1, Units.LENGTH.METERS, 120, Units.FORCE.POUND);
         emulator.load(path, Constants.TEST_PARAMS);
         
-        //this call will populate the emulator's velocity map
-        emulator.performInitialCalculations(path.getPoints()[0]);
+        return emulator.calculateVelocityMap();
+    }
 
-        return emulator.getVelocityMap();
+    /**
+     * Calculates and return a rough velocity map for the given path.
+     * @param path the path for calculate the rough velocity map for.
+     * @return The rough velocity map for the path.
+     */
+    public static double[] calculateRoughVelocityMapForPath(Path path) {
+        //fake path emulator again
+        PathEmulator emulator = new PathEmulator(DriveStyle.TANK, 1, Units.LENGTH.METERS, 120, Units.FORCE.POUND);
+        return emulator.calculateRoughVelocityMap(path.getPoints());
     }
 }
