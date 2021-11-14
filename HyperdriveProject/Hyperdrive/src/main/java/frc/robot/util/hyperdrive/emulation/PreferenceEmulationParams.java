@@ -27,11 +27,6 @@ public class PreferenceEmulationParams implements IEmulateParams {
     }
 
     @Override
-    public double getOverturn() {
-        return HyperdriveUtil.getAndSetDouble("Emulate Overturn", HyperdriveConstants.DEFAULT_OVERTURN);
-    }
-
-    @Override
     public double getMinimumSpeed() {
         return HyperdriveUtil.getAndSetDouble("Emulate Minimum Speed", HyperdriveUtil.convertDistance(HyperdriveConstants.DEFAULT_MIN_SPEED_IPS, Units.LENGTH.INCHES, units));
     }
@@ -47,23 +42,8 @@ public class PreferenceEmulationParams implements IEmulateParams {
     }
 
     @Override
-    public double getPositionalCorrectionDistance() {
-        return HyperdriveUtil.getAndSetDouble("Emulate Positional Correction Distance", HyperdriveUtil.convertDistance(HyperdriveConstants.DEFAULT_POSITIONAL_CORRECT_DISTANCE, Units.LENGTH.INCHES, units));
-    }
-
-    @Override
     public double getCoefficientOfStaticFriction() {
         return HyperdriveUtil.getAndSetDouble("Emulate Coefficient of Static Friction", HyperdriveConstants.DEFAULT_COEFFICIENT_OF_STATIC_FRICTION);
-    }
-
-    @Override
-    public int getPointSkipCount() {
-        return (int) HyperdriveUtil.getAndSetDouble("Emulate Points to Skip", HyperdriveConstants.DEFAULT_POINT_SKIP_COUNT);
-    }
-
-    @Override
-    public int getImmediatePathSize() {
-        return (int) HyperdriveUtil.getAndSetDouble("Emulate Path Size", HyperdriveConstants.DEFAULT_IMMEDIATE_PATH_SIZE);
     }
     
     @Override

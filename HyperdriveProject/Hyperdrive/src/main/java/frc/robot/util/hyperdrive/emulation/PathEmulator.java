@@ -9,8 +9,6 @@ import frc.robot.util.hyperdrive.util.Path;
 import frc.robot.util.hyperdrive.util.Point2D;
 import frc.robot.util.hyperdrive.util.Units;
 
-import javax.print.attribute.standard.Destination;
-
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.util.hyperdrive.Hyperdrive;
@@ -265,15 +263,13 @@ public class PathEmulator {
             }
         }
 
-        int skipCount = parameters.getPointSkipCount();
         currentPointIndex = (currentPointIndex > points.length - 2 ? points.length - 2 : currentPointIndex);
         Point2D currentDestination = points[currentPointIndex + 1];
 
         this.isForwards = calculateIsForwards(robotPosition, currentDestination);        
 
         //Resolve the path of points that are immediately ahead of the robot. This array will include the robot's location as the first point.
-        int immediatePathSize = parameters.getImmediatePathSize();
-        Point2D[] nextPoints = getNextNPoints(points, currentPointIndex + skipCount, immediatePathSize);
+        Point2D[] nextPoints = getNextNPoints(points, currentPointIndex + 1, HyperdriveConstants.EMULATE_IMMEDIATE_PATH_SIZE);
         Point2D[] immediatePath = new Point2D[nextPoints.length + 1];
 
         //set first point to robot location, but the heading must be forwards trajectory. Fill in rest of immediate path with normal points
@@ -297,12 +293,12 @@ public class PathEmulator {
      * @return The rough velocity map for the given points.
      */
     public double[] calculateRoughVelocityMap(Point2D[] points) {
-        int mapPopulatedSize = points.length - parameters.getImmediatePathSize(); //the number of points in the speedmap that are actually defined
+        int mapPopulatedSize = points.length - HyperdriveConstants.EMULATE_IMMEDIATE_PATH_SIZE; //the number of points in the speedmap that are actually defined
         double[] roughMap = new double[points.length];
 
         for(int i=0; i<mapPopulatedSize; i++) {
             Point2D currentPoint = points[i];
-            Point2D[] immediatePath = getNextNPoints(points, i, parameters.getImmediatePathSize());
+            Point2D[] immediatePath = getNextNPoints(points, i, HyperdriveConstants.EMULATE_IMMEDIATE_PATH_SIZE);
 
             //figure out if the robot would be driving backwards at this point
             boolean wouldBeForwards = calculateIsForwards(immediatePath[0], immediatePath[immediatePath.length - 1]);
@@ -341,7 +337,7 @@ public class PathEmulator {
             greatestPoint = 0, //furthest point algorithm has reached
             currentPoint  = 0; //current point algorithm is processing
 
-        while(currentPoint < velocityMap.length - 2) {
+        while(currentPoint < velocityMap.length - 1) {
             //check to see if the beginning of the array has been reached while moving backwards
             if(increment < 0 && currentPoint <= 0) {
                 currentPoint = greatestPoint;
@@ -418,7 +414,7 @@ public class PathEmulator {
                     increment = 1;
                 }
             }
-
+            
             currentPoint += increment; //increment / decrement current point
         }
 
@@ -597,13 +593,10 @@ public class PathEmulator {
 
         //add positional correction to heading by making the robot aim for 2 points ahead of us
         Point2D targetPoint = immediatePath[1];
-        if(robotPosition.getDistanceFrom(targetPoint) > parameters.getPositionalCorrectionDistance()) {
-            double positionalCorrection = HyperdriveUtil.getAngleBetweenHeadings(forwardsify(robotPosition.getHeading(), isForwards), robotPosition.getHeadingTo(targetPoint));
-            positionalCorrection *= robotPosition.getDistanceFrom(targetPoint) * parameters.getPositionalCorrectionInhibitor();
-            immediateTurn += positionalCorrection;
-        }
+        double positionalCorrection = HyperdriveUtil.getAngleBetweenHeadings(forwardsify(robotPosition.getHeading(), isForwards), robotPosition.getHeadingTo(targetPoint));
+        positionalCorrection *= robotPosition.getDistanceFrom(targetPoint) * parameters.getPositionalCorrectionInhibitor();
+        immediateTurn += positionalCorrection;
 
-        immediateTurn *= parameters.getOverturn();
         immediateTurn = Math.toRadians(immediateTurn); //The Trajectory class requires values in radians.
 
         double 
@@ -624,7 +617,8 @@ public class PathEmulator {
             immediateTurn = 0;
         }
 
-        pathFinished = currentPointIndex >= path.getPoints().length - parameters.getPointSkipCount() - 2; //path will be finished when the immediate path can only be two points long.
+        //TODO: the line below may need to be line - 3, but if it works, then it works I guess
+        pathFinished = currentPointIndex >= path.getPoints().length - 2; //path will be finished when the immediate path can only be two points long.
         return new Trajectory(velocity, immediateDistance, immediateTurn, parameters, controller, motorUnitsPerUnit);
     }
 
@@ -641,6 +635,12 @@ public class PathEmulator {
         return calculateTrajectoryForImmediatePath(immediatePath, robotPosition, precalculatedVelocity, isForwards);
     }
 
+    /**
+     * Determines whether or not the robot was going fowards at a specified position
+     * @param position The current position of the robot.
+     * @param destination The point that the robot is aiming for
+     * @return {@code true} if the robot should be going forwards, {@code false} otherwise.
+     */
     private boolean calculateIsForwards(Point2D position, Point2D destination) {
         //figure out if the robot needs to drive forwards or backwards to acheive the point
         double headingToNextPoint = position.getHeadingTo(destination);

@@ -29,5 +29,5 @@ public final class Constants {
 
     //test constants. DO NOT CHANGE THESE OR ELSE YOU WILL BREAK THE TESTS AND HAVE TO REDO THEM
     public static final PIDFAConfig TEST_PIDFA = new PIDFAConfig(0.25, 1, 0.01, 0.125, 1.5, -1, 1);
-    public static final IEmulateParams TEST_PARAMS = new ConstantEmulationParams(1.15, 1.27, 2.54, 0.025, 0.3048, 0.5, 2, 7, TEST_PIDFA);
+    public static final IEmulateParams TEST_PARAMS = new ConstantEmulationParams(1.27, 2.54, 0.025, 0.3048, TEST_PIDFA);
 }
