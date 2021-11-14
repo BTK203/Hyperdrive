@@ -130,13 +130,19 @@ public class TankGyro {
      */
     public void update(double leftPosition, double rightPosition) {
         // this method uses velocities to calculate heading instead of simply using the positions directly to
-        // reduce drift that is caused by acceleration.
+        // reduce drift that is caused by acceleration
 
         long currentTime = System.currentTimeMillis();
 
         //calculate the current velocity of the motors
+        double deltaTime = (currentTime - lastUpdatedTime) / 1000.0;
+
+        //if the delta time was zero, then the robot never could have moved, and it will cause a bunch of annoying NaNs later.
+        if(deltaTime == 0) {
+            return;
+        }
+
         double
-            deltaTime = (currentTime - lastUpdatedTime) / 1000.0,
             leftVelocity = (lastLeftPosition - leftPosition) / deltaTime,
             rightVelocity = (lastRightPosition - rightPosition) / deltaTime,
             leftVelocityUnits = leftVelocity / motorUnitsPerUnit,
@@ -146,14 +152,14 @@ public class TankGyro {
         double 
             leftDisplacementNow = deltaTime * (0.5 * (leftVelocityUnits - lastLeftVelocity) + lastLeftVelocity),
             rightDisplacementNow = deltaTime * (0.5 * (rightVelocityUnits - lastRightVelocity) + lastRightVelocity),
-            leftDisplacement = (leftDisplacementNow + lastLeftDisplacement) / 2, //reduce noise from riemann sum
+            leftDisplacement = (leftDisplacementNow + lastLeftDisplacement) / 2, //reduce drift from acceleration
             rightDisplacement = (rightDisplacementNow + lastRightDisplacement) / 2;
 
         double changeInHeading = 0; //unit: radians
         if(inverted) {
-            changeInHeading = (leftDisplacement - rightDisplacement) / wheelBaseWidth;
-        } else { //NOT inverted
             changeInHeading = (rightDisplacement - leftDisplacement) / wheelBaseWidth;
+        } else { //NOT inverted
+            changeInHeading = (leftDisplacement - rightDisplacement) / wheelBaseWidth;
         }
 
         double changeInHeadingDegrees = Math.toDegrees(changeInHeading);

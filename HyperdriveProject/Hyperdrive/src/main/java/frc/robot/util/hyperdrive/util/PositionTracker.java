@@ -27,7 +27,7 @@ public class PositionTracker {
         y,
         heading;
 
-    private boolean waitForEncoders; //indicates if the PositionTracker is to wait for the distance readout to zero before zeroing position.
+    private boolean zeroWithEncoders; //indicates if the PositionTracker is to wait for the distance readout to zero before zeroing position.
     
     private final double motorUnitsPerUnit;
 
@@ -41,7 +41,7 @@ public class PositionTracker {
      */
     public PositionTracker(final double motorUnitsPerUnit, double x, double y, double heading) {
         this.motorUnitsPerUnit = motorUnitsPerUnit;
-        waitForEncoders = false;
+        zeroWithEncoders = false;
         setPositionAndHeading(x, y, heading);
     }
 
@@ -85,7 +85,7 @@ public class PositionTracker {
      * a position value that is close enough to zero, or until a half-second has passed.
      */
     public void zeroPositionAndHeading(boolean waitForEncoders) {
-        this.waitForEncoders = waitForEncoders;
+        this.zeroWithEncoders = waitForEncoders;
 
         if(!waitForEncoders) {
             setPositionAndHeading(0, 0, 0);
@@ -111,7 +111,7 @@ public class PositionTracker {
      * programmers should be careful of how often they request encoder counts from their motor controllers
      * to avoid overloading their CAN network, which can cause undesired motor behavior.
      * @param driveDistance The displacement of the robot since the last zero, in encoder counts.
-     * @param movementDirection The direction in which the robot is moving.
+     * @param movementDirection The direction in which the robot is moving, in degrees
      */
     public void update(double driveDistance, double movementDirection) {
         movementDirection %= 360;
@@ -145,9 +145,9 @@ public class PositionTracker {
         this.y += driveY;
         this.heading = movementDirection;
 
-        if(waitForEncoders && Math.abs(driveDistance) < HyperdriveConstants.ALMOST_ZERO) {
+        if(zeroWithEncoders && Math.abs(driveDistance) < HyperdriveConstants.ALMOST_ZERO) {
             setPositionAndHeading(0, 0, 0);
-            waitForEncoders = false;
+            zeroWithEncoders = false;
         }
     }
 
