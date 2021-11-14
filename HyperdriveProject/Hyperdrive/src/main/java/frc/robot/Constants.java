@@ -4,6 +4,10 @@
 
 package frc.robot;
 
+import frc.robot.util.hyperdrive.emulation.ConstantEmulationParams;
+import frc.robot.util.hyperdrive.emulation.IEmulateParams;
+import frc.robot.util.hyperdrive.util.PIDFAConfig;
+
 /**
  * The Constants class provides a convenient place for teams to hold robot-wide numerical or boolean
  * constants. This class should not be used for any other purpose. All constants should be declared
@@ -22,4 +26,8 @@ public final class Constants {
     public static final double WHEEL_BASE_WIDTH = 0.5; //meters
 
     public static final double KEY_THROTTLE_PER_SECOND = 5;
+
+    //test constants. DO NOT CHANGE THESE OR ELSE YOU WILL BREAK THE TESTS AND HAVE TO REDO THEM
+    public static final PIDFAConfig TEST_PIDFA = new PIDFAConfig(0.25, 1, 0.01, 0.125, 1.5, -1, 1);
+    public static final IEmulateParams TEST_PARAMS = new ConstantEmulationParams(1.27, 2.54, 0.025, 0.3048, TEST_PIDFA);
 }

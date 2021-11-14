@@ -119,7 +119,7 @@ public class PositionTracker {
         double distanceSinceLastUpdate = driveDistance - lastDistance;
 
         double linearDisplacement = 0;
-        double changeInHeading = Math.toRadians(HyperdriveUtil.getAngleToHeading(movementDirection, this.heading));
+        double changeInHeading = Math.toRadians(HyperdriveUtil.getAngleBetweenHeadings(movementDirection, this.heading));
         if(changeInHeading != 0 && HyperdriveConstants.USE_CHORD_BASED_TRACKING) {
             //use the arc chord-based displacement method to increase the accuracy of the tracking.
             double radiusOfArc = distanceSinceLastUpdate / changeInHeading;

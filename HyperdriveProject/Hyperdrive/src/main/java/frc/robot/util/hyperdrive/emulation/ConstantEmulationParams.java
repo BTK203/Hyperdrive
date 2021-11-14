@@ -18,16 +18,10 @@ import frc.robot.util.hyperdrive.util.Units;
  */
 public class ConstantEmulationParams implements IEmulateParams {
     private double  
-        overturn,
         minimumSpeed,
         maximumSpeed,
         positionalCorrectionInhibitor,
-        positionalCorrectionDistance,
         coefficientOfStaticFriction;
-
-    private int
-        pointSkipCount,
-        immediatePathSize;
 
     private PIDFAConfig pidfaConfig;
 
@@ -44,30 +38,17 @@ public class ConstantEmulationParams implements IEmulateParams {
      * @param pidfaConfig The PIDF and acceleration settings to use.
      */
     public ConstantEmulationParams(
-        double overturn,
         double minimumSpeed,
         double maximumSpeed,
         double positionalCorrectionInhibitor,
-        double positionalCorrectionDistance,
         double coefficientOfStaticFriction,
-        int pointSkipCount,
-        int immediatePathSize,
         PIDFAConfig pidfaConfig
     ) {
-        this.overturn = overturn;
         this.minimumSpeed = minimumSpeed;
         this.maximumSpeed = maximumSpeed;
         this.positionalCorrectionInhibitor = positionalCorrectionInhibitor;
-        this.positionalCorrectionDistance = positionalCorrectionDistance;
         this.coefficientOfStaticFriction = coefficientOfStaticFriction;
-        this.pointSkipCount = pointSkipCount;
-        this.immediatePathSize = immediatePathSize;
         this.pidfaConfig = pidfaConfig;
-    }
-
-    @Override
-    public double getOverturn() {
-        return overturn;
     }
 
     @Override
@@ -86,23 +67,8 @@ public class ConstantEmulationParams implements IEmulateParams {
     }
 
     @Override
-    public double getPositionalCorrectionDistance() {
-        return positionalCorrectionDistance;
-    }
-
-    @Override
     public double getCoefficientOfStaticFriction() {
         return coefficientOfStaticFriction;
-    }
-
-    @Override
-    public int getPointSkipCount() {
-        return pointSkipCount;
-    }
-
-    @Override
-    public int getImmediatePathSize() {
-        return immediatePathSize;
     }
 
     @Override
@@ -119,14 +85,10 @@ public class ConstantEmulationParams implements IEmulateParams {
      */
     public static ConstantEmulationParams getDefaults(Units.LENGTH units, PIDFAConfig pidfaConfig) {
         return new ConstantEmulationParams(
-            HyperdriveConstants.DEFAULT_OVERTURN,
             HyperdriveUtil.convertDistance(HyperdriveConstants.DEFAULT_MIN_SPEED_IPS, Units.LENGTH.INCHES, units),
             HyperdriveUtil.convertDistance(HyperdriveConstants.DEFAULT_MAX_SPEED_IPS, Units.LENGTH.INCHES, units),
             HyperdriveConstants.DEFAULT_POSITIONAL_CORRECT_INHIBITOR,
-            HyperdriveConstants.DEFAULT_POSITIONAL_CORRECT_DISTANCE,
             HyperdriveConstants.DEFAULT_COEFFICIENT_OF_STATIC_FRICTION,
-            HyperdriveConstants.DEFAULT_POINT_SKIP_COUNT,
-            HyperdriveConstants.DEFAULT_IMMEDIATE_PATH_SIZE,
             pidfaConfig
         );
     }

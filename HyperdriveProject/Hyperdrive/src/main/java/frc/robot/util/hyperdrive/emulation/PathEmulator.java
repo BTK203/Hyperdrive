@@ -25,6 +25,7 @@ import frc.robot.util.hyperdrive.recording.PathRecorder;
  */
 public class PathEmulator {
     private Path path;
+    private double[] velocityMap; //array containing maximum speeds at all points in path
     private IEmulateParams parameters;
     private IController controller;
     private PathRecorder recorder;
@@ -155,7 +156,7 @@ public class PathEmulator {
 
         if(pathLoaded && pathValid && pathLongEnough) {
             double headingToNextPoint = robotPosition.getHeadingTo(path.getPoints()[1]);
-            double headingDifference = HyperdriveUtil.getAngleToHeading(robotPosition.getHeading(), headingToNextPoint); 
+            double headingDifference = HyperdriveUtil.getAngleBetweenHeadings(robotPosition.getHeading(), headingToNextPoint); 
             this.isForwards = Math.abs(headingDifference) < 90;
             
             currentPointIndex = 0;
@@ -173,8 +174,9 @@ public class PathEmulator {
         }
 
         //now that path and parameters are loaded, and the robot is ready to emulate a path, create the controller that it 
-        //will be driven with.
+        //will be driven with. Also create the speedmap to provide guidelines for speed
         createController();
+        this.velocityMap = calculateVelocityMap();
     }
 
     /**
@@ -250,7 +252,7 @@ public class PathEmulator {
             double currentDirection = forwardsify(robotPosition.getHeading());
             for(int limit=0; limit<HyperdriveConstants.EMULATE_POINT_PASS_LIMIT; limit++) {
                 //get the angle that the robot needs to turn to acheive the point
-                double headingToNext = Math.abs(HyperdriveUtil.getAngleToHeading(currentDirection, robotPosition.getHeadingTo(points[currentPointIndex])));
+                double headingToNext = Math.abs(HyperdriveUtil.getAngleBetweenHeadings(currentDirection, robotPosition.getHeadingTo(points[currentPointIndex])));
 
                 //get a path that consists of future points
                 if(currentPointIndex < points.length - 1 && headingToNext >= 90) {
@@ -261,18 +263,13 @@ public class PathEmulator {
             }
         }
 
-        int skipCount = parameters.getPointSkipCount();
-        currentPointIndex = (currentPointIndex > points.length - skipCount ? points.length - skipCount : currentPointIndex);
+        currentPointIndex = (currentPointIndex > points.length - 2 ? points.length - 2 : currentPointIndex);
         Point2D currentDestination = points[currentPointIndex + 1];
 
-        //figure out if the robot needs to drive forwards or backwards to acheive the point
-        double headingToNextPoint = robotPosition.getHeadingTo(currentDestination);
-        double headingDifference = HyperdriveUtil.getAngleToHeading(robotPosition.getHeading(), headingToNextPoint); 
-        this.isForwards = Math.abs(headingDifference) < 90;
+        this.isForwards = calculateIsForwards(robotPosition, currentDestination);        
 
         //Resolve the path of points that are immediately ahead of the robot. This array will include the robot's location as the first point.
-        int immediatePathSize = parameters.getImmediatePathSize();
-        Point2D[] nextPoints = getNextNPoints(points, currentPointIndex + skipCount, immediatePathSize);
+        Point2D[] nextPoints = getNextNPoints(points, currentPointIndex + 1, HyperdriveConstants.EMULATE_IMMEDIATE_PATH_SIZE);
         Point2D[] immediatePath = new Point2D[nextPoints.length + 1];
 
         //set first point to robot location, but the heading must be forwards trajectory. Fill in rest of immediate path with normal points
@@ -281,45 +278,149 @@ public class PathEmulator {
             immediatePath[i] = nextPoints[i - 1];
         }
 
+        //dont try to drive short paths
         if(immediatePath.length < 2) {
             return new Trajectory(0, 0, 0, parameters, controller, motorUnitsPerUnit);
         }
 
-        //draw an "arc" that closely fits the path. The arc will be used to calculate the robot velocity and turn magnitude.
-        double immediateDistance = getDistanceOfPath(immediatePath); //unit: in
-        double immediateTurn = getTurnOfPath(immediatePath); //unit: degrees
-        double headingChange = HyperdriveUtil.getAngleToHeading(immediatePath[1].getHeading(), immediatePath[immediatePath.length - 1].getHeading());
+        //once we have our immediate path, calculate a trajectory for it
+        return calculateTrajectoryForImmediatePath(immediatePath, robotPosition, velocityMap[currentPointIndex]);
+    }
 
-        SmartDashboard.putNumber("immediate turn", immediateTurn);
-        SmartDashboard.putNumber("immediate dist", immediateDistance);
-        SmartDashboard.putNumber("heading change", headingChange);
-        SmartDashboard.putNumber("point", currentPointIndex);
+    /**
+     * Calculates the unsmoothed velocity map for a path.
+     * @param points The points of the path to process.
+     * @return The rough velocity map for the given points.
+     */
+    public double[] calculateRoughVelocityMap(Point2D[] points) {
+        int mapPopulatedSize = points.length - HyperdriveConstants.EMULATE_IMMEDIATE_PATH_SIZE; //the number of points in the speedmap that are actually defined
+        double[] roughMap = new double[points.length];
 
-        //figure out if the robot is about switch directions (forward to backward or vice versa). If so, the robot will want to make a large turn. So we zero it.
-        double turnToHeadingDifference = Math.abs(HyperdriveUtil.getAngleToHeading(headingChange, immediateTurn));
-        boolean shouldZeroTurn = turnToHeadingDifference > HyperdriveConstants.EMULATE_MAX_HEADING_TO_TURN_DIFFERENCE;    
+        for(int i=0; i<mapPopulatedSize; i++) {
+            Point2D currentPoint = points[i];
+            Point2D[] immediatePath = getNextNPoints(points, i, HyperdriveConstants.EMULATE_IMMEDIATE_PATH_SIZE);
 
-        //add positional correction to heading by making the robot aim for 2 points ahead of us
-        Point2D targetPoint = points[currentPointIndex + 2];
-        if(robotPosition.getDistanceFrom(targetPoint) > parameters.getPositionalCorrectionDistance()) {
-            double positionalCorrection = HyperdriveUtil.getAngleToHeading(forwardsify(robotPosition.getHeading()), robotPosition.getHeadingTo(targetPoint));
-            positionalCorrection *= robotPosition.getDistanceFrom(targetPoint) * parameters.getPositionalCorrectionInhibitor();
-            immediateTurn += positionalCorrection;
+            //figure out if the robot would be driving backwards at this point
+            boolean wouldBeForwards = calculateIsForwards(immediatePath[0], immediatePath[immediatePath.length - 1]);
+
+            //forwards-ify first point of immediate path. This is required by calculateTrajectoryForImmediatePath()
+            Point2D
+                oldPoint = immediatePath[0],
+                newPoint = new Point2D(oldPoint.getX(), oldPoint.getY(), forwardsify(oldPoint.getHeading(), wouldBeForwards));
+
+            immediatePath[0] = newPoint;
+
+            //calculate trajectory for the path (theoretically) ahead. Use Double.MAX_VALUE because there is no cap on the speed
+            //that calculateTrajectoryForImmediatePath should calculate.
+            Trajectory goalTrajectory = calculateTrajectoryForImmediatePath(immediatePath, currentPoint, Double.MAX_VALUE, wouldBeForwards);
+            double velocity = goalTrajectory.getVelocity();
+            roughMap[i] = velocity;
         }
 
-        immediateTurn *= parameters.getOverturn();
+        return roughMap;
+    }
 
-        immediateTurn = Math.toRadians(immediateTurn); //The Trajectory class requires values in radians.
-        double radius = immediateDistance / immediateTurn;
-        double baseSpeed = calculateBestTangentialSpeed(radius);
-        double velocity = (isForwards ? baseSpeed : -1 * baseSpeed);
-        
-        if(shouldZeroTurn) {
-            immediateTurn = 0;
+    /**
+     * Calculates a speed map based on the currently loaded path and parameters.
+     * The speedmap array will then be populated.
+     */
+    public double[] calculateVelocityMap() {
+        final double maxAccel = parameters.getPIDFAConfig().getAccel();
+        Point2D[] points = path.getPoints();
+        double[] velocityMap = calculateRoughVelocityMap(points);
+
+        HyperdriveUtil.saveValuesToFile(velocityMap, "rough.txt");
+
+        //numbers for controlling the smoothing algorithm's progress
+        int
+            increment     = 1, //should be either 1 or -1 
+            greatestPoint = 0, //furthest point algorithm has reached
+            currentPoint  = 0; //current point algorithm is processing
+
+        while(currentPoint < velocityMap.length - 1) {
+            //check to see if the beginning of the array has been reached while moving backwards
+            if(increment < 0 && currentPoint <= 0) {
+                currentPoint = greatestPoint;
+                increment = 1;
+            }
+
+            //update greatest point if necessary
+            if(currentPoint > greatestPoint) {
+                greatestPoint = currentPoint;
+            }
+
+            double
+                currentVelocity       = velocityMap[currentPoint],
+                nextVelocity          = velocityMap[currentPoint + increment],
+                distanceBetweenPoints = points[currentPoint].getDistanceFrom(points[currentPoint + increment]);
+            
+            //acceleration currently needed to get between points and acheive target velocities
+            double acceleration = (Math.pow(nextVelocity, 2) - Math.pow(currentVelocity, 2)) / (2 * distanceBetweenPoints);
+
+            //the algorithm for actually smoothing the points only works for positive values, so check signs here to perform operations later
+            boolean
+                currentPositive = currentVelocity >= 0,
+                nextPositive    = nextVelocity >= 0;
+            
+            //invert negative values so that they become positive
+            currentVelocity = conditionalInvert(currentVelocity, !currentPositive); //inverts if negative (!positive)
+            nextVelocity    = conditionalInvert(nextVelocity, !nextPositive);
+
+            // if the acceleration is too steep, this is the part that smooths it out.
+            if(Math.abs(acceleration) > maxAccel) {
+                //if the values are on both sides of zero...
+                if(currentPositive != nextPositive) {
+                    //compute maximum acceptable velocity from stopped. The distanceBetweenPoints / 2 garantees that
+                    //the acceleration will not cause an infinite loop
+                    double acceptableVelocity = computeAcceptableVelocity(0, distanceBetweenPoints / 2, maxAccel);
+                    
+                    //create a new current and next velocity. These are capped to the "current" values.
+                    double
+                        newCurrentVelocity = (acceptableVelocity > Math.abs(currentVelocity) ? currentVelocity : acceptableVelocity),
+                        newNextVelocity    = (acceptableVelocity > Math.abs(nextVelocity) ? nextVelocity : acceptableVelocity);
+                    
+                    //invert the velocities if necessary
+                    newCurrentVelocity = conditionalInvert(newCurrentVelocity, !currentPositive);
+                    newNextVelocity    = conditionalInvert(newNextVelocity, !nextPositive);
+
+                    //set the velocities
+                    velocityMap[currentPoint]     = newCurrentVelocity;
+                    velocityMap[currentPoint + increment] = newNextVelocity;
+
+                    //start going backwards because previous velocities may need to be adjusted. Then go back to top of loop.
+                    increment = -1;
+                    continue;
+                }
+
+                //otherwise, value smoothing goes as normal.
+                double 
+                    signedMaxAccel     = conditionalInvert(maxAccel, acceleration < 0),
+                    acceptableVelocity = computeAcceptableVelocity(currentVelocity, distanceBetweenPoints, signedMaxAccel),
+                    deltaV             = acceptableVelocity - currentVelocity;
+
+                //smooth value. Lower values are prioritized by the algorithm
+                if(deltaV > 0) {
+                    //smooth relative to current velocity if "speeding up"
+                    velocityMap[currentPoint + increment] = conditionalInvert(acceptableVelocity, !nextPositive);
+                } else {
+                    //prioritize the lower speed if "slowing down." This means that previous speeds will need to be re-calculated.
+                    currentPoint = currentPoint + (2 * increment); //will be decremented at end of loop, making 1 * increment
+                    increment = -1;
+                }
+            } else {
+                //if going backwards, we have reached acceptable velocities and can start going forwards again.
+                if(increment < 0) {
+                    currentPoint = greatestPoint - 1; //will be incremented later, making greatestPoint - 0
+                    increment = 1;
+                }
+            }
+            
+            currentPoint += increment; //increment / decrement current point
         }
 
-        pathFinished = currentPointIndex >= path.getPoints().length - parameters.getPointSkipCount() - 2; //path will be finished when the immediate path can only be two points long.
-        return new Trajectory(velocity, immediateDistance, immediateTurn, parameters, controller, motorUnitsPerUnit);
+        HyperdriveUtil.saveValuesToFile(velocityMap, "smoothed.txt"); //TODO: DELETE
+
+        return velocityMap;
     }
 
     /**
@@ -357,7 +458,8 @@ public class PathEmulator {
 
     /**
      * Returns the average turn of a path.
-     * @param path An array of points representing the path.
+     * @param path An array of points representing the path. The first point should be forwards-ified
+     * using {@link #forwardsify(double)}.
      * @return The average turn of the path in degrees.
      */
     private double getTurnOfPath(Point2D[] path) {
@@ -365,7 +467,7 @@ public class PathEmulator {
         double lastHeading = path[0].getHeading();
         for(int i=1; i<path.length; i++) {
             double headingToPoint = path[i - 1].getHeadingTo(path[i]);
-            double correctionToPoint = HyperdriveUtil.getAngleToHeading(lastHeading, headingToPoint);
+            double correctionToPoint = HyperdriveUtil.getAngleBetweenHeadings(lastHeading, headingToPoint);
 
             turn += correctionToPoint;
             lastHeading = headingToPoint;
@@ -377,9 +479,20 @@ public class PathEmulator {
     /**
      * Returns an angle corresponding to the direction that the robot is travelling in
      * @param angle Original angle.
+     * @param isForwards {@code true} if the robot is currently driving forwards, {@code false} otherwise.
+     * @return A new angle with respect to the direction of the robot's movement.
+     */
+    private double forwardsify(double angle, boolean isForwards) {
+        return (isForwards ? angle : (angle + 180) % 360);
+    }
+
+    /**
+     * Returns an angle corresponding to the direction that the robot is travelling in
+     * @param angle Original angle.
+     * @return A new angle with respect to the direction of the robot's movement.
      */
     private double forwardsify(double angle) {
-        return (isForwards ? angle : (angle + 180) % 360);
+        return forwardsify(angle, isForwards);
     }
 
     /**
@@ -405,6 +518,7 @@ public class PathEmulator {
 
         //convert best speed to in/s
         bestSpeed = HyperdriveUtil.convertDistance(bestSpeed, Units.LENGTH.METERS, lengthUnit); //unit: in/s
+
         bestSpeed = (bestSpeed > maxSpeed ? maxSpeed : (bestSpeed < minSpeed ? minSpeed : bestSpeed));
 
         return bestSpeed;
@@ -426,5 +540,111 @@ public class PathEmulator {
                 throw new RuntimeException(msg);
             }
         }
+    }
+
+    /**
+     * Computes the acceptable next velocity from the current one that will satisfy the maximum acceleration.
+     * @param currentVelocity Current velocity of robot
+     * @param distance Distance the robot will drive by next velocity
+     * @param maxAcceleration Maximum acceleration of robot
+     * @return The acceptable velocity of the robot at the next point.
+     */
+    private double computeAcceptableVelocity(double currentVelocity, double distance, double maxAcceleration) {
+        double numberToSqrt = Math.pow(currentVelocity, 2) + (2 * maxAcceleration * distance);
+        double acceptableVelocity = 0;
+
+        if(numberToSqrt > 0) {
+            acceptableVelocity = Math.sqrt(numberToSqrt);
+        } else {
+            acceptableVelocity = -1 * Math.sqrt(Math.abs(numberToSqrt));
+        }
+
+        return acceptableVelocity;
+    }
+
+    /**
+     * Inverts a value if {@code shouldInvert} is true.
+     * @param value The value to (maybe) invert.
+     * @param shouldInvert Whether or not to invert the value. 
+     * @return The (maybe) inverted value.
+     */
+    private double conditionalInvert(double value, boolean shouldInvert) {
+        return (shouldInvert ? value * -1 : value);
+    }
+
+    /**
+     * Calculates the trajectory needed for the robot to drive through a short path immediately ahead of it.
+     * @param immediatePath An array of points describing the path immediately ahead of the robot.
+     * @param robotPosition The current position of the robot.
+     * @param precalculatedVelocity The velocity calculated for the current point before path execution. Will
+     * be treated as the maximum allowable robot speed.
+     * @param isForwards {@code true} if the robot is driving forwards, {@code false} otherwise.
+     * @return A Trajectory object containing information needed to drive the robot through the immediate path.
+     */
+    private Trajectory calculateTrajectoryForImmediatePath(Point2D[] immediatePath, Point2D robotPosition, double precalculatedVelocity, boolean isForwards) {
+        //draw an "arc" that closely fits the path. The arc will be used to calculate the robot velocity and turn magnitude.
+        double immediateDistance = getDistanceOfPath(immediatePath); //unit: in
+        double immediateTurn = getTurnOfPath(immediatePath); //unit: degrees
+        double headingChange = HyperdriveUtil.getAngleBetweenHeadings(immediatePath[1].getHeading(), immediatePath[immediatePath.length - 1].getHeading());
+
+        //figure out if the robot is about switch directions (forward to backward or vice versa). If so, the robot will want to make a large turn. So we zero it.
+        double turnToHeadingDifference = Math.abs(HyperdriveUtil.getAngleBetweenHeadings(headingChange, immediateTurn));
+        boolean shouldZeroTurn = turnToHeadingDifference > HyperdriveConstants.EMULATE_MAX_HEADING_TO_TURN_DIFFERENCE;    
+
+        //add positional correction to heading by making the robot aim for 2 points ahead of us
+        Point2D targetPoint = immediatePath[1];
+        double positionalCorrection = HyperdriveUtil.getAngleBetweenHeadings(forwardsify(robotPosition.getHeading(), isForwards), robotPosition.getHeadingTo(targetPoint));
+        positionalCorrection *= robotPosition.getDistanceFrom(targetPoint) * parameters.getPositionalCorrectionInhibitor();
+        immediateTurn += positionalCorrection;
+
+        immediateTurn = Math.toRadians(immediateTurn); //The Trajectory class requires values in radians.
+
+        double 
+            radius = immediateDistance / immediateTurn,
+            baseSpeed = calculateBestTangentialSpeed(radius);
+
+        if(baseSpeed > Math.abs(precalculatedVelocity)) {
+            baseSpeed = Math.abs(precalculatedVelocity);
+        }
+
+        if(baseSpeed < parameters.getMinimumSpeed()) {
+            baseSpeed = parameters.getMinimumSpeed();
+        }
+        
+        double velocity = (isForwards ? baseSpeed : -1 * baseSpeed);
+        
+        if(shouldZeroTurn) {
+            immediateTurn = 0;
+        }
+
+        //TODO: the line below may need to be line - 3, but if it works, then it works I guess
+        pathFinished = currentPointIndex >= path.getPoints().length - 2; //path will be finished when the immediate path can only be two points long.
+        return new Trajectory(velocity, immediateDistance, immediateTurn, parameters, controller, motorUnitsPerUnit);
+    }
+
+    /**
+     * Calculates the trajectory needed for the robot to drive through a short path immediately ahead of it.
+     * This implementation uses the class's stored value for isForwards.
+     * @param immediatePath An array of points describing the path immediately ahead of the robot.
+     * @param robotPosition The current position of the robot.
+     * @param precalculatedVelocity The velocity calculated for the current point before path execution. Will
+     * be treated as the maximum allowable robot speed.
+     * @return A Trajectory object containing information needed to drive the robot through the immediate path.
+     */
+    private Trajectory calculateTrajectoryForImmediatePath(Point2D[] immediatePath, Point2D robotPosition, double precalculatedVelocity) {
+        return calculateTrajectoryForImmediatePath(immediatePath, robotPosition, precalculatedVelocity, isForwards);
+    }
+
+    /**
+     * Determines whether or not the robot was going fowards at a specified position
+     * @param position The current position of the robot.
+     * @param destination The point that the robot is aiming for
+     * @return {@code true} if the robot should be going forwards, {@code false} otherwise.
+     */
+    private boolean calculateIsForwards(Point2D position, Point2D destination) {
+        //figure out if the robot needs to drive forwards or backwards to acheive the point
+        double headingToNextPoint = position.getHeadingTo(destination);
+        double headingDifference = HyperdriveUtil.getAngleBetweenHeadings(position.getHeading(), headingToNextPoint); 
+        return Math.abs(headingDifference) < 90;
     }
 }
