@@ -10,7 +10,6 @@ import frc.robot.util.hyperdrive.util.Point2D;
 import frc.robot.util.hyperdrive.util.Units;
 
 import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.util.hyperdrive.Hyperdrive;
 import frc.robot.util.hyperdrive.HyperdriveConstants;
 import frc.robot.util.hyperdrive.enumeration.DriveStyle;
@@ -25,7 +24,8 @@ import frc.robot.util.hyperdrive.recording.PathRecorder;
  */
 public class PathEmulator {
     private Path path;
-    private double[] velocityMap; //array containing maximum speeds at all points in path
+    private double[] velocityMap; //array containing maximum velocities at all points in path
+    private double[] devianceMap; //array containing deviances captured when the robot passes the target point
     private IEmulateParams parameters;
     private IController controller;
     private PathRecorder recorder;
@@ -140,7 +140,7 @@ public class PathEmulator {
     }
 
     /**
-     * Performs calculations that are required for Hyperdrive to drive a path to the best of its ability.
+     * Performs calculations that are required for Hyperdrive to drive a path.
      * Mainly, this method uses the current robot position to figure out if it should start going forwards
      * or backwards.
      * @param robotPosition The current position of the robot.
@@ -174,8 +174,13 @@ public class PathEmulator {
         }
 
         //now that path and parameters are loaded, and the robot is ready to emulate a path, create the controller that it 
-        //will be driven with. Also create the speedmap to provide guidelines for speed
+        //will be driven with.
         createController();
+
+        //allocate array for deviance tracking
+        devianceMap = new double[path.getPoints().length];
+
+        //create velocity map
         this.velocityMap = calculateVelocityMap();
     }
 
@@ -256,6 +261,9 @@ public class PathEmulator {
 
                 //get a path that consists of future points
                 if(currentPointIndex < points.length - 1 && headingToNext >= 90) {
+                    //calculate deviance from current point, aligned to the axis that the point's heading is aligned with.
+                    //TODO: IMPLEMENT
+
                     currentPointIndex++;
                 } else {
                     break;

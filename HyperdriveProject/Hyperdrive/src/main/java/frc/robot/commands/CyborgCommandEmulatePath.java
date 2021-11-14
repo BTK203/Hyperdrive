@@ -12,6 +12,7 @@ import frc.robot.util.hyperdrive.Hyperdrive;
 import frc.robot.util.hyperdrive.emulation.IEmulateParams;
 import frc.robot.util.hyperdrive.emulation.PreferenceEmulationParams;
 import frc.robot.util.hyperdrive.emulation.TankTrajectory;
+import frc.robot.util.hyperdrive.util.Path;
 import frc.robot.util.hyperdrive.util.Units;
 
 /**
@@ -24,6 +25,18 @@ public class CyborgCommandEmulatePath extends CommandBase {
   private SubsystemDrive drivetrain;
   private Hyperdrive hyperdrive;
   private IEmulateParams parameters;
+  private boolean driveRecordedPath;
+  private String pathFile; //only used if driveRecordedPath is true
+
+  public CyborgCommandEmulatePath(SubsystemDrive drivetrain, Hyperdrive hyperdrive, IEmulateParams parameters, String path) {
+    this.drivetrain = drivetrain;
+    this.hyperdrive = hyperdrive;
+    this.parameters = parameters;
+    pathFile = path;
+    driveRecordedPath = pathFile.equals("");
+
+    addRequirements(this.drivetrain);
+  }
 
   /**
    * Creates a new CyborgCommandEmulatePath. This constructor overrides all defaults to the user-specified arguments.
@@ -32,11 +45,7 @@ public class CyborgCommandEmulatePath extends CommandBase {
    * @param parameters The parameters for Hyperdrive to use while driving the robot through the path.
    */
   public CyborgCommandEmulatePath(SubsystemDrive drivetrain, Hyperdrive hyperdrive, IEmulateParams parameters) {
-    this.drivetrain = drivetrain;
-    this.hyperdrive = hyperdrive;
-    this.parameters = parameters;
-
-    addRequirements(this.drivetrain);
+    this(drivetrain, hyperdrive, parameters, "");
   }
 
   /**
@@ -51,7 +60,8 @@ public class CyborgCommandEmulatePath extends CommandBase {
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    hyperdrive.loadPath(hyperdrive.getRecordedPath(), parameters);
+    Path path = (driveRecordedPath ? hyperdrive.getRecordedPath() : new Path(pathFile));
+    hyperdrive.loadPath(path, parameters);
     hyperdrive.performInitialCalculations();
   }
 
@@ -60,9 +70,8 @@ public class CyborgCommandEmulatePath extends CommandBase {
   public void execute() {
     TankTrajectory trajectory = hyperdrive.calculateNextMovements()
                                   .getTankTrajectory(Constants.WHEEL_BASE_WIDTH)
-                                  .convertTime(Units.TIME.MINUTES)
-                                  .invertTurn();
-
+                                  .convertTime(Units.TIME.MINUTES);
+                                  
     //calculate percent outputs
     double
       leftPercent = trajectory.getLeftPercentOutput(drivetrain.getLeftVelocityMotorUnits()),

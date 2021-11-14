@@ -51,7 +51,9 @@ public class TankController implements IController {
         double output = controllers[controllerID].calculate(current);
         output += parameters.getPIDFAConfig().getkF();
 
-        //make sure output is within bounds
+        //scale output and make sure output is within bounds
+        output *= parameters.getPIDFAConfig().getMaximumOutput();
+
         if(output < parameters.getPIDFAConfig().getMinimumOutput()) {
             output = parameters.getPIDFAConfig().getMinimumOutput();
         } else if(output > parameters.getPIDFAConfig().getMaximumOutput()) {

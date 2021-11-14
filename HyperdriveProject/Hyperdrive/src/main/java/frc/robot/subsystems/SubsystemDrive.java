@@ -124,8 +124,8 @@ public class SubsystemDrive extends SubsystemBase {
     steeringInput = (steeringInput < -1 ? -1 : (steeringInput > 1 ? 1 : steeringInput));
 
     //calculate new percent outputs based on forward and steer inputs
-    double left = forwardInput - steeringInput;
-    double right = forwardInput + steeringInput;
+    double left = forwardInput + steeringInput;
+    double right = forwardInput - steeringInput;
 
     //make sure that left and right are between -1 and 1
     left = (left < -1 ? -1 : (left > 1 ? 1 : left));

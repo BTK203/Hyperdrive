@@ -15,6 +15,8 @@ import frc.robot.commands.CyborgCommandRecordPath;
 import frc.robot.commands.InstantCommandCreateRandomPath;
 import frc.robot.commands.InstantCommandSetRobotPosition;
 import frc.robot.subsystems.SubsystemDrive;
+import frc.robot.util.hyperdrive.emulation.PreferenceEmulationParams;
+import frc.robot.util.hyperdrive.util.Units;
 
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a
@@ -46,6 +48,7 @@ public class RobotContainer {
     SmartDashboard.putData("Set Robot To Start", setRobotPositionToPathStart);
     SmartDashboard.putData("Emulate", new CyborgCommandEmulatePath(drivetrain, drivetrain.getHyperdrive()));
     SmartDashboard.putData("Emulate with Test Params", new CyborgCommandEmulatePath(drivetrain, drivetrain.getHyperdrive(), Constants.TEST_PARAMS));
+    SmartDashboard.putData("Emulate Benchmark", new CyborgCommandEmulatePath(drivetrain, drivetrain.getHyperdrive(), new PreferenceEmulationParams(Units.LENGTH.METERS), "benchmark.txt"));
     SmartDashboard.putData("Record", new CyborgCommandRecordPath(drivetrain.getHyperdrive()));
     SmartDashboard.putData("Create Random", new InstantCommandCreateRandomPath("src/main/java/frc/robot/random.txt", drivetrain.getHyperdrive()));
     SmartDashboard.putData("Zero Coords", new InstantCommand(() -> drivetrain.zeroPositionAndHeading()));
