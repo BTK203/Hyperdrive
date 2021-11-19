@@ -262,8 +262,7 @@ public class PathEmulator {
                 //get a path that consists of future points
                 if(currentPointIndex < points.length - 1 && headingToNext >= 90) {
                     //calculate deviance from current point, aligned to the axis that the point's heading is aligned with.
-                    //TODO: IMPLEMENT
-
+                    devianceMap[currentPointIndex] = HyperdriveUtil.getDeviance(robotPosition, points[currentPointIndex]);
                     currentPointIndex++;
                 } else {
                     break;
@@ -599,7 +598,7 @@ public class PathEmulator {
         double turnToHeadingDifference = Math.abs(HyperdriveUtil.getAngleBetweenHeadings(headingChange, immediateTurn));
         boolean shouldZeroTurn = turnToHeadingDifference > HyperdriveConstants.EMULATE_MAX_HEADING_TO_TURN_DIFFERENCE;    
 
-        //add positional correction to heading by making the robot aim for 2 points ahead of us
+        //add positional correction to heading by making the robot aim for a point ahead of us
         Point2D targetPoint = immediatePath[1];
         double positionalCorrection = HyperdriveUtil.getAngleBetweenHeadings(forwardsify(robotPosition.getHeading(), isForwards), robotPosition.getHeadingTo(targetPoint));
         positionalCorrection *= robotPosition.getDistanceFrom(targetPoint) * parameters.getPositionalCorrectionInhibitor();

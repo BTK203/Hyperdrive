@@ -8,12 +8,13 @@ import static org.junit.Assert.assertEquals;
 import org.junit.Test;
 
 import frc.robot.util.hyperdrive.util.HyperdriveUtil;
+import frc.robot.util.hyperdrive.util.Point2D;
 import frc.robot.util.hyperdrive.util.Units;
 
 /** 
  * Test class for some foundational Hyperdrive structures.
  */
-public class HyperdriveUtilTests {
+public class HyperdriveUtilTests { //TODO: Write test for HyperdriveUtil.getDeviance()
     @Test
     public void testLengthUnits() {
         assertEquals(1.667, HyperdriveUtil.convertDistance(20, Units.LENGTH.INCHES, Units.LENGTH.FEET), 0.01); //20 inches = 1.666667 ft
@@ -67,6 +68,50 @@ public class HyperdriveUtilTests {
     }
 
     @Test
+    public void testMassAndWeight() {
+        //converting from kg to N or LBF and whatever
+        assertEquals(0, HyperdriveUtil.massKGFromWeight(0, Units.FORCE.KILOGRAM_FORCE), 0.01);
+        assertEquals(0, HyperdriveUtil.massKGFromWeight(0, Units.FORCE.NEWTON), 0.01);
+        assertEquals(0, HyperdriveUtil.massKGFromWeight(0, Units.FORCE.POUND), 0.01);
+
+        assertEquals(0, HyperdriveUtil.weightFromMassKG(0, Units.FORCE.KILOGRAM_FORCE), 0.01);
+        assertEquals(0, HyperdriveUtil.weightFromMassKG(0, Units.FORCE.NEWTON), 0.01);
+        assertEquals(0, HyperdriveUtil.weightFromMassKG(0, Units.FORCE.POUND), 0.01);
+
+        //convert 5 kilograms to weights and back
+        assertEquals(49.03, HyperdriveUtil.weightFromMassKG(5, Units.FORCE.NEWTON), 0.01);
+        assertEquals(11.0156, HyperdriveUtil.weightFromMassKG(5, Units.FORCE.POUND), 0.01);
+        assertEquals(5, HyperdriveUtil.weightFromMassKG(5, Units.FORCE.KILOGRAM_FORCE), 0.01);
+
+        assertEquals(5, HyperdriveUtil.massKGFromWeight(49.03, Units.FORCE.NEWTON), 0.01);
+        assertEquals(5, HyperdriveUtil.massKGFromWeight(11.0156, Units.FORCE.POUND), 0.01);
+        assertEquals(5, HyperdriveUtil.massKGFromWeight(5, Units.FORCE.KILOGRAM_FORCE), 0.01);
+    }
+
+    @Test
+    public void testAngleBetweenHeadings() {
+        //some zero tests fo today
+        assertEquals(0, HyperdriveUtil.getAngleBetweenHeadings(0, 0), 0.01);
+        assertEquals(0, HyperdriveUtil.getAngleBetweenHeadings(0, 360), 0.01);
+        assertEquals(0, HyperdriveUtil.getAngleBetweenHeadings(360, 0), 0.01);
+        assertEquals(0, HyperdriveUtil.getAngleBetweenHeadings(-720, 360), 0.01);
+
+        //simple tests
+        assertEquals(90, HyperdriveUtil.getAngleBetweenHeadings(0, 90), 0.01);
+        assertEquals(60, HyperdriveUtil.getAngleBetweenHeadings(20, 80), 0.01);
+        assertEquals(-90, HyperdriveUtil.getAngleBetweenHeadings(100, 10), 0.01);
+        assertEquals(5, HyperdriveUtil.getAngleBetweenHeadings(265, 270), 0.01);
+        assertEquals(8, HyperdriveUtil.getAngleBetweenHeadings(352, 360), 0.01);
+
+        //complex tests
+        assertEquals(-2, HyperdriveUtil.getAngleBetweenHeadings(0, 358), 0.01);
+        assertEquals(-40, HyperdriveUtil.getAngleBetweenHeadings(20, 340), 0.01);
+        assertEquals(-40, HyperdriveUtil.getAngleBetweenHeadings(20, -20), 0.01);
+        assertEquals(-1, HyperdriveUtil.getAngleBetweenHeadings(1, 720), 0.01);
+        assertEquals(1, HyperdriveUtil.getAngleBetweenHeadings(720, 1), 0.01);
+    }
+
+    @Test
     public void testValueImport() {
         double[] results1 = {
             2.1953320e+00,   
@@ -103,5 +148,42 @@ public class HyperdriveUtilTests {
         assertArrayEquals(new double[0], HyperdriveUtil.loadValuesFromFile("src/test/java/files/valueImport/valueimport3.txt"), 0.01);
         assertArrayEquals(new double[0], HyperdriveUtil.loadValuesFromFile("src/test/java/files/valueImport/valueimport4.txt"), 0.01); //this one doesn't exist on purpose
         assertArrayEquals(results5, HyperdriveUtil.loadValuesFromFile("src/test/java/files/valueImport/valueimport5.txt"), 0.01);
+    }
+
+    @Test
+    public void testGetDeviance() {
+        //test 1 (points are right on top of each other, same heading, 0 deviance)
+        Point2D
+            current = new Point2D(6, 6, 8),
+            target = new Point2D(6, 6, 8);
+
+        assertEquals(0, HyperdriveUtil.getDeviance(current, target), 0.01);
+
+        //test 2 (current point directly in front of target, same heading, 0 deviance)
+        current = new Point2D(1, 2, 0);
+        target  = new Point2D(3, 2, 0);
+        assertEquals(0, HyperdriveUtil.getDeviance(current, target), 0.01);
+
+        current = new Point2D(0, 0, 45);
+        target = new Point2D(1, 1, 45);
+        assertEquals(0, HyperdriveUtil.getDeviance(current, target), 0.01);
+
+        //test 3 (current point directly beside target, same(ish) heading, easily calculated deviance);
+        current = new Point2D(0, 0, 0);
+        target = new Point2D(0, 1, 0);
+        assertEquals(1, HyperdriveUtil.getDeviance(current, target), 0.01);
+
+        current = new Point2D(5, 6, 180);
+        target = new Point2D(5, 0, 180);
+        assertEquals(6, HyperdriveUtil.getDeviance(current, target), 0.01);
+
+        current = new Point2D(1, 1, 45); //45 degree offset should not matter because the robot is still on the perpendicular deviance line
+        target = new Point2D(3, 1, 90);
+        assertEquals(2, HyperdriveUtil.getDeviance(current, target), 0.01);
+
+        //test 3 (more difficult cases)
+        current = new Point2D(2, 5, 25);
+        target = new Point2D(-1, -1, 0);
+        assertEquals(4.6006, HyperdriveUtil.getDeviance(current, target), 0.01);
     }
 }

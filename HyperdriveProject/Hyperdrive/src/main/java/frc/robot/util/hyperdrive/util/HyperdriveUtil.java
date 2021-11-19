@@ -248,11 +248,52 @@ public class HyperdriveUtil {
 	 * @return        The angle that the robot needs to turn to have its desired heading.
 	 */
 	public static double getAngleBetweenHeadings(double heading1, double heading2) {
-		double angle1 = heading2 - heading1;         //angle to heading without crossing 0
+		double angle1 = (heading2 - heading1) % 360;         //angle to heading without crossing 0
 		double angle2 = angle1 - 360;
 		double angle3 = angle1 + 360;
 
 		return closestToZero(new double[] {angle1, angle2, angle3});
+	}
+
+	/**
+	 * Calculates the exact deviance between two points. This method takes headings into account, meaning
+	 * that a point that is two units directly in front of the target point will return 0, because
+	 * the current point is still directly in line with the target.
+	 * @param current The point to calculate the deviance of
+	 * @param target The point to calculate the deviance relative to.
+	 * @return The deviance of the current point to the target point.
+	 */
+	public static double getDeviance(Point2D current, Point2D target) {
+		//define a triangle connecting the current point, target point, and line perpendicular to the target's heading.
+		double
+			angleToCurrent = Math.abs(target.getHeadingTo(current)),
+			angleToTarget = Math.abs(current.getHeadingTo(target)),
+			// angleToCurrent = target.getHeadingTo(current),
+			// angleToTarget = current.getHeadingTo(target),
+			a = 90 - (angleToCurrent - target.getHeading()),
+			b = 180 - (angleToTarget - current.getHeading()),
+			c = 180 - b - a,
+			actualDistance = current.getDistanceFrom(target);
+
+		System.out.println("current: " + current);
+		System.out.println("target: " + target);
+		System.out.println("angle to current: " + angleToCurrent);
+		System.out.println("angle to target: " + angleToTarget);
+		System.out.println("a: " + a);
+		System.out.println("b: " + b);
+		System.out.println("c: " + c);
+		System.out.println("actual distance: " + actualDistance);
+
+		//convert b and c to radians for the java math library
+		b = Math.toRadians(b);
+		c = Math.toRadians(c);
+
+		//use law of sines to get the deviance
+		double deviance = (actualDistance * Math.sin(b)) / Math.sin(c);
+		System.out.println("deviance: " + deviance);
+		System.out.println("sinb: " + Math.sin(b));
+		System.out.println();
+		return Math.abs(deviance);
 	}
 
 	/**
