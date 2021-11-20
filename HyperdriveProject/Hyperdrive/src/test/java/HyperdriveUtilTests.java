@@ -184,6 +184,18 @@ public class HyperdriveUtilTests { //TODO: Write test for HyperdriveUtil.getDevi
         //test 3 (more difficult cases)
         current = new Point2D(2, 5, 25);
         target = new Point2D(-1, -1, 0);
-        assertEquals(4.6006, HyperdriveUtil.getDeviance(current, target), 0.01);
+        assertEquals(4.601, HyperdriveUtil.getDeviance(current, target), 0.01);
+
+        current = new Point2D(-8, 1, 180);
+        target = new Point2D(-5, 6, 140);
+        assertEquals(6.527, HyperdriveUtil.getDeviance(current, target), 0.01);
+
+        current = new Point2D(9, 3, -69);
+        target = new Point2D(5, 13, 37);
+        assertEquals(0.547, HyperdriveUtil.getDeviance(current, target), 0.01);
+
+        current = new Point2D(4, 4, 84);
+        target = new Point2D(23, 18, 137);
+        assertEquals(28.967, HyperdriveUtil.getDeviance(current, target), 0.01);
     }
 }
