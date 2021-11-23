@@ -109,6 +109,7 @@ public class HyperdriveUtilTests { //TODO: Write test for HyperdriveUtil.getDevi
         assertEquals(-40, HyperdriveUtil.getAngleBetweenHeadings(20, -20), 0.01);
         assertEquals(-1, HyperdriveUtil.getAngleBetweenHeadings(1, 720), 0.01);
         assertEquals(1, HyperdriveUtil.getAngleBetweenHeadings(720, 1), 0.01);
+        assertEquals(20, HyperdriveUtil.getAngleBetweenHeadings(260, -80), 0.01);
     }
 
     @Test
@@ -150,52 +151,60 @@ public class HyperdriveUtilTests { //TODO: Write test for HyperdriveUtil.getDevi
         assertArrayEquals(results5, HyperdriveUtil.loadValuesFromFile("src/test/java/files/valueImport/valueimport5.txt"), 0.01);
     }
 
+    /**
+     * Test for deviance calculation. Because this method is trig-based and has many failure points, this will be tested
+     * much more thoroghly than the rest of the methods.
+     */
     @Test
     public void testGetDeviance() {
         //test 1 (points are right on top of each other, same heading, 0 deviance)
         Point2D
-            current = new Point2D(6, 6, 8),
+            position = new Point2D(6, 6, 8),
             target = new Point2D(6, 6, 8);
 
-        assertEquals(0, HyperdriveUtil.getDeviance(current, target), 0.01);
+        assertEquals(0, HyperdriveUtil.getDeviance(position, target), 0.01);
 
         //test 2 (current point directly in front of target, same heading, 0 deviance)
-        current = new Point2D(1, 2, 0);
+        position = new Point2D(1, 2, 0);
         target  = new Point2D(3, 2, 0);
-        assertEquals(0, HyperdriveUtil.getDeviance(current, target), 0.01);
+        assertEquals(0, HyperdriveUtil.getDeviance(position, target), 0.01);
 
-        current = new Point2D(0, 0, 45);
+        position = new Point2D(0, 0, 45);
         target = new Point2D(1, 1, 45);
-        assertEquals(0, HyperdriveUtil.getDeviance(current, target), 0.01);
+        assertEquals(0, HyperdriveUtil.getDeviance(position, target), 0.01);
 
         //test 3 (current point directly beside target, same(ish) heading, easily calculated deviance);
-        current = new Point2D(0, 0, 0);
+        position = new Point2D(0, 0, 0);
         target = new Point2D(0, 1, 0);
-        assertEquals(1, HyperdriveUtil.getDeviance(current, target), 0.01);
+        assertEquals(1, HyperdriveUtil.getDeviance(position, target), 0.01);
 
-        current = new Point2D(5, 6, 180);
+        position = new Point2D(5, 6, 180);
         target = new Point2D(5, 0, 180);
-        assertEquals(6, HyperdriveUtil.getDeviance(current, target), 0.01);
+        assertEquals(6, HyperdriveUtil.getDeviance(position, target), 0.01);
 
-        current = new Point2D(1, 1, 45); //45 degree offset should not matter because the robot is still on the perpendicular deviance line
+        position = new Point2D(1, 1, 45); //45 degree offset should not matter because the robot is still on the perpendicular deviance line
         target = new Point2D(3, 1, 90);
-        assertEquals(2, HyperdriveUtil.getDeviance(current, target), 0.01);
+        assertEquals(2, HyperdriveUtil.getDeviance(position, target), 0.01);
 
-        //test 3 (more difficult cases)
-        current = new Point2D(2, 5, 25);
+        //test 4 (more difficult cases)
+        position = new Point2D(2, 5, 25);
         target = new Point2D(-1, -1, 0);
-        assertEquals(4.601, HyperdriveUtil.getDeviance(current, target), 0.01);
+        assertEquals(6, HyperdriveUtil.getDeviance(position, target), 0.01);
 
-        current = new Point2D(-8, 1, 180);
+        position = new Point2D(-8, 1, 180);
         target = new Point2D(-5, 6, 140);
-        assertEquals(6.527, HyperdriveUtil.getDeviance(current, target), 0.01);
+        assertEquals(5.759, HyperdriveUtil.getDeviance(position, target), 0.01);
 
-        current = new Point2D(9, 3, -69);
-        target = new Point2D(5, 13, 37);
-        assertEquals(0.547, HyperdriveUtil.getDeviance(current, target), 0.01);
+        position = new Point2D(-79, 112, -68);
+        target = new Point2D(-169, 117, 126);
+        assertEquals(69.873, HyperdriveUtil.getDeviance(position, target), 0.01);
 
-        current = new Point2D(4, 4, 84);
-        target = new Point2D(23, 18, 137);
-        assertEquals(28.967, HyperdriveUtil.getDeviance(current, target), 0.01);
+        position = new Point2D(-163, -45, 20);
+        target = new Point2D(163, 154, -171);
+        assertEquals(145.552, HyperdriveUtil.getDeviance(position, target), 0.01);
+    
+        position = new Point2D(-1, 53, 9);
+        target = new Point2D(-27, 70, 189);
+        assertEquals(20.858, HyperdriveUtil.getDeviance(position, target), 0.01);
     }
 }

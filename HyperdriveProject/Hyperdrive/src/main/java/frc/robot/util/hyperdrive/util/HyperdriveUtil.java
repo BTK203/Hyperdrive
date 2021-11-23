@@ -264,60 +264,15 @@ public class HyperdriveUtil {
 	 * @return The deviance of the current point to the target point.
 	 */
 	public static double getDeviance(Point2D current, Point2D target) {
-		//define a triangle connecting the current point, target point, and line perpendicular to the target's heading.
 		double
-			// angleToCurrent = Math.abs(target.getHeadingTo(current)),
-			// angleToTarget = Math.abs(current.getHeadingTo(target)),
-			angleToCurrent = target.getHeadingTo(current),
-			angleToTarget = current.getHeadingTo(target),
-			moddedTargetHeading = target.getHeading() % 180,
-			moddedCurrentHeading = current.getHeading() % 180;
+			distanceToCurrent = target.getDistanceFrom(current),
+			headingToCurrent = target.getHeadingTo(current),
+			robotToTargetAngle = getAngleBetweenHeadings(headingToCurrent, target.getHeading());
 
-		//a can be defined two ways:
-		// if the angle between the different headings is less than 90, then a an angle in between the target
-		// heading and the direct connection line. In this case a is defined as 90 - (angle to current - modded target heading).
-		// otherwise, a is outside of the angle and is defined as -(angle to current - modded target heading) - 90
-		// TODO: TEST THIS MORE
-		double rawA = 90 - (angleToCurrent - moddedTargetHeading);
-		if(Math.abs(getAngleBetweenHeadings(target.getHeading(), current.getHeading())) > 90) {
-			rawA = (-1 * (angleToCurrent - moddedTargetHeading)) - 90;
-		}
-		
-		double
-			rawB = 180 - (angleToTarget - moddedCurrentHeading),
-			a = Math.abs(getAngleBetweenHeadings(0, rawA)),
-			b = Math.abs(getAngleBetweenHeadings(0, rawB)),
-			c = 180 - b - a,
-			actualDistance = current.getDistanceFrom(target);
-		
-		if(b == 180 && c == 0) {
-			//robot is directly in front of point; no deviance. However, this will cause a div by 0
-			return 0;
-		}
+		robotToTargetAngle = Math.abs(robotToTargetAngle);
+		double deviance = distanceToCurrent * Math.sin(Math.toRadians(robotToTargetAngle));
 
-		System.out.println("current: " + current);
-		System.out.println("target: " + target);
-		System.out.println("modded current heading: " + moddedCurrentHeading);
-		System.out.println("modded target heading: " + moddedTargetHeading);
-		System.out.println("angle to current: " + angleToCurrent);
-		System.out.println("angle to target: " + angleToTarget);
-		System.out.println("raw a: " + rawA);
-		System.out.println("raw b: " + rawB);
-		System.out.println("a: " + a);
-		System.out.println("b: " + b);
-		System.out.println("c: " + c);
-		System.out.println("actual distance: " + actualDistance);
-
-		//convert b and c to radians for the java math library
-		b = Math.toRadians(b);
-		c = Math.toRadians(c);
-
-		//use law of sines to get the deviance
-		double deviance = (actualDistance * Math.sin(b)) / Math.sin(c);
-		System.out.println("deviance: " + deviance);
-		System.out.println("sinb: " + Math.sin(b));
-		System.out.println();
-		return Math.abs(deviance);
+		return deviance;
 	}
 
 	/**
