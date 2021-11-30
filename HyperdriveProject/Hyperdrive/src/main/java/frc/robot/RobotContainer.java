@@ -44,8 +44,10 @@ public class RobotContainer {
     drivetrain.setDefaultCommand(new RunCommand( () -> { drivetrain.driveWithKeyboardInput(); }, drivetrain));
 
     //dashboard commands
-    InstantCommand setRobotPositionToPathStart = new InstantCommand( () -> { drivetrain.setPoseToRecordedPathStart(); } );
-    SmartDashboard.putData("Set Robot To Start", setRobotPositionToPathStart);
+    InstantCommand robotToRecordedStart = new InstantCommand( () -> { drivetrain.setPoseToRecordedPathStart(); } );
+    InstantCommand robotToLoadedStart = new InstantCommand( () -> { drivetrain.setPoseToLoadedPathStart(); } );
+    SmartDashboard.putData("Set Robot To Recorded Start", robotToRecordedStart);
+    SmartDashboard.putData("Set Robot To Loaded Start", robotToLoadedStart);
     SmartDashboard.putData("Emulate", new CyborgCommandEmulatePath(drivetrain, drivetrain.getHyperdrive()));
     SmartDashboard.putData("Emulate with Test Params", new CyborgCommandEmulatePath(drivetrain, drivetrain.getHyperdrive(), Constants.TEST_PARAMS));
     SmartDashboard.putData("Emulate Benchmark", new CyborgCommandEmulatePath(drivetrain, drivetrain.getHyperdrive(), new PreferenceEmulationParams(Units.LENGTH.METERS), "benchmark.txt"));

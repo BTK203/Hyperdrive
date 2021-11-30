@@ -54,10 +54,13 @@ public class TankController implements IController {
         //scale output and make sure output is within bounds
         output *= parameters.getPIDFAConfig().getMaximumOutput();
 
-        if(output < parameters.getPIDFAConfig().getMinimumOutput()) {
-            output = parameters.getPIDFAConfig().getMinimumOutput();
-        } else if(output > parameters.getPIDFAConfig().getMaximumOutput()) {
-            output = parameters.getPIDFAConfig().getMaximumOutput();
+        if(Math.abs(output) > parameters.getPIDFAConfig().getMaximumOutput()) {
+            //set the value of the output equal to the maximum allowed, with the correct sign
+            if(output > 0) {
+                output = parameters.getPIDFAConfig().getMaximumOutput();
+            } else {
+                output = parameters.getPIDFAConfig().getMaximumOutput() * -1;
+            }
         }
 
         return output;

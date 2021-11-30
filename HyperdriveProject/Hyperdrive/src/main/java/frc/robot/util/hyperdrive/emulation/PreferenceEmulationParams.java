@@ -54,7 +54,6 @@ public class PreferenceEmulationParams implements IEmulateParams {
             HyperdriveUtil.getAndSetDouble("Hyperdrive kD", 0), 
             HyperdriveUtil.getAndSetDouble("Hyperdrive kF", 0), 
             HyperdriveUtil.getAndSetDouble("Hyperdrive Full Acceleration", 5),
-            HyperdriveUtil.getAndSetDouble("Hyperdrive Min Out", -0.4),
             HyperdriveUtil.getAndSetDouble("Hyperdrive Max Out", 0.4)
         );
     }

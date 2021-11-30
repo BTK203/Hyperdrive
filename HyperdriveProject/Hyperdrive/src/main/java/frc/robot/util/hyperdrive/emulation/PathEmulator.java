@@ -25,7 +25,6 @@ import frc.robot.util.hyperdrive.recording.PathRecorder;
 public class PathEmulator {
     private Path path;
     private double[] velocityMap; //array containing maximum velocities at all points in path
-    private double[] devianceMap; //array containing deviances captured when the robot passes the target point
     private IEmulateParams parameters;
     private IController controller;
     private PathRecorder recorder;
@@ -177,9 +176,6 @@ public class PathEmulator {
         //will be driven with.
         createController();
 
-        //allocate array for deviance tracking
-        devianceMap = new double[path.getPoints().length];
-
         //create velocity map
         this.velocityMap = calculateVelocityMap();
     }
@@ -262,7 +258,6 @@ public class PathEmulator {
                 //get a path that consists of future points
                 if(currentPointIndex < points.length - 1 && headingToNext >= 90) {
                     //calculate deviance from current point, aligned to the axis that the point's heading is aligned with.
-                    devianceMap[currentPointIndex] = HyperdriveUtil.getDeviance(robotPosition, points[currentPointIndex]);
                     currentPointIndex++;
                 } else {
                     break;
@@ -601,7 +596,7 @@ public class PathEmulator {
         //add positional correction to heading by making the robot aim for a point ahead of us
         Point2D targetPoint = immediatePath[1];
         double positionalCorrection = HyperdriveUtil.getAngleBetweenHeadings(forwardsify(robotPosition.getHeading(), isForwards), robotPosition.getHeadingTo(targetPoint));
-        positionalCorrection *= robotPosition.getDistanceFrom(targetPoint) * parameters.getPositionalCorrectionInhibitor();
+        positionalCorrection *= HyperdriveUtil.getDeviance(robotPosition, targetPoint) * parameters.getPositionalCorrectionInhibitor();
         immediateTurn += positionalCorrection;
 
         immediateTurn = Math.toRadians(immediateTurn); //The Trajectory class requires values in radians.

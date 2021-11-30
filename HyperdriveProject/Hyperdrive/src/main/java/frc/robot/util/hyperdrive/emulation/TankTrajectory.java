@@ -65,15 +65,15 @@ public class TankTrajectory extends Trajectory {
                 rightSpeed = Math.abs(unboundedRightVelocity);
 
             if(leftSpeed > parameters.getMaximumSpeed()) {
-                double overflow = leftSpeed - parameters.getMaximumSpeed();
-                rightSpeed -= overflow;
-                leftSpeed = parameters.getMaximumSpeed();
+                double factor = parameters.getMaximumSpeed() / leftSpeed;
+                rightSpeed *= factor;
+                leftSpeed *= factor;
             }
 
             if(rightSpeed > parameters.getMaximumSpeed()) {
-                double overflow = rightSpeed - parameters.getMaximumSpeed();
-                leftSpeed -= overflow;
-                rightSpeed = parameters.getMaximumSpeed();
+                double factor = parameters.getMaximumSpeed() / rightSpeed;
+                leftSpeed *= factor;
+                rightSpeed *= factor;
             }
 
             this.leftVelocity = leftNegative ? -1 * leftSpeed : leftSpeed;

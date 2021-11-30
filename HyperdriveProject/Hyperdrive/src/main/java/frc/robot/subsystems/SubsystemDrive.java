@@ -222,6 +222,13 @@ public class SubsystemDrive extends SubsystemBase {
     }
   }
 
+  public void setPoseToLoadedPathStart() {
+    if(hyperdrive.getLoadedPath().isValid()) {
+      Point2D pathStart = hyperdrive.getLoadedPath().getPoints()[0];
+      simulatedRobot.setCurrentPositionAndHeading(pathStart);
+    }
+  }
+
   /**
    * Stops the drivetrain motors.
    */

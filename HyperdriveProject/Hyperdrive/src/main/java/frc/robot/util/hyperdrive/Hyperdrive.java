@@ -321,6 +321,14 @@ public class Hyperdrive {
     }
 
     /**
+     * Returns a reference to the {@link Path} that Hyperdrive is currently running.
+     * @return The {@link Path} that is currently being driven.
+     */
+    public Path getLoadedPath() {
+        return emulator.getPath();
+    }
+
+    /**
      * Forces Hyperdrive to record the results of the driven path to the file location
      * provided.
      * @param filePath The location of the new results file.

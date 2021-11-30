@@ -14,7 +14,6 @@ public class PIDFAConfig {
         kD,
         kF,
         accel,
-        minOut,
         maxOut;
 
     /**
@@ -27,13 +26,12 @@ public class PIDFAConfig {
      * @param minOut The minimum allowed percent output of the robot.
      * @param maxOut The maximum allowed percent output of the robot.
      */
-    public PIDFAConfig(double kP, double kI, double kD, double kF, double accel, double minOut, double maxOut) {
+    public PIDFAConfig(double kP, double kI, double kD, double kF, double accel, double maxOut) {
         this.kP = kP;
         this.kI = kI;
         this.kD = kD;
         this.kF = kF;
         this.accel = accel;
-        this.minOut = minOut;
         this.maxOut = maxOut;
     }
 
@@ -84,15 +82,6 @@ public class PIDFAConfig {
      */
     public double getAccel() {
         return accel;
-    }
-
-    /**
-     * Returns the minimum allowed output of the robot.
-     * Ex. -1 (full output backwards)
-     * @return Minimum allowed output for path driving.
-     */
-    public double getMinimumOutput() {
-        return minOut;
     }
 
     /**
