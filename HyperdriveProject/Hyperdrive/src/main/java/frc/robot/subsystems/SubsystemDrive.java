@@ -60,9 +60,8 @@ public class SubsystemDrive extends SubsystemBase {
       SimulatedMotor.NEO, 
       2,
       HyperdriveUtil.convertDistance(6, Units.LENGTH.INCHES, Units.LENGTH.METERS), 
-      HyperdriveUtil.convertDistance(20, Units.LENGTH.INCHES, Units.LENGTH.METERS), 
+      Constants.WHEEL_BASE_WIDTH, 
       7.14,
-      110, 
       Units.FORCE.POUND, 
       mupuMeters
     );

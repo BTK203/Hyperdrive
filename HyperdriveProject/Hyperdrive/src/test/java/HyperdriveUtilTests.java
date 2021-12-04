@@ -207,4 +207,12 @@ public class HyperdriveUtilTests { //TODO: Write test for HyperdriveUtil.getDevi
         target = new Point2D(-27, 70, 189);
         assertEquals(20.858, HyperdriveUtil.getDeviance(position, target), 0.01);
     }
+
+    @Test
+    public void testFixInnerVelocity() {
+        assertEquals(0, HyperdriveUtil.fixInnerSpeed(5, 0, 20), 0.01);
+        assertEquals(-27/5.0, HyperdriveUtil.fixInnerSpeed(1, 9, 8), 0.01);
+        assertEquals(18/11.0, HyperdriveUtil.fixInnerSpeed(15, 2, 3), 0.01);
+        assertEquals(1809/11.0, HyperdriveUtil.fixInnerSpeed(1500, 201, 300), 0.01);
+    }
 }

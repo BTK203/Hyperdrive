@@ -64,21 +64,31 @@ public class TankTrajectory extends Trajectory {
                 leftSpeed = Math.abs(unboundedLeftVelocity),
                 rightSpeed = Math.abs(unboundedRightVelocity);
 
+            System.out.println("radius: " + radius);
             if(leftSpeed > parameters.getMaximumSpeed()) {
-                double factor = parameters.getMaximumSpeed() / leftSpeed;
-                rightSpeed *= factor;
-                leftSpeed *= factor;
+                System.out.println("before: " + rightSpeed);
+                leftSpeed = parameters.getMaximumSpeed();
+                rightSpeed = HyperdriveUtil.fixInnerSpeed(radius, leftSpeed, wheelBaseWidth);
+                System.out.println("fixing at time " + System.currentTimeMillis());
+                System.out.println("after: " + rightSpeed);
+
+                rightSpeed = Math.abs(rightSpeed);
             }
 
             if(rightSpeed > parameters.getMaximumSpeed()) {
-                double factor = parameters.getMaximumSpeed() / rightSpeed;
-                leftSpeed *= factor;
-                rightSpeed *= factor;
+                System.out.println("before: " + leftSpeed);
+                rightSpeed = parameters.getMaximumSpeed();
+                leftSpeed = HyperdriveUtil.fixInnerSpeed(radius, rightSpeed, wheelBaseWidth);
+                System.out.println("fixing at time " + System.currentTimeMillis());
+                System.out.println("after: " + leftSpeed);
+
+                leftSpeed = Math.abs(leftSpeed);
             }
 
             this.leftVelocity = leftNegative ? -1 * leftSpeed : leftSpeed;
             this.rightVelocity = rightNegative ? -1 * rightSpeed : rightSpeed;
         } else {
+            //no turn, drive robot straight forward
             double velocity = getVelocity();
 
             this.leftVelocity  = velocity;

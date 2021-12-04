@@ -276,6 +276,23 @@ public class HyperdriveUtil {
 	}
 
 	/**
+	 * Calculates the correct inner velocity to take if a turn is to remain true. 
+	 * This method can be used if an outer velocity exceeds the allowed maximum.
+	 * @param radius The radius of the turn.
+	 * @param outerSpeed The outer velocity.
+	 * @param wheelbaseWidth The distance between the two sets of wheels
+	 * @return The inner velocity to take for the trajectory to remain true.
+	 */
+	public static double fixInnerSpeed(double radius, double outerSpeed, double wheelbaseWidth) {
+		double
+			outerRadius = Math.abs(radius) + (wheelbaseWidth / 2),
+			innerRadius = Math.abs(radius) - (wheelbaseWidth / 2),
+			innerVelocity = (innerRadius * outerSpeed) / outerRadius;
+		
+		return innerVelocity;
+	}
+
+	/**
 	 * Returns a list of files.
 	 * @param directory The directory to search
 	 * @param specifyDirectories If true, add a tag specifying whether or not a file is a directory.

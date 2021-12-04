@@ -23,7 +23,6 @@ public class SimulatedRobot  {
     private double  
         wheelRadius,
         gearRatio,
-        robotMass,
         motorUnitsPerUnit;
 
     //runtime values
@@ -55,10 +54,9 @@ public class SimulatedRobot  {
         double wheelRadius, 
         double wheelBaseWidth,
         double gearRatio, 
-        double robotWeight, 
         Units.FORCE weightUnit
     ) {
-        this(motor, 2, wheelRadius, wheelBaseWidth, gearRatio, robotWeight, weightUnit, 0.472);
+        this(motor, 2, wheelRadius, wheelBaseWidth, gearRatio, weightUnit, 0.472);
     }
 
     /**
@@ -78,7 +76,6 @@ public class SimulatedRobot  {
         double wheelRadius,
         double wheelBaseWidth,
         double gearRatio, 
-        double robotWeight,
         Units.FORCE weightUnit, 
         double motorUnitsPerUnit
     ) {
@@ -86,7 +83,6 @@ public class SimulatedRobot  {
         this.motorsPerSide = motorsPerSide;
         this.wheelRadius = wheelRadius;
         this.gearRatio = gearRatio;
-        this.robotMass = HyperdriveUtil.massKGFromWeight(robotWeight, weightUnit);
         this.motorUnitsPerUnit = motorUnitsPerUnit;
         leftVelocity = 0;
         rightVelocity = 0;
@@ -248,6 +244,7 @@ public class SimulatedRobot  {
                     * 60.0; //seconds per minute
 
         double top = (slope + (percentOut * motorsPerSide * motor.getInitialTorque())) * gearRatio;
+        double robotMass = HyperdriveUtil.massKGFromWeight(HyperdriveUtil.getAndSetDouble("Robot Weight", 110), Units.FORCE.POUND);
         double bottom = wheelRadius * robotMass;
 
         double acceleration = top / bottom;
