@@ -65,7 +65,7 @@ public class SimulatedRobot  {
      * @param motorsPerSide The number of motors per side.
      * @param wheelRadius The radius of the drive wheels.
      * @param wheelBaseWidth The width between the sets of wheels of the robot.
-     * @param gearRatio The gear ratio of the gearbox (wheel RPM / motorRPM);
+     * @param gearRatio The gear ratio of the gearbox (motor RPM / wheel RPM);
      * @param robotWeight The weight of the robot.
      * @param weightUnit The units used to specify the weight.
      * @param motorUnitsPerUnit The number of motor units (RPM, ticks, etc) per length value (inches, meters, etc)

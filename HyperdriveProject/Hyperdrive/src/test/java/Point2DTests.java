@@ -101,7 +101,6 @@ public class Point2DTests {
 
             //test converting to string
             String testString = test.toString();
-            System.out.println("testString: " + testString);
             assertEquals(points[i], testString);
         }
     }

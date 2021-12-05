@@ -621,14 +621,6 @@ public class PathEmulator {
         }
 
         pathFinished = currentPointIndex >= path.getPoints().length - 2; //path will be finished when the immediate path can only be two points long.
-
-        if(!isForwards) {
-            System.out.println("velocity: " + velocity);
-            System.out.println("distance: " + immediateDistance);
-            System.out.println("turn: " + immediateTurn);
-            System.out.println();
-        }
-
         return new Trajectory(velocity, immediateDistance, immediateTurn, parameters, controller, motorUnitsPerUnit);
     }
 
