@@ -53,7 +53,7 @@ public class SubsystemDrive extends SubsystemBase {
     double mupuMeters = 0.472 / mupuConversionFactor;
 
     //define hyperdrive
-    hyperdrive = new Hyperdrive(DriveStyle.TANK, Units.LENGTH.METERS, mupuMeters, Units.FORCE.POUND, 110);
+    hyperdrive = new Hyperdrive(DriveStyle.TANK, Constants.LENGTH_UNITS, mupuMeters, Units.FORCE.POUND, 110);
 
     //define simulated robot
     simulatedRobot = new SimulatedRobot(
@@ -80,9 +80,14 @@ public class SubsystemDrive extends SubsystemBase {
 
     //update simulated robot
     Point2D currentPositionAndHeading = simulatedRobot.update(leftPercentOutput, rightPercentOutput, deltaTimeSeconds);
+    double
+      xPOUnit = HyperdriveUtil.convertDistance(currentPositionAndHeading.getX(), Units.LENGTH.METERS, Constants.LENGTH_UNITS),
+      YPOUnit = HyperdriveUtil.convertDistance(currentPositionAndHeading.getY(), Units.LENGTH.METERS, Constants.LENGTH_UNITS);
+
+    Point2D currentPoseUnit = new Point2D(xPOUnit, YPOUnit, currentPositionAndHeading.getHeading());
 
     //update Hyperdrive
-    hyperdrive.update(currentPositionAndHeading);
+    hyperdrive.update(currentPoseUnit);
   }
 
   /**
@@ -208,7 +213,13 @@ public class SubsystemDrive extends SubsystemBase {
    * @param positionAndHeading new position and heading.
    */
   public void setPositionAndHeading(Point2D positionAndHeading) {
-    simulatedRobot.setCurrentPositionAndHeading(positionAndHeading);
+    //convert to meters
+    double
+      xMeters = HyperdriveUtil.convertDistance(positionAndHeading.getX(), Constants.LENGTH_UNITS, Units.LENGTH.METERS),
+      yMeters = HyperdriveUtil.convertDistance(positionAndHeading.getY(), Constants.LENGTH_UNITS, Units.LENGTH.METERS);
+
+    Point2D ptMeters = new Point2D(xMeters, yMeters, positionAndHeading.getHeading());
+    simulatedRobot.setCurrentPositionAndHeading(ptMeters);
   }
 
   /**
@@ -217,14 +228,14 @@ public class SubsystemDrive extends SubsystemBase {
   public void setPoseToRecordedPathStart() {
     if(hyperdrive.getRecordedPath().isValid()) { //if the most recently recorded path exists...
       Point2D pathStart = hyperdrive.getRecordedPath().getPoints()[0];
-      simulatedRobot.setCurrentPositionAndHeading(pathStart);
+      setPositionAndHeading(pathStart);
     }
   }
 
   public void setPoseToLoadedPathStart() {
     if(hyperdrive.getLoadedPath().isValid()) {
       Point2D pathStart = hyperdrive.getLoadedPath().getPoints()[0];
-      simulatedRobot.setCurrentPositionAndHeading(pathStart);
+      setPositionAndHeading(pathStart);
     }
   }
 
@@ -234,5 +245,4 @@ public class SubsystemDrive extends SubsystemBase {
   public void stop() {
     setPercentOutputs(0, 0);
   }
-
 }

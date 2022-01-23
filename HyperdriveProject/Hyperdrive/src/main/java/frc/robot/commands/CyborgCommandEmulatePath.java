@@ -81,8 +81,9 @@ public class CyborgCommandEmulatePath extends CommandBase {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
+    final double wheelBaseUnits = HyperdriveUtil.convertDistance(Constants.WHEEL_BASE_WIDTH, Units.LENGTH.METERS, Constants.LENGTH_UNITS);
     TankTrajectory trajectory = hyperdrive.calculateNextMovements()
-                                  .getTankTrajectory(Constants.WHEEL_BASE_WIDTH)
+                                  .getTankTrajectory(wheelBaseUnits)
                                   .convertTime(Units.TIME.MINUTES);
                                   
     //calculate percent outputs

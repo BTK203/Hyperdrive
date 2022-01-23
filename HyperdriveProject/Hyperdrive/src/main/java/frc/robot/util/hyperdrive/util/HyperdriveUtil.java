@@ -380,4 +380,13 @@ public class HyperdriveUtil {
 			DriverStation.reportError("Could not write to file " + fileName + "!\nError: " + ex.getMessage(), true);
 		}
 	}
+
+	/**
+	 * Returns -1 if value is negative, 1 if value is positive, and 0 if it is zero.
+	 * @param value The value to evaluate.
+	 * @return The sign of the value
+	 */
+	public static double sign(double value) {
+		return (value < 0 ? -1 : (value > 0 ? 1 : 0));
+	}
 }

@@ -24,6 +24,9 @@ public class HyperdriveConstants {
         EMULATE_POINT_PASS_LIMIT = 10,
         EMULATE_MAX_HEADING_TO_TURN_DIFFERENCE = 75,
         EMULATE_IMMEDIATE_PATH_SIZE = 2;
+    
+    public static final double
+        EMULATE_NEGLIGIBLE_DEVIANCE = 0.01;
 
     //PositionTracker constants
     public static final double

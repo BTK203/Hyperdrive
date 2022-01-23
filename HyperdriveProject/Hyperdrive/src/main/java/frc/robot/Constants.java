@@ -7,6 +7,7 @@ package frc.robot;
 import frc.robot.util.hyperdrive.emulation.ConstantEmulationParams;
 import frc.robot.util.hyperdrive.emulation.IEmulateParams;
 import frc.robot.util.hyperdrive.util.PIDFAConfig;
+import frc.robot.util.hyperdrive.util.Units;
 
 /**
  * The Constants class provides a convenient place for teams to hold robot-wide numerical or boolean
@@ -23,9 +24,9 @@ public final class Constants {
         RIGHT_MASTER_ID = 3,
         RIGHT_SLAVE_ID = 4;
 
-    public static final double WHEEL_BASE_WIDTH = 0.5; //meters TODO: DEFAULT IS 0.5
-
+    public static final double WHEEL_BASE_WIDTH = 0.5; //meters
     public static final double KEY_THROTTLE_PER_SECOND = 5;
+    public static final Units.LENGTH LENGTH_UNITS = Units.LENGTH.METERS;
 
     //test constants. DO NOT CHANGE THESE OR ELSE YOU WILL BREAK THE TESTS AND HAVE TO REDO THEM
     public static final PIDFAConfig TEST_PIDFA = new PIDFAConfig(0.25, 1, 0.01, 0.125, 1.5, 1);

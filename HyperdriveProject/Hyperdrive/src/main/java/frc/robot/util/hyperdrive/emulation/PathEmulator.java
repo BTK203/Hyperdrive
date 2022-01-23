@@ -332,8 +332,6 @@ public class PathEmulator {
         Point2D[] points = path.getPoints();
         double[] velocityMap = calculateRoughVelocityMap(points);
 
-        HyperdriveUtil.saveValuesToFile(velocityMap, "rough.txt");
-
         //numbers for controlling the smoothing algorithm's progress
         int
             increment     = 1, //should be either 1 or -1 
@@ -421,7 +419,6 @@ public class PathEmulator {
             currentPoint += increment; //increment / decrement current point
         }
 
-        HyperdriveUtil.saveValuesToFile(velocityMap, "smoothed.txt"); //TODO: DELETE
         return velocityMap;
     }
 
@@ -587,8 +584,7 @@ public class PathEmulator {
         //draw an "arc" that closely fits the path. The arc will be used to calculate the robot velocity and turn magnitude.
         double 
             immediateDistance = getDistanceOfPath(immediatePath), //unit: in
-            immediateTurn = getTurnOfPath(immediatePath), //unit: degrees
-            headingChange = HyperdriveUtil.getAngleBetweenHeadings(immediatePath[1].getHeading(), immediatePath[immediatePath.length - 1].getHeading()); //TODO: DELETE?
+            immediateTurn = getTurnOfPath(immediatePath); //unit: degrees
 
         //figure out if the robot is about switch directions (forward to backward or vice versa). If so, the robot will want to make a large turn. So we zero it.
         boolean isForwardsLater = calculateIsForwards(immediatePath[immediatePath.length - 2], immediatePath[immediatePath.length - 1]);
@@ -597,11 +593,13 @@ public class PathEmulator {
         //add positional correction to heading by making the robot aim for a point ahead of it
         Point2D targetPoint = immediatePath[1];
         double positionalCorrection = HyperdriveUtil.getAngleBetweenHeadings(forwardsify(robotPosition.getHeading(), isForwards), robotPosition.getHeadingTo(targetPoint));
-        positionalCorrection *= HyperdriveUtil.getDeviance(robotPosition, targetPoint) * parameters.getPositionalCorrectionInhibitor();
+        double currentDeviance = HyperdriveUtil.getDeviance(robotPosition, targetPoint);
+        currentDeviance = Math.pow(Math.E, currentDeviance);
+        positionalCorrection *= currentDeviance;
         immediateTurn += positionalCorrection;
-
         immediateTurn = Math.toRadians(immediateTurn); //The Trajectory class requires values in radians.
 
+        //calculate the radius of the turn and the base speed it is taken at
         double 
             radius = immediateDistance / immediateTurn,
             baseSpeed = calculateBestTangentialSpeed(radius);
@@ -615,7 +613,6 @@ public class PathEmulator {
         }
         
         double velocity = (isForwards ? baseSpeed : -1 * baseSpeed);
-        
         if(shouldZeroTurn) {
             immediateTurn = 0;
         }
